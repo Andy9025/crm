@@ -147,8 +147,8 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full flex flex-col gap-4 sm:gap-6">
 
-        <!-- Ultra-Slim Minimal Cloud Sync Toolbar (Mobile Optimized) -->
-        <section class="bg-slate-900 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-xs flex items-center justify-between gap-2 border border-slate-800">
+        <!-- Ultra-Slim Minimal Cloud Sync Toolbar (Mobile Optimized - Icon Only) -->
+        <section class="bg-slate-900 text-white px-3 py-1.5 rounded-xl shadow-xs flex items-center justify-between gap-2 border border-slate-800">
             <div class="flex items-center gap-2 min-w-0">
                 <div class="relative flex items-center justify-center shrink-0 w-7 h-7 rounded-lg bg-slate-800 border border-slate-700/80" title="클라우드 동기화 상태">
                     <i id="mobile-cloud-icon" class="fa-solid fa-cloud text-emerald-400 text-xs sm:text-sm animate-pulse"></i>
@@ -629,62 +629,7 @@
     <script type="module">
         // Realtime REST Sync Endpoint (Guarantees zero-config instant sync across all devices)
         const SYNC_SERVER_URL = "https://kvdb.io/W9d7u2K3p1X4M6L8N/";
-        const HAS_INITIALIZED_KEY = 'caos_crm_initialized_v2';
-
-        // Sample data for very first boot
-        const initialClients = [
-            {
-                id: 'client_101',
-                name: '(주)테크솔루션즈',
-                country: '대한민국',
-                manager: '김민준 이사',
-                email: 'mj.kim@techsolutions.co.kr',
-                phone: '010-3892-1004',
-                products: [
-                    { name: 'CAOS 산업용 광센서 모듈 v3', price: 180 },
-                    { name: '스마트 센서 게이트웨이 Hub', price: 320 }
-                ],
-                status: 'ACTIVE',
-                notes: '매월 정기 물량 공급 계약. 결제조건: 익월 15일 현금 결제.',
-                orders: [
-                    { id: 'ord_1', itemName: 'CAOS 광센서 모듈 v3 (1000EA)', qty: 1000, price: 180, total: 180000, date: '2026-09-15', status: '결제완료' },
-                    { id: 'ord_2', itemName: '게이트웨이 Hub (5EA)', qty: 5, price: 320, total: 1600, date: '2026-09-28', status: '발송완료' }
-                ]
-            },
-            {
-                id: 'client_102',
-                name: 'Apex Global Trade Inc.',
-                country: '미국',
-                manager: 'Robert Chen (VP)',
-                email: 'r.chen@apextrade.us',
-                phone: '+1 (415) 892-3011',
-                products: [
-                    { name: 'CAOS 고정밀 컨트롤러 v2.5', price: 420 },
-                    { name: 'Wi-Fi 임베디드 칩셋', price: 75 }
-                ],
-                status: 'ACTIVE',
-                notes: '북미 독점 유통망 공급 협의 완료. FCC 품질 인증 취득.',
-                orders: [
-                    { id: 'ord_3', itemName: 'CAOS 고정밀 컨트롤러 v2.5', qty: 200, price: 420, total: 84000, date: '2026-10-01', status: '진행중' }
-                ]
-            },
-            {
-                id: 'client_103',
-                name: '사쿠라 일렉트로닉스 (Sakura Elec)',
-                country: '일본',
-                manager: 'Tanaka Sato (田中 佐藤)',
-                email: 'sato@sakura-elec.jp',
-                phone: '+81 3-5214-9000',
-                products: [
-                    { name: '마이크로 센서 핀 커넥터', price: 15 }
-                ],
-                status: 'ACTIVE',
-                notes: '도쿄 지사 직접 배송. 방수 포장 필수.',
-                orders: [
-                    { id: 'ord_4', itemName: '마이크로 센서 핀 커넥터', qty: 10000, price: 15, total: 150000, date: '2026-08-20', status: '결제완료' }
-                ]
-            }
-        ];
+        const HAS_INITIALIZED_KEY = 'caos_crm_initialized_v3_clean';
 
         let clients = [];
         let viewMode = 'card';
@@ -692,7 +637,6 @@
         let channelId = localStorage.getItem('caos_sync_channel_id') || 'CAOS-77';
 
         function loadInitialState() {
-            const hasInit = localStorage.getItem(HAS_INITIALIZED_KEY);
             const storedData = localStorage.getItem('caos_crm_clients_data');
 
             if (storedData !== null) {
@@ -701,13 +645,10 @@
                 } catch(e) {
                     clients = [];
                 }
-            } else if (!hasInit) {
-                // First boot ever
-                clients = [...initialClients];
-                localStorage.setItem(HAS_INITIALIZED_KEY, 'true');
-                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
             } else {
+                // Completely clean start: Zero sample data resurrection
                 clients = [];
+                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
             }
             renderApp();
         }
