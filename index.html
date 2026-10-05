@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CAOS CRM">
     
-    <!-- Definitive iOS Apple Touch Icon Fix: Bulletproof solid PNG-mimicking standard data-URI to prevent Safari 'C' fallback -->
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQlCAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAZBJREFUeNrs1bEJgzAURNE5vY3KzBnsIhnB0s5iE+wtVksQJISD+A8w9yNHeR5f94F1e60tu+s2061t18931/PueT+r3vf7fvnf9+vd89/vvuf//e77/H/3/H3/+t/zfO9/P+/3vffv9/v/+5//e/+Xz/f6+37v3/e9r//n9/n7fv6vn+/5+77vO//ffp7P9/b9nvv7ff79fH+/v9/nve//9z//+f7+/r7f/+/ve61Xr17W13r16mUdOnTo+x3q1KlTp96j1KlTp06dOnXq1KlTp97XlTr1vq5UqVOnTp06derUqfcfde48dOrUqVOnTp0f6uT8g8h67NixN963o0rN6uTvN11vN96/H1VqVrOtvN10vd1ovV8vNdsa1evbbt63m/vud5f77r2t6nZf63r2vTq317rf2vd737v2+t8GAAAAAElFTkSuQmCC">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAZBJREFUeNrs1bEJgzAURNE5vY3KzBnsIhnB0s5iE+wtVksQJISD+A8w9yNHeR5f94F1e60tu+s2061t18931/PueT+r3vf7fvnf9+vd89/vvuf//e77/H/3/H3/+t/zfO9/P+/3vffv9/v/+5//e/+Xz/f6+37v3/e9r//n9/n7fv6vn+/5+77vO//ffp7P9/b9nvv7ff79fH+/v9/nve//9z//+f7+/r7f/+/ve61Xr17W13r16mUdOnTo+x3q1KlTp96j1KlTp06dOnXq1KlTp97XlTr1vq5UqVOnTp06derUqfcfde48dOrUqVOnTp0f6uT8g8h67NixN963o0rN6uTvN11vN96/H1VqVrOtvN10vd1ovV8vNdsa1evbbt63m/vud5f77r2t6nZf63r2vTq317rf2vd737v2+t8GAAAAAElFTkSuQmCC">
 
@@ -102,9 +101,9 @@
                         </svg>
                     </div>
 
-                    <div class="flex flex-col justify-center leading-none">
+                    <div class="flex flex-col justify-center leading-tight">
                         <span class="text-base sm:text-xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
-                        <span class="text-[9px] sm:text-[10px] font-black tracking-widest text-caos-red uppercase mt-0.5">CRM</span>
+                        <span class="text-[9px] sm:text-[10px] font-black tracking-widest text-caos-red uppercase">CRM</span>
                     </div>
                 </a>
             </div>
@@ -140,9 +139,8 @@
 
         <section class="bg-slate-900 text-white px-3 py-1.5 rounded-xl shadow-xs flex items-center justify-between gap-2 border border-slate-800">
             <div class="flex items-center gap-2 min-w-0">
-                <div class="relative flex items-center justify-center shrink-0 w-6 h-6 rounded-lg bg-slate-800 border border-slate-700/80" title="실시간 동기화 채널">
-                    <i class="fa-solid fa-cloud text-emerald-400 text-xs animate-pulse"></i>
-                    <span class="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div class="relative flex items-center justify-center shrink-0 w-5 h-5 rounded-lg bg-slate-800 text-emerald-400" title="실시간 동기화 채널">
+                    <i class="fa-solid fa-cloud text-xs animate-pulse"></i>
                 </div>
                 <span id="mobile-room-tag" class="px-2 py-0.5 bg-emerald-950/80 text-emerald-300 font-bold text-[10px] rounded-md border border-emerald-800/60 font-mono">CAOS-77</span>
             </div>
@@ -204,7 +202,6 @@
             </div>
         </section>
 
-        <!-- Search and Filters -->
         <section class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             <div class="relative flex-1">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -610,7 +607,6 @@
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
     <script>
-        // Bulletproof robust default fallback data ensuring preview & initial load are never empty
         const FALLBACK_CLIENTS = [
             {
                 id: 'client_sample_1',
@@ -677,7 +673,7 @@
                 if (storedData !== null && storedData !== undefined) {
                     const parsed = JSON.parse(storedData);
                     if (Array.isArray(parsed)) {
-                        clients = parsed.length > 0 ? parsed : FALLBACK_CLIENTS;
+                        clients = parsed;
                     } else {
                         clients = FALLBACK_CLIENTS;
                     }
@@ -702,7 +698,7 @@
                 const storedData = localStorage.getItem('caos_crm_clients_data');
                 if (storedData) {
                     const parsed = JSON.parse(storedData);
-                    if (Array.isArray(parsed) && parsed.length > 0) clients = parsed;
+                    if (Array.isArray(parsed)) clients = parsed;
                 }
             } catch(e) {}
             
@@ -1557,7 +1553,6 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Initialize state immediately upon script execution
         loadInitialState();
     </script>
 </body>
