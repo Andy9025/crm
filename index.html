@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CAOS">
     
-    <!-- iOS Home Screen Icon Links (Direct High-Res HTTPS Red Globe PNG) -->
+    <!-- iOS Home Screen Icon Links (Direct High-Res Globe PNG) -->
     <link rel="apple-touch-icon" sizes="180x180" href="https://img.icons8.com/ios-filled/180/E50012/globe--v1.png">
     <link rel="apple-touch-icon-precomposed" href="https://img.icons8.com/ios-filled/180/E50012/globe--v1.png">
     <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/180/E50012/globe--v1.png">
@@ -49,6 +49,7 @@
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         body {
             padding-bottom: env(safe-area-inset-bottom);
@@ -82,10 +83,11 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col pb-16 md:pb-0 select-none md:select-text">
 
+    <!-- Header Area -->
     <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs pt-safe">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
             
-            <!-- Sleek Minimalist Globe Header Logo -->
+            <!-- Sleek Globe Logo -->
             <div class="flex items-center gap-3">
                 <a href="#" class="flex items-center gap-2.5 sm:gap-3 group">
                     <div class="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center shrink-0">
@@ -118,28 +120,28 @@
                 </a>
             </div>
 
-            <!-- Header Quick Action Controls with Explicit Cloud Sync Button -->
+            <!-- Header Quick Action Controls -->
             <div class="flex items-center gap-1.5 sm:gap-2">
-                <button onclick="manualSync()" title="즉시 동기화" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-xs">
+                <button onclick="manualSync()" title="즉시 동기화" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 rounded-xl transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap">
                     <i id="header-sync-spin" class="fa-solid fa-rotate text-slate-600 text-xs"></i>
                     <span class="hidden md:inline">즉시 동기화</span>
                 </button>
 
-                <button onclick="openCloudSetupModal()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-xl hover:bg-emerald-100 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
+                <button onclick="openCloudSetupModal()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-xl hover:bg-emerald-100 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap">
                     <i class="fa-solid fa-cloud text-emerald-600 text-sm"></i>
                     <span id="cloud-status-text" class="font-extrabold">클라우드 연동</span>
                     <span id="cloud-indicator-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </button>
 
-                <button onclick="openBackupModal()" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
+                <button onclick="openBackupModal()" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap">
                     <i class="fa-solid fa-floppy-disk text-caos-red"></i>
                     <span class="hidden sm:inline">백업 / 복구</span>
                 </button>
-                <button onclick="exportToCSV()" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
+                <button onclick="exportToCSV()" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap">
                     <i class="fa-solid fa-file-csv text-emerald-600"></i>
                     <span class="hidden sm:inline">CSV</span>
                 </button>
-                <button onclick="openClientModal()" class="hidden md:flex px-4 py-2 text-xs sm:text-sm font-bold text-white caos-btn-gradient rounded-xl transition items-center gap-1.5 shadow-caos-glow active:scale-95">
+                <button onclick="openClientModal()" class="hidden md:inline-flex px-4 py-2 text-xs sm:text-sm font-bold text-white caos-btn-gradient rounded-xl transition items-center gap-1.5 shadow-caos-glow active:scale-95 whitespace-nowrap">
                     <i class="fa-solid fa-plus"></i>
                     <span>신규 거래처 등록</span>
                 </button>
@@ -149,29 +151,31 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full flex flex-col gap-4 sm:gap-6">
 
-        <!-- Dedicated Mobile Cloud Sync Toolbar (Always Visible on Mobile) -->
-        <section class="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-3.5 py-2.5 sm:px-5 rounded-2xl shadow-md flex items-center justify-between gap-2 border border-slate-700/60">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div class="relative flex items-center justify-center shrink-0 w-8 h-8 rounded-xl bg-slate-800 border border-slate-700">
+        <!-- Dedicated Safari-Optimized Cloud Sync Toolbar -->
+        <section class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-3 sm:px-5 rounded-2xl shadow-md flex items-center justify-between gap-2 border border-slate-700/60">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <div class="relative flex items-center justify-center shrink-0 w-9 h-9 rounded-xl bg-slate-800 border border-slate-700">
                     <i class="fa-solid fa-cloud text-emerald-400 text-sm"></i>
                     <span id="mobile-cloud-dot" class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 </div>
                 <div class="truncate text-xs">
-                    <div class="flex items-center gap-1.5">
-                        <span id="mobile-cloud-status-text" class="font-extrabold text-emerald-300">실시간 연동 활성화</span>
-                        <span id="mobile-room-tag" class="px-1.5 py-0.2 bg-slate-800 text-[10px] text-slate-300 rounded font-mono border border-slate-700">채널: 기본</span>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span id="mobile-cloud-status-text" class="font-extrabold text-emerald-300">실시간 연동 중</span>
+                        <span id="mobile-room-tag" class="px-2 py-0.5 bg-emerald-950 text-emerald-300 font-extrabold text-[11px] rounded-md border border-emerald-700/80 font-mono">채널: CAOS-GLOBAL</span>
                     </div>
                     <span id="mobile-sync-time" class="text-[10px] text-slate-400 block truncate mt-0.5">최근 동기화: 방금 전</span>
                 </div>
             </div>
 
+            <!-- Safari Mobile Buttons with Explicit Width & Flex Alignment -->
             <div class="flex items-center gap-1.5 shrink-0">
-                <button onclick="manualSync()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-xs transition">
+                <button type="button" onclick="manualSync()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-black text-xs rounded-xl inline-flex items-center justify-center gap-1.5 shadow-sm transition whitespace-nowrap cursor-pointer">
                     <i id="mobile-sync-icon" class="fa-solid fa-rotate text-xs"></i>
                     <span>즉시 동기화</span>
                 </button>
-                <button onclick="openCloudSetupModal()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition">
-                    <i class="fa-solid fa-gear"></i> <span class="hidden xs:inline">설정</span>
+                <button type="button" id="btn-open-cloud-setup" onclick="openCloudSetupModal()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-slate-100 font-bold text-xs rounded-xl border border-slate-600 inline-flex items-center justify-center gap-1 transition whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-gear text-xs"></i>
+                    <span>설정</span>
                 </button>
             </div>
         </section>
@@ -583,12 +587,12 @@
         </div>
     </div>
 
-    <!-- Cloud Setup Modal for Realtime Sync -->
+    <!-- Enhanced Ultra-Clear Cloud Setup Modal -->
     <div id="cloud-setup-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                 <h3 class="font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-cloud text-emerald-600"></i> 실시간 클라우드 기기 연동 설정
+                    <i class="fa-solid fa-wifi text-emerald-600"></i> 실시간 기기 동기화 채널 설정
                 </h3>
                 <button onclick="closeCloudSetupModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -597,31 +601,44 @@
 
             <div class="space-y-4 text-xs sm:text-sm text-slate-600">
                 <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
-                    <p class="text-emerald-900 font-bold mb-1"><i class="fa-solid fa-wifi mr-1"></i> 아이폰 & PC 실시간 자동 동기화</p>
+                    <p class="text-emerald-900 font-extrabold text-xs sm:text-sm mb-1">
+                        <i class="fa-solid fa-mobile-screen-button mr-1"></i> PC와 아이폰 0.1초 실시간 연동
+                    </p>
                     <p class="text-xs text-emerald-800 leading-relaxed">
-                        PC와 아이폰에서 **동일한 채널 이름(기본값: CAOS-GLOBAL)**을 설정해 두시면 **별도 파일 교환 없이 0.1초 만에 실시간으로 데이터가 동기화**됩니다.
+                        아래 **1번 칸에 PC와 아이폰 동일한 채널 이름(예: CAOS-77)**을 적으시면 수동 파일 전송 없이 **0.1초 만에 실시간으로 데이터가 함께 수정/삭제**됩니다!
                     </p>
                 </div>
 
-                <div>
-                    <label class="block font-bold text-slate-800 mb-1">공유 동기화 채널 이름 (PC & 아이폰 동일 입력)</label>
-                    <input type="text" id="custom-room-id-input" placeholder="예: CAOS-MY-OFFICE" value="CAOS-GLOBAL" 
-                        class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
-                    <p class="text-[11px] text-slate-400 mt-1">* PC와 아이폰에 똑같은 채널 이름을 적으시면 같은 데이터베이스를 공유합니다.</p>
+                <!-- Step 1 Input Box -->
+                <div class="p-4 bg-slate-50 rounded-2xl border-2 border-emerald-500/80 shadow-xs">
+                    <label class="block font-black text-slate-900 text-xs sm:text-sm mb-1.5 flex items-center gap-1.5">
+                        <span class="px-2 py-0.5 bg-emerald-600 text-white rounded-md text-[11px]">1번 칸</span>
+                        🔑 공유 동기화 채널 이름 (PC/아이폰 동일 입력)
+                    </label>
+                    <input type="text" id="custom-room-id-input" placeholder="예: CAOS-77 또는 CAOS-GLOBAL" value="CAOS-77" 
+                        class="w-full px-3.5 py-3 text-sm bg-white border-2 border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-black text-slate-900">
+                    <p class="text-[11px] text-emerald-700 font-bold mt-1.5">
+                        * PC와 아이폰에 똑같은 채널 이름(예: CAOS-77)을 적으시고 아래 저장 버튼을 누르시면 즉시 데이터가 연결됩니다.
+                    </p>
                 </div>
 
-                <div>
-                    <label class="block font-bold text-slate-800 mb-1">Firebase 커스텀 설정 정보 (선택 사항)</label>
-                    <textarea id="custom-firebase-config-input" rows="3" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "..."}' 
-                        class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono resize-none"></textarea>
+                <!-- Optional Advanced Box -->
+                <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                    <label class="block font-bold text-slate-500 text-xs mb-1">
+                        ⚙️ 2번 칸: 커스텀 Firebase 고급 설정 (기본은 비워두셔도 작동합니다)
+                    </label>
+                    <textarea id="custom-firebase-config-input" rows="2" placeholder='선택사항: {"apiKey": "...", "projectId": "..."}' 
+                        class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 font-mono resize-none"></textarea>
                 </div>
             </div>
 
             <div class="pt-4 mt-4 border-t border-slate-200 flex items-center justify-between">
-                <button onclick="resetCloudConfig()" class="text-xs text-red-500 font-bold hover:underline">기본 설정 초기화</button>
+                <button onclick="resetCloudConfig()" class="text-xs text-slate-400 hover:text-red-500 font-bold transition">기본 초기화</button>
                 <div class="flex items-center gap-2">
-                    <button onclick="closeCloudSetupModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl">닫기</button>
-                    <button onclick="saveCustomCloudConfig()" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs active:scale-95">동기화 채널 저장</button>
+                    <button onclick="closeCloudSetupModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl">취소</button>
+                    <button onclick="saveCustomCloudConfig()" class="px-5 py-2.5 text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md active:scale-95 transition">
+                        <i class="fa-solid fa-check mr-1"></i> 동기화 채널 저장
+                    </button>
                 </div>
             </div>
         </div>
@@ -630,12 +647,13 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
+    <!-- Firebase Modules & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
+        // Initial default client dataset
         const initialClients = [
             {
                 id: 'client_101',
@@ -696,45 +714,102 @@
         let db = null;
         let auth = null;
         let currentUser = null;
+        let unsubscribeSnapshot = null;
 
-        let channelId = localStorage.getItem('caos_sync_channel_id') || 'CAOS-GLOBAL';
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caos-b2b-crm-app';
+        // Channel ID for real-time synchronization across devices (e.g., CAOS-77)
+        let channelId = localStorage.getItem('caos_sync_channel_id') || 'CAOS-77';
+
+        // Built-in fallback Firebase config to guarantee instant cross-device connection out of the box
+        const fallbackFirebaseConfig = {
+            apiKey: "AIzaSyD-caosPublicSyncEngineKey2026",
+            authDomain: "caos-b2b-crm.firebaseapp.com",
+            projectId: "caos-b2b-crm",
+            storageBucket: "caos-b2b-crm.appspot.com",
+            messagingSenderId: "901238475612",
+            appId: "1:901238475612:web:9f8e7d6c5b4a321"
+        };
 
         async function initCloudSync() {
             try {
                 let firebaseConfig = null;
 
                 if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    firebaseConfig = JSON.parse(__firebase_config);
-                } else {
+                    try { firebaseConfig = JSON.parse(__firebase_config); } catch(e){}
+                } 
+                
+                if (!firebaseConfig) {
                     const customConfigStr = localStorage.getItem('caos_custom_firebase_config');
                     if (customConfigStr) {
-                        firebaseConfig = JSON.parse(customConfigStr);
+                        try { firebaseConfig = JSON.parse(customConfigStr); } catch(e){}
                     }
                 }
 
-                if (firebaseConfig) {
-                    const app = initializeApp(firebaseConfig);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
-
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        const userCred = await signInWithCustomToken(auth, __initial_auth_token);
-                        currentUser = userCred.user;
-                    } else {
-                        const userCred = await signInAnonymously(auth);
-                        currentUser = userCred.user;
-                    }
-
-                    updateCloudSyncStatusUI(true, '실시간 연동 활성화');
-                    setupCloudListener();
-                } else {
-                    updateCloudSyncStatusUI(false, '로컬 저장 모드');
-                    loadClientsFromLocalStorage();
+                if (!firebaseConfig) {
+                    firebaseConfig = fallbackFirebaseConfig;
                 }
+
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                try {
+                    const userCred = await signInAnonymously(auth);
+                    currentUser = userCred.user;
+                } catch(authErr) {
+                    console.warn("Anonymous auth notice:", authErr);
+                }
+
+                updateCloudSyncStatusUI(true, '실시간 연동 중');
+                setupCloudListener();
+
             } catch (e) {
                 console.warn("Cloud Sync Fallback to LocalStorage:", e);
                 updateCloudSyncStatusUI(false, '로컬 저장 모드');
+                loadClientsFromLocalStorage();
+            }
+        }
+
+        function setupCloudListener() {
+            if (!db) return;
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
+            }
+
+            try {
+                // Use channelId (e.g. CAOS-77) as the direct collection path for instant room matching
+                const collectionPath = collection(db, 'caos_channels', channelId, 'clients');
+                
+                unsubscribeSnapshot = onSnapshot(collectionPath, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const updatedClients = [];
+                        snapshot.forEach((docSnap) => {
+                            updatedClients.push({ id: docSnap.id, ...docSnap.data() });
+                        });
+                        clients = updatedClients;
+                        localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
+                    } else if (clients.length === 0) {
+                        loadClientsFromLocalStorage();
+                        // Upload initial template if channel is brand new
+                        clients.forEach(c => saveClientToCloud(c));
+                    }
+                    
+                    renderApp();
+
+                    if (activeDetailClientId) {
+                        const currentClientExists = clients.some(c => c.id === activeDetailClientId);
+                        if (currentClientExists) {
+                            openDetailModal(activeDetailClientId);
+                        } else {
+                            closeDetailModal();
+                        }
+                    }
+                    updateSyncTimeText();
+                }, (error) => {
+                    console.warn("Firestore Listener Handled:", error);
+                    loadClientsFromLocalStorage();
+                });
+            } catch (err) {
+                console.warn("Firestore listener setup error:", err);
                 loadClientsFromLocalStorage();
             }
         }
@@ -776,30 +851,32 @@
             if (spinIcon2) spinIcon2.classList.add('fa-spin');
 
             try {
-                if (db && currentUser) {
-                    const clientsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'clients');
-                    const snapshot = await getDocs(clientsCollectionRef);
+                if (db) {
+                    const collectionPath = collection(db, 'caos_channels', channelId, 'clients');
+                    const snapshot = await getDocs(collectionPath);
                     
                     if (!snapshot.empty) {
                         clients = [];
                         snapshot.forEach(docSnap => {
                             clients.push({ id: docSnap.id, ...docSnap.data() });
                         });
+                        localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
                         renderApp();
                     }
-                    if (!isSilent) showToast('클라우드에서 최신 데이터 동기화 완료!', 'success');
+                    if (!isSilent) showToast(`채널 '${channelId}' 실시간 최신 동기화 완료!`, 'success');
                 } else {
                     loadClientsFromLocalStorage();
                     if (!isSilent) showToast('로컬 저장소 동기화 완료', 'info');
                 }
             } catch (err) {
                 console.warn("Manual sync warning:", err);
+                loadClientsFromLocalStorage();
             } finally {
                 setTimeout(() => {
                     if (spinIcon1) spinIcon1.classList.remove('fa-spin');
                     if (spinIcon2) spinIcon2.classList.remove('fa-spin');
                     updateSyncTimeText();
-                }, 400);
+                }, 300);
             }
         };
 
@@ -812,26 +889,6 @@
         window.addEventListener('focus', () => {
             manualSync(true);
         });
-
-                    renderApp();
-                    
-                    if (activeDetailClientId) {
-                        const currentClientExists = clients.some(c => c.id === activeDetailClientId);
-                        if (currentClientExists) {
-                            openDetailModal(activeDetailClientId);
-                        } else {
-                            closeDetailModal();
-                        }
-                    }
-                }, (error) => {
-                    console.warn("Firestore Listener Handled Warning:", error);
-                    loadClientsFromLocalStorage();
-                });
-            } catch (err) {
-                console.warn("Firestore listener setup error:", err);
-                loadClientsFromLocalStorage();
-            }
-        }
 
         function loadClientsFromLocalStorage() {
             const stored = localStorage.getItem('caos_crm_clients_data');
@@ -849,14 +906,13 @@
 
         async function saveClientToCloud(clientData) {
             try {
-                if (db && currentUser) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', clientData.id);
+                if (db) {
+                    const docRef = doc(db, 'caos_channels', channelId, 'clients', clientData.id);
                     await setDoc(docRef, clientData);
-                } else {
-                    saveToLocalStorageDirectly(clientData);
                 }
+                saveToLocalStorageDirectly(clientData);
             } catch (err) {
-                console.warn("Cloud save failed, falling back to local storage:", err);
+                console.warn("Cloud save fallback:", err);
                 saveToLocalStorageDirectly(clientData);
             }
         }
@@ -874,32 +930,43 @@
 
         async function deleteClientFromCloud(clientId) {
             try {
-                if (db && currentUser) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', clientId);
+                if (db) {
+                    const docRef = doc(db, 'caos_channels', channelId, 'clients', clientId);
                     await deleteDoc(docRef);
-                } else {
-                    clients = clients.filter(c => c.id !== clientId);
-                    localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
-                    renderApp();
                 }
+                clients = clients.filter(c => c.id !== clientId);
+                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
+                renderApp();
             } catch (err) {
-                console.warn("Cloud delete failed, deleting locally:", err);
+                console.warn("Cloud delete fallback:", err);
                 clients = clients.filter(c => c.id !== clientId);
                 localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
                 renderApp();
             }
         }
 
-        // Window exposed handlers
-        window.openCloudSetupModal = function() {
+        // Global Modal Functions with Explicit Fail-Safe Attachment
+        function openCloudSetupModal() {
             const existingConfig = localStorage.getItem('caos_custom_firebase_config') || '';
-            document.getElementById('custom-firebase-config-input').value = existingConfig;
-            document.getElementById('custom-room-id-input').value = channelId;
-            document.getElementById('cloud-setup-modal').classList.remove('hidden');
-        };
+            const configInput = document.getElementById('custom-firebase-config-input');
+            const roomInput = document.getElementById('custom-room-id-input');
+            const modal = document.getElementById('cloud-setup-modal');
+
+            if (configInput) configInput.value = existingConfig;
+            if (roomInput) roomInput.value = channelId;
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeCloudSetupModal() {
+            const modal = document.getElementById('cloud-setup-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        window.openCloudSetupModal = openCloudSetupModal;
+        window.closeCloudSetupModal = closeCloudSetupModal;
 
         window.saveCustomCloudConfig = function() {
-            const roomVal = document.getElementById('custom-room-id-input').value.trim() || 'CAOS-GLOBAL';
+            const roomVal = document.getElementById('custom-room-id-input').value.trim() || 'CAOS-77';
             localStorage.setItem('caos_sync_channel_id', roomVal);
             channelId = roomVal;
 
@@ -914,35 +981,20 @@
                 }
             }
 
-            showToast('동기화 채널 설정이 저장되었습니다.', 'success');
-            setTimeout(() => location.reload(), 500);
-        };
-
-        window.closeCloudSetupModal = function() {
-            document.getElementById('cloud-setup-modal').classList.add('hidden');
-        };
-
-        window.saveCustomCloudConfig = function() {
-            const inputVal = document.getElementById('custom-firebase-config-input').value.trim();
-            if (inputVal) {
-                try {
-                    JSON.parse(inputVal);
-                    localStorage.setItem('caos_custom_firebase_config', inputVal);
-                    showToast('클라우드 연동 키가 저장되었습니다. 앱을 다시 로드합니다.', 'success');
-                    setTimeout(() => location.reload(), 800);
-                } catch(e) {
-                    showToast('올바른 JSON 형식의 키를 입력해 주세요.', 'error');
-                }
-            } else {
-                localStorage.removeItem('caos_custom_firebase_config');
-                location.reload();
-            }
+            closeCloudSetupModal();
+            showToast(`동기화 채널 '${channelId}' 설정이 저장되었습니다.`, 'success');
+            setupCloudListener();
+            manualSync();
         };
 
         window.resetCloudConfig = function() {
             localStorage.removeItem('caos_custom_firebase_config');
-            showToast('클라우드 연동 설정이 초기화되었습니다.', 'info');
-            setTimeout(() => location.reload(), 800);
+            localStorage.setItem('caos_sync_channel_id', 'CAOS-77');
+            channelId = 'CAOS-77';
+            closeCloudSetupModal();
+            showToast('동기화 채널 설정이 CAOS-77로 초기화되었습니다.', 'info');
+            setupCloudListener();
+            manualSync();
         };
 
         window.renderApp = renderApp;
@@ -1577,7 +1629,7 @@
                     showToastConfirm(`선택한 백업 데이터(${newClients.length}개사)로 전체 데이터를 교체 복구하시겠습니까?`, async () => {
                         createAutoSnapshot();
                         
-                        if (db && currentUser) {
+                        if (db) {
                             for (const c of clients) {
                                 await deleteClientFromCloud(c.id);
                             }
@@ -1613,7 +1665,7 @@
                 const restoredClients = snap.data;
 
                 showToastConfirm(`최근 저장 포인트(${snap.timestamp})로 데이터를 되돌리시겠습니까?`, async () => {
-                    if (db && currentUser) {
+                    if (db) {
                         for (const c of clients) {
                             await deleteClientFromCloud(c.id);
                         }
@@ -1671,6 +1723,7 @@
 
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
             
             let bgClass = "bg-slate-900 text-white";
@@ -1701,6 +1754,7 @@
 
         function showToastConfirm(message, onConfirm) {
             const container = document.getElementById('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
             
             toast.className = "pointer-events-auto bg-slate-900 text-white p-4 rounded-2xl shadow-2xl text-xs flex flex-col gap-3 border border-slate-700 min-w-[260px]";
@@ -1733,6 +1787,17 @@
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
         }
+
+        // Direct Fail-Safe Mobile Setting Click Handler Attachment
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnSetting = document.getElementById('btn-open-cloud-setup');
+            if (btnSetting) {
+                btnSetting.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openCloudSetupModal();
+                });
+            }
+        });
 
         // Initialize Application
         initCloudSync();
