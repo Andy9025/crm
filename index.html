@@ -2,14 +2,15 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <!-- 모바일 환경에서 스크롤 없이도 상단 헤더가 잘 보이도록 viewport 최적화 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CAOS 거래처 관리 시스템 (B2B CRM)</title>
     
-    <!-- iOS Web App Meta Tags & Bulletproof Touch Icon -->
+    <!-- iOS Web App Meta Tags & Apple Touch Icon -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="CAOS CRM">
-    <link rel="apple-touch-icon" href="https://placehold.co/180x180/E50012/FFFFFF/png?text=CAOS">
+    <link rel="apple-touch-icon" href="./caos-icon-180.png">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -46,7 +47,12 @@
             touch-action: manipulation;
         }
         body {
+            /* 아이폰 하단 홈 바 영역 침범 방지 */
             padding-bottom: env(safe-area-inset-bottom);
+        }
+        .pt-safe-top {
+            /* 아이폰 상단 노치/다이나믹 아일랜드 영역 침범 방지하여 버튼이 잘리거나 가려지는 것 방지 */
+            padding-top: max(1rem, env(safe-area-inset-top));
         }
         ::-webkit-scrollbar {
             width: 6px;
@@ -77,12 +83,12 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col pb-16 md:pb-0 select-none md:select-text">
 
-    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs pt-safe">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs pt-safe-top">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-2">
             
             <div class="flex items-center gap-3">
                 <a href="#" class="flex items-center gap-2.5 sm:gap-3 group">
-                    <div class="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center shrink-0">
+                    <div class="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center shrink-0">
                         <svg class="w-full h-full text-caos-red drop-shadow-xs group-hover:rotate-12 group-hover:scale-105 transition-all duration-500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="50" cy="50" r="42" stroke="url(#globeRedGrad)" stroke-width="5"/>
                             <ellipse cx="50" cy="50" rx="20" ry="42" stroke="#94A3B8" stroke-width="3.5" stroke-dasharray="2 1"/>
@@ -101,20 +107,20 @@
                     </div>
 
                     <div class="flex flex-col justify-center leading-tight">
-                        <span class="text-base sm:text-xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
-                        <span class="text-[9px] sm:text-[10px] font-black tracking-widest text-caos-red uppercase">CRM</span>
+                        <span class="text-lg sm:text-xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
+                        <span class="text-[10px] font-black tracking-widest text-caos-red uppercase">CRM</span>
                     </div>
                 </a>
             </div>
 
-            <div class="flex items-center gap-1.5 sm:gap-2">
+            <!-- 동기화 버튼 영역: 사파리에서 누르기 편하도록 크기와 여백 최적화 -->
+            <div class="flex items-center gap-2">
                 <button onclick="manualCloudSync()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="클라우드 동기화 새로고침">
-                    <i class="fa-solid fa-cloud text-caos-red animate-pulse"></i>
-                    <span class="font-extrabold text-caos-red">클라우드 동기화</span>
+                    <i class="fa-solid fa-cloud text-caos-red" id="sync-icon"></i>
+                    <span class="font-extrabold text-caos-red hidden sm:inline" id="sync-text">클라우드 동기화</span>
                 </button>
-                <button onclick="exportToCSV()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="CSV">
+                <button onclick="exportToCSV()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="CSV 다운로드">
                     <i class="fa-solid fa-file-csv text-emerald-600"></i>
-                    <span class="hidden sm:inline">CSV</span>
                 </button>
                 <button onclick="openClientModal()" class="hidden md:inline-flex px-4 py-2 text-xs sm:text-sm font-bold text-white caos-btn-gradient rounded-xl transition items-center gap-1.5 shadow-caos-glow active:scale-95 whitespace-nowrap">
                     <i class="fa-solid fa-plus"></i>
@@ -126,7 +132,6 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 flex-1 w-full flex flex-col gap-3 sm:gap-6">
 
-        <!-- KPI Summary Stats -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
@@ -173,7 +178,6 @@
             </div>
         </section>
 
-        <!-- Search and Filters -->
         <section class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             <div class="relative flex-1">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -204,8 +208,14 @@
             </div>
         </section>
 
-        <!-- Clients Container -->
-        <section id="clients-container" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex-1">
+        <section id="clients-container" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex-1 relative min-h-[300px]">
+            
+            <!-- Loading Indicator -->
+            <div id="loading-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-circle-notch fa-spin text-caos-red text-3xl mb-3"></i>
+                <p class="text-sm font-bold text-slate-600">클라우드 데이터 동기화 중...</p>
+            </div>
+
             <div id="card-view" class="p-3 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
             </div>
 
@@ -232,7 +242,7 @@
                     <i class="fa-solid fa-folder-open"></i>
                 </div>
                 <h3 class="text-slate-800 font-bold text-base sm:text-lg">등록된 거래처 정보가 없습니다</h3>
-                <p class="text-slate-500 text-xs mt-1">검색어를 변경하거나 신규 거래처를 추가해 보세요.</p>
+                <p class="text-slate-500 text-xs mt-1">새로운 거래처를 클라우드에 등록해 보세요.</p>
                 <button onclick="openClientModal()" class="mt-4 px-4 py-2.5 text-xs font-bold text-caos-red bg-red-50 rounded-xl hover:bg-red-100 transition inline-flex items-center gap-2 active:scale-95 border border-red-200">
                     <i class="fa-solid fa-plus"></i> 신규 거래처 추가
                 </button>
@@ -248,7 +258,7 @@
         </button>
     </div>
 
-    <!-- Client Modal -->
+    <!-- Client Form Modal -->
     <div id="client-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
@@ -308,7 +318,7 @@
                 <div class="border-t border-slate-200 pt-4 mt-2">
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-xs font-bold text-slate-800">
-                            <i class="fa-solid fa-boxes-stacked text-caos-red mr-1"></i> 다중 판매/취급 물품 목록 및 단가($ USD, 소수점 둘째자리 지원)
+                            <i class="fa-solid fa-boxes-stacked text-caos-red mr-1"></i> 판매 물품 및 단가 (소수점 둘째 자리 허용)
                         </label>
                         <button type="button" onclick="addProductRow()" class="text-xs text-caos-red font-bold hover:underline flex items-center gap-1 py-1">
                             <i class="fa-solid fa-plus-circle"></i> 물품 추가
@@ -327,15 +337,15 @@
 
                 <div class="pt-4 border-t border-slate-200 flex items-center justify-end gap-2 pb-safe">
                     <button type="button" onclick="closeClientModal()" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition">취소</button>
-                    <button type="submit" class="px-5 py-2.5 text-xs font-bold text-white caos-btn-gradient rounded-xl transition shadow-caos-glow active:scale-95">
-                        <i class="fa-solid fa-check mr-1"></i> 저장하기
+                    <button type="submit" id="save-client-btn" class="px-5 py-2.5 text-xs font-bold text-white caos-btn-gradient rounded-xl transition shadow-caos-glow active:scale-95">
+                        <i class="fa-solid fa-check mr-1"></i> 클라우드에 저장
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Detail Modal -->
+    <!-- Client Detail Modal -->
     <div id="detail-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-end">
         <div class="bg-white h-full sm:h-full w-full max-w-2xl shadow-2xl border-l border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out">
             <div class="p-5 sm:p-6 bg-slate-900 text-white flex items-center justify-between pt-safe">
@@ -371,7 +381,7 @@
                     </div>
 
                     <div class="col-span-2 border-t border-slate-200/80 pt-3 mt-1">
-                        <span class="text-slate-400 block mb-1.5 font-bold">등록된 취급 물품 및 단가 ($ USD, 소수점 둘째자리 지원)</span>
+                        <span class="text-slate-400 block mb-1.5 font-bold">등록된 취급 물품 및 단가 ($ USD)</span>
                         <div id="detail-products-list" class="flex flex-wrap gap-1.5">
                         </div>
                     </div>
@@ -399,7 +409,7 @@
 
             <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between pb-safe">
                 <button onclick="deleteCurrentClient()" class="px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-trash-can"></i> 삭제
+                    <i class="fa-solid fa-trash-can"></i> 클라우드에서 삭제
                 </button>
                 <button onclick="editCurrentClient()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition flex items-center gap-1.5 shadow-xs active:scale-95">
                     <i class="fa-solid fa-pen-to-square"></i> 정보 수정
@@ -440,7 +450,7 @@
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">단가 ($ USD, 소수점 가능) <span class="text-red-500">*</span></label>
+                        <label class="block font-bold text-slate-700 mb-1">단가 ($ USD, 소수점) <span class="text-red-500">*</span></label>
                         <input type="number" id="order-unit-price" value="0.00" min="0" step="0.01" required oninput="calculateOrderTotal()" 
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                     </div>
@@ -469,8 +479,8 @@
 
                 <div class="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
                     <button type="button" onclick="closeOrderModal()" class="px-4 py-2 font-bold text-slate-600 hover:bg-slate-100 rounded-xl">취소</button>
-                    <button type="submit" class="px-4 py-2 font-bold text-white caos-btn-gradient rounded-xl active:scale-95 shadow-caos-glow">
-                        주문 등록 완료
+                    <button type="submit" id="save-order-btn" class="px-4 py-2 font-bold text-white caos-btn-gradient rounded-xl active:scale-95 shadow-caos-glow">
+                        주문 클라우드 등록
                     </button>
                 </div>
             </form>
@@ -480,152 +490,139 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
-    <script>
-        const STORAGE_KEY = 'caos_crm_robust_clients_data';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration & Global Variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-caos-crm';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            // Fallback for isolated testing, though in environment this is provided
+            apiKey: "dummy", authDomain: "dummy", projectId: "dummy"
+        };
+        
+        let app, db, auth;
         let clients = [];
         let viewMode = 'card';
         let activeDetailClientId = null;
+        let isCloudReady = false;
 
-        // BroadcastChannel for instant multi-tab / cross-frame sync
-        const syncChannel = new BroadcastChannel('caos_crm_sync_channel');
-        syncChannel.onmessage = (event) => {
-            if (event.data && event.data.type === 'SYNC_DATA') {
-                if (Array.isArray(event.data.clients)) {
-                    clients = event.data.clients;
-                    renderApp();
-                    showToast('클라우드 동기화 완료!', 'success');
-                }
-            }
-        };
+        const LOCAL_STORAGE_KEY = 'caos_crm_robust_clients_data';
 
-        window.addEventListener('storage', (e) => {
-            if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (error) {
+            console.error("Firebase 초기화 에러:", error);
+        }
+
+        // 마이그레이션: PC 로컬에 남아있는 6개 업체를 클라우드로 쏴주는 구출 로직
+        async function migrateLocalDataToCloud() {
+            const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (localData) {
                 try {
-                    const parsed = JSON.parse(e.newValue);
-                    if (Array.isArray(parsed)) {
-                        clients = parsed;
-                        renderApp();
+                    const parsedLocal = JSON.parse(localData);
+                    if (Array.isArray(parsedLocal) && parsedLocal.length > 0) {
+                        const clientsRef = collection(db, 'artifacts', appId, 'public', 'data', 'clients');
+                        const snap = await getDocs(clientsRef);
+                        
+                        // 클라우드가 비어있고 로컬에만 데이터가 있으면(PC 환경) 무조건 업로드
+                        if (snap.empty) {
+                            showToast('PC 로컬 데이터를 클라우드로 옮기는 중...', 'info');
+                            for (const c of parsedLocal) {
+                                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', c.id);
+                                await setDoc(docRef, c);
+                            }
+                            showToast('클라우드 마이그레이션 완료! 이제 스마트폰에서도 보입니다.', 'success');
+                            // 업로드 완료 후 로컬 캐시 삭제하여 중복 방지
+                            localStorage.removeItem(LOCAL_STORAGE_KEY); 
+                        }
                     }
-                } catch(err) {}
+                } catch(e) { console.error("마이그레이션 오류:", e); }
             }
+        }
+
+        async function initCloudSync() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                if (!auth.currentUser) return;
+
+                // 인증 성공 시 로컬 찌꺼기 데이터 구출 로직 실행
+                await migrateLocalDataToCloud();
+
+                // 실시간 리스너 장착 (PC에서 추가하면 모바일에서 새로고침 없이 바로 뜸)
+                const clientsRef = collection(db, 'artifacts', appId, 'public', 'data', 'clients');
+                
+                onSnapshot(clientsRef, (snapshot) => {
+                    const loadedClients = [];
+                    snapshot.forEach((docSnap) => {
+                        loadedClients.push(docSnap.data());
+                    });
+                    
+                    // 이름순 정렬
+                    clients = loadedClients.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                    
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                    isCloudReady = true;
+                    
+                    const syncIcon = document.getElementById('sync-icon');
+                    if (syncIcon) {
+                        syncIcon.classList.remove('fa-spin');
+                        syncIcon.classList.add('text-emerald-500');
+                        setTimeout(() => syncIcon.classList.remove('text-emerald-500'), 1500);
+                    }
+
+                    renderApp();
+                    
+                    // 상세 모달이 열려있다면 내용 갱신 (실시간 업데이트 반영)
+                    if (activeDetailClientId) {
+                        const stillExists = clients.find(c => c.id === activeDetailClientId);
+                        if (stillExists) {
+                            refreshDetailModal(activeDetailClientId);
+                        } else {
+                            closeDetailModal();
+                        }
+                    }
+
+                }, (error) => {
+                    console.error("클라우드 구독 에러:", error);
+                    showToast('데이터를 실시간으로 불러오는데 실패했습니다.', 'error');
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                });
+
+            } catch (error) {
+                console.error("인증 에러:", error);
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }
+        }
+
+        // 앱 시작 시 클라우드 연결
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            initCloudSync();
         });
 
-        function loadInitialState() {
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed)) {
-                        clients = parsed;
-                    }
-                }
-                
-                // Only load default sample if completely empty
-                if (!clients || clients.length === 0) {
-                    clients = [
-                        {
-                            id: 'client_sample_1',
-                            name: 'ACCENT SYSTEMS SRL',
-                            country: 'Romania',
-                            manager: 'Dan Albu',
-                            status: 'ACTIVE',
-                            email: 'dan.albu@accentsystems.ro',
-                            phone: '0744 382758',
-                            notes: '유럽 센서 모듈 주력 공급 거래처',
-                            products: [
-                                { name: 'CA05FS', price: 29.50 },
-                                { name: 'CA20FS', price: 37.25 },
-                                { name: 'MP100', price: 10.00 }
-                            ],
-                            orders: []
-                        }
-                    ];
-                    persistDataLocally();
-                }
-            } catch(e) {
-                clients = [];
-            }
-            renderApp();
-        }
-
-        function persistDataLocally() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
-                syncChannel.postMessage({ type: 'SYNC_DATA', clients: clients });
-            } catch(e) {}
-        }
-
-        function manualCloudSync() {
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed)) {
-                        clients = parsed;
-                        renderApp();
-                        showToast('클라우드 동기화 성공: 최신 데이터 로드됨', 'success');
-                        return;
-                    }
-                }
+        window.manualCloudSync = function() {
+            if (!isCloudReady) return;
+            const syncIcon = document.getElementById('sync-icon');
+            if (syncIcon) syncIcon.classList.add('fa-spin');
+            showToast('클라우드 동기화 확인 중...', 'info');
+            // 리스너가 이미 실시간 갱신 중이므로, 강제 렌더링만 다시 호출
+            setTimeout(() => {
                 renderApp();
-                showToast('현재 최신 상태입니다.', 'success');
-            } catch(e) {
-                showToast('동기화 중 오류가 발생했습니다.', 'error');
-            }
-        }
+                if (syncIcon) syncIcon.classList.remove('fa-spin');
+                showToast('현재 모든 기기가 완벽하게 동기화되어 있습니다.', 'success');
+            }, 500);
+        };
 
-        // Expose handlers globally
-        window.renderApp = renderApp;
-        window.setViewMode = setViewMode;
-        window.openClientModal = openClientModal;
-        window.closeClientModal = closeClientModal;
-        window.saveClient = saveClient;
-        window.openDetailModal = openDetailModal;
-        window.closeDetailModal = closeDetailModal;
-        window.editCurrentClient = editCurrentClient;
-        window.deleteCurrentClient = deleteCurrentClient;
-        window.openOrderModal = openOrderModal;
-        window.closeOrderModal = closeOrderModal;
-        window.saveOrder = saveOrder;
-        window.deleteOrder = deleteOrder;
-        window.addProductRow = addProductRow;
-        window.removeProductRow = removeProductRow;
-        window.onOrderProductSelectChange = onOrderProductSelectChange;
-        window.calculateOrderTotal = calculateOrderTotal;
-        window.exportToCSV = exportToCSV;
-        window.manualCloudSync = manualCloudSync;
-
-        function updateCountryFilterOptions() {
-            const filterSelect = document.getElementById('filter-country');
-            if (!filterSelect) return;
-            const currentVal = filterSelect.value || 'ALL';
-            const countries = Array.from(new Set(clients.map(c => c.country).filter(Boolean))).sort();
-            
-            let optionsHTML = '<option value="ALL">전체 국가</option>';
-            countries.forEach(c => {
-                optionsHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`;
-            });
-            filterSelect.innerHTML = optionsHTML;
-            filterSelect.value = countries.includes(currentVal) ? currentVal : 'ALL';
-        }
-
-        function getStatusBadgeHTML(status) {
-            if (status === 'ACTIVE') {
-                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>활성 거래중
-                </span>`;
-            } else if (status === 'PROSPECT') {
-                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>계약 협상중
-                </span>`;
-            } else {
-                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>거래 중단
-                </span>`;
-            }
-        }
-
-        function setViewMode(mode) {
+        window.setViewMode = function(mode) {
             viewMode = mode;
             const cardView = document.getElementById('card-view');
             const tableView = document.getElementById('table-view');
@@ -643,35 +640,31 @@
                 tableBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-white shadow-xs text-slate-900 transition";
                 cardBtn.className = "px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
             }
-        }
+        };
 
-        function getFilteredClients() {
+        window.renderApp = function() {
+            updateCountryFilterOptions();
+            updateDashboardKPIs();
+
             const searchInput = document.getElementById('search-input');
             const search = searchInput ? searchInput.value.trim().toLowerCase() : '';
             const countryFilter = document.getElementById('filter-country')?.value || 'ALL';
             const statusFilter = document.getElementById('filter-status')?.value || 'ALL';
 
-            return clients.filter(c => {
+            const filtered = clients.filter(c => {
                 const productNames = (c.products || []).map(p => p.name.toLowerCase()).join(' ');
                 const matchesSearch = !search || 
                     (c.name && c.name.toLowerCase().includes(search)) ||
                     (c.manager && c.manager.toLowerCase().includes(search)) ||
                     productNames.includes(search) ||
-                    (c.country && c.country.toLowerCase().includes(search)) ||
-                    (c.email && c.email.toLowerCase().includes(search));
+                    (c.country && c.country.toLowerCase().includes(search));
 
                 const matchesCountry = countryFilter === 'ALL' || c.country === countryFilter;
                 const matchesStatus = statusFilter === 'ALL' || c.status === statusFilter;
 
                 return matchesSearch && matchesCountry && matchesStatus;
             });
-        }
 
-        function renderApp() {
-            updateCountryFilterOptions();
-            updateDashboardKPIs();
-
-            const filtered = getFilteredClients();
             const tableBody = document.getElementById('client-table-body');
             const cardView = document.getElementById('card-view');
             const emptyState = document.getElementById('empty-state');
@@ -688,48 +681,45 @@
             filtered.forEach(client => {
                 const totalOrdersCount = client.orders ? client.orders.length : 0;
                 const statusBadge = getStatusBadgeHTML(client.status);
-                const productsList = client.products && client.products.length > 0 
-                    ? client.products 
-                    : [{ name: '등록 물품 없음', price: 0.00 }];
+                const productsList = client.products && client.products.length > 0 ? client.products : [];
 
+                // 렌더링: 테이블 뷰
                 if (tableBody) {
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-red-50/30 transition cursor-pointer group";
+                    tr.className = "hover:bg-red-50/30 transition cursor-pointer group border-b border-slate-100 last:border-0";
                     tr.onclick = (e) => {
                         if (!e.target.closest('button')) openDetailModal(client.id);
                     };
 
-                    const productsBadgeHTML = productsList.slice(0, 2).map(p => `
-                        <span class="inline-block text-[11px] bg-red-50 text-caos-red px-2 py-0.5 rounded-md font-bold border border-red-100 mr-1 mb-1">
-                            ${escapeHTML(p.name)} ($${Number(p.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})})
-                        </span>
-                    `).join('') + (productsList.length > 2 ? `<span class="text-[10px] text-slate-400 font-bold">+${productsList.length - 2}개 더보기</span>` : '');
+                    let productsBadgeHTML = '<span class="text-xs text-slate-400">없음</span>';
+                    if (productsList.length > 0) {
+                        productsBadgeHTML = productsList.slice(0, 2).map(p => `
+                            <span class="inline-block text-[11px] bg-red-50 text-caos-red px-2 py-0.5 rounded-md font-bold border border-red-100 mr-1 mb-1 whitespace-nowrap">
+                                ${escapeHTML(p.name)} ($${Number(p.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})})
+                            </span>
+                        `).join('') + (productsList.length > 2 ? `<span class="text-[10px] text-slate-400 font-bold ml-1">+${productsList.length - 2}</span>` : '');
+                    }
 
                     tr.innerHTML = `
-                        <td class="py-3.5 px-4 font-bold text-slate-900 group-hover:text-caos-red transition">
+                        <td class="py-3.5 px-4 font-bold text-slate-900 group-hover:text-caos-red transition whitespace-nowrap">
                             ${escapeHTML(client.name)}
                         </td>
-                        <td class="py-3.5 px-4 font-medium text-slate-700">
-                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-700 font-semibold border border-slate-200">
-                                <i class="fa-solid fa-earth-asia text-slate-400"></i> ${escapeHTML(client.country)}
-                            </span>
+                        <td class="py-3.5 px-4 font-medium text-slate-700 whitespace-nowrap">
+                            ${escapeHTML(client.country)}
                         </td>
-                        <td class="py-3.5 px-4 text-xs">
+                        <td class="py-3.5 px-4 text-xs whitespace-nowrap">
                             <div class="font-bold text-slate-800">${escapeHTML(client.manager)}</div>
-                            <div class="text-slate-500">${escapeHTML(client.phone)}</div>
                         </td>
-                        <td class="py-3.5 px-4">
+                        <td class="py-3.5 px-4 max-w-[200px] overflow-hidden">
                             ${productsBadgeHTML}
                         </td>
-                        <td class="py-3.5 px-4 text-center">
-                            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700">
-                                ${totalOrdersCount}건
-                            </span>
+                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700">${totalOrdersCount}</span>
                         </td>
-                        <td class="py-3.5 px-4 text-center">
+                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
                             ${statusBadge}
                         </td>
-                        <td class="py-3.5 px-4 text-right">
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap">
                             <button onclick="openDetailModal('${client.id}')" class="px-2.5 py-1 text-xs font-bold text-slate-600 hover:text-caos-red hover:bg-slate-100 rounded-md transition">
                                 상세 <i class="fa-solid fa-chevron-right text-[10px]"></i>
                             </button>
@@ -738,6 +728,7 @@
                     tableBody.appendChild(tr);
                 }
 
+                // 렌더링: 카드 뷰
                 if (cardView) {
                     const card = document.createElement('div');
                     card.className = "bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:shadow-card-hover hover:border-caos-red transition flex flex-col justify-between cursor-pointer active:scale-[0.99]";
@@ -745,12 +736,15 @@
                         if (!e.target.closest('button')) openDetailModal(client.id);
                     };
 
-                    const cardProductsHTML = productsList.map(p => `
-                        <div class="flex items-center justify-between text-xs py-0.5">
-                            <span class="text-slate-700 font-medium truncate max-w-[170px]">• ${escapeHTML(p.name)}</span>
-                            <span class="font-bold text-slate-900 shrink-0">$${Number(p.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                        </div>
-                    `).join('');
+                    let cardProductsHTML = '<div class="text-xs text-slate-400 py-1">등록 물품 없음</div>';
+                    if (productsList.length > 0) {
+                        cardProductsHTML = productsList.map(p => `
+                            <div class="flex items-center justify-between text-xs py-0.5">
+                                <span class="text-slate-700 font-medium truncate max-w-[170px]">• ${escapeHTML(p.name)}</span>
+                                <span class="font-bold text-slate-900 shrink-0">$${Number(p.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            </div>
+                        `).join('');
+                    }
 
                     card.innerHTML = `
                         <div>
@@ -771,7 +765,7 @@
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-slate-400">연락처</span>
-                                    <span>${escapeHTML(client.phone)}</span>
+                                    <span class="truncate pl-2">${escapeHTML(client.phone)}</span>
                                 </div>
                                 
                                 <div class="pt-1">
@@ -795,113 +789,18 @@
                     cardView.appendChild(card);
                 }
             });
-        }
+        };
 
-        function updateDashboardKPIs() {
-            const totalClients = clients.length;
-            const activeClients = clients.filter(c => c.status === 'ACTIVE').length;
-
-            let totalRevenue = 0;
-            let pendingOrdersCount = 0;
-
-            clients.forEach(c => {
-                if (c.orders && Array.isArray(c.orders)) {
-                    c.orders.forEach(o => {
-                        totalRevenue += Number(o.total || 0);
-                        if (o.status === '주문접수' || o.status === '진행중') {
-                            pendingOrdersCount++;
-                        }
-                    });
-                }
-            });
-
-            const uniqueCountries = new Set(clients.map(c => c.country)).size;
-
-            const statTotalClients = document.getElementById('stat-total-clients');
-            const statActiveClients = document.getElementById('stat-active-clients');
-            const statTotalRevenue = document.getElementById('stat-total-revenue');
-            const statPendingOrders = document.getElementById('stat-pending-orders');
-            const statTotalCountries = document.getElementById('stat-total-countries');
-
-            if (statTotalClients) statTotalClients.textContent = `${totalClients}개사`;
-            if (statActiveClients) statActiveClients.textContent = activeClients;
-            if (statTotalRevenue) statTotalRevenue.textContent = `$${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            if (statPendingOrders) statPendingOrders.textContent = `${pendingOrdersCount}건`;
-            if (statTotalCountries) statTotalCountries.textContent = `${uniqueCountries}개국`;
-        }
-
-        function addProductRow(name = '', price = '') {
-            const container = document.getElementById('product-rows-container');
-            if (!container) return;
-            const rowId = 'prod_row_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
-
-            const formattedPrice = price !== '' && !isNaN(price) ? Number(price).toFixed(2) : '';
-
-            const row = document.createElement('div');
-            row.id = rowId;
-            row.className = "flex items-center gap-2 animate-in fade-in duration-150";
-            row.innerHTML = `
-                <input type="text" placeholder="물품명 (예: CAOS 광센서 모듈)" value="${escapeHTML(name)}" required
-                    class="product-name-input flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
-                <input type="number" step="0.01" min="0" placeholder="단가($ USD, 소수점)" value="${formattedPrice}" required
-                    class="product-price-input w-36 sm:w-44 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
-                <button type="button" onclick="removeProductRow('${rowId}')" class="text-slate-400 hover:text-red-500 p-2 transition">
-                    <i class="fa-solid fa-trash-can text-sm"></i>
-                </button>
-            `;
-            container.appendChild(row);
-        }
-
-        function removeProductRow(rowId) {
-            const row = document.getElementById(rowId);
-            if (row) row.remove();
-        }
-
-        function openClientModal(clientId = null) {
-            const modal = document.getElementById('client-modal');
-            const form = document.getElementById('client-form');
-            const title = document.getElementById('modal-title');
-            const productContainer = document.getElementById('product-rows-container');
-
-            if (!modal || !form) return;
-            form.reset();
-            if (productContainer) productContainer.innerHTML = '';
-
-            if (clientId) {
-                const client = clients.find(c => c.id === clientId);
-                if (client) {
-                    if (title) title.textContent = '거래처 정보 수정';
-                    document.getElementById('form-client-id').value = client.id;
-                    document.getElementById('form-name').value = client.name || '';
-                    document.getElementById('form-country').value = client.country || '';
-                    document.getElementById('form-manager').value = client.manager || '';
-                    document.getElementById('form-status').value = client.status || 'ACTIVE';
-                    document.getElementById('form-email').value = client.email || '';
-                    document.getElementById('form-phone').value = client.phone || '';
-                    document.getElementById('form-notes').value = client.notes || '';
-
-                    if (client.products && client.products.length > 0) {
-                        client.products.forEach(p => addProductRow(p.name, p.price));
-                    } else {
-                        addProductRow();
-                    }
-                }
-            } else {
-                if (title) title.textContent = '신규 거래처 등록';
-                document.getElementById('form-client-id').value = '';
-                addProductRow();
+        window.saveClient = async function(event) {
+            event.preventDefault();
+            if (!auth.currentUser) {
+                showToast('클라우드 인증 오류. 새로고침 후 시도해주세요.', 'error');
+                return;
             }
 
-            modal.classList.remove('hidden');
-        }
-
-        function closeClientModal() {
-            const modal = document.getElementById('client-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function saveClient(event) {
-            event.preventDefault();
+            const btn = document.getElementById('save-client-btn');
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> 저장 중...`;
+            btn.disabled = true;
 
             const id = document.getElementById('form-client-id').value;
             const name = document.getElementById('form-name').value.trim();
@@ -918,13 +817,16 @@
                 const pName = row.querySelector('.product-name-input')?.value.trim();
                 const pPrice = Number(row.querySelector('.product-price-input')?.value) || 0;
                 if (pName) {
+                    // 소수점 둘째 자리 유지
                     products.push({ name: pName, price: Number(pPrice.toFixed(2)) });
                 }
             });
 
             const existingClient = id ? clients.find(c => c.id === id) : null;
+            const clientIdToSave = id || ('client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+            
             const clientData = {
-                id: id || ('client_' + Date.now()),
+                id: clientIdToSave,
                 name,
                 country,
                 manager,
@@ -933,24 +835,106 @@
                 phone,
                 notes,
                 products,
-                orders: existingClient ? (existingClient.orders || []) : []
+                orders: existingClient ? (existingClient.orders || []) : [],
+                updatedAt: new Date().toISOString()
             };
 
-            const idx = clients.findIndex(c => c.id === clientData.id);
-            if (idx >= 0) {
-                clients[idx] = clientData;
-            } else {
-                clients.push(clientData);
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', clientIdToSave);
+                await setDoc(docRef, clientData); // Firebase 클라우드에 직접 쓰기
+                
+                closeClientModal();
+                showToast('클라우드 서버에 안전하게 저장되었습니다.', 'success');
+            } catch (error) {
+                console.error("저장 에러:", error);
+                showToast('저장 중 오류가 발생했습니다.', 'error');
+            } finally {
+                btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> 클라우드에 저장`;
+                btn.disabled = false;
             }
+        };
 
-            persistDataLocally();
-            closeClientModal();
-            showToast('거래처 정보가 저장되었습니다.', 'success');
-            renderApp();
-        }
+        window.deleteCurrentClient = function() {
+            if (!activeDetailClientId || !auth.currentUser) return;
+            
+            showToastConfirm('이 거래처를 영구 삭제하시겠습니까?', async function() {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', activeDetailClientId);
+                    await deleteDoc(docRef);
+                    closeDetailModal();
+                    showToast('거래처가 클라우드에서 삭제되었습니다.', 'success');
+                } catch(error) {
+                    console.error("삭제 에러:", error);
+                    showToast('삭제 중 오류가 발생했습니다.', 'error');
+                }
+            });
+        };
 
-        function openDetailModal(clientId) {
-            activeDetailClientId = clientId;
+        window.saveOrder = async function(event) {
+            event.preventDefault();
+            if (!activeDetailClientId || !auth.currentUser) return;
+
+            const client = clients.find(c => c.id === activeDetailClientId);
+            if (!client) return;
+
+            const btn = document.getElementById('save-order-btn');
+            btn.innerHTML = `처리 중...`;
+            btn.disabled = true;
+
+            const itemName = document.getElementById('order-item-name').value.trim();
+            const qty = Number(document.getElementById('order-qty').value) || 1;
+            const price = Number(document.getElementById('order-unit-price').value) || 0;
+            const date = document.getElementById('order-date').value;
+            const status = document.getElementById('order-status').value;
+            const total = Number((qty * price).toFixed(2));
+
+            const newOrder = {
+                id: 'ord_' + Date.now(),
+                itemName,
+                qty,
+                price: Number(price.toFixed(2)),
+                total,
+                date,
+                status
+            };
+
+            const updatedOrders = [newOrder, ...(client.orders || [])];
+            
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', activeDetailClientId);
+                await setDoc(docRef, { orders: updatedOrders }, { merge: true });
+                
+                closeOrderModal();
+                showToast('신규 주문이 클라우드에 등록되었습니다.', 'success');
+            } catch (error) {
+                console.error("주문 저장 에러:", error);
+                showToast('주문 저장 중 오류가 발생했습니다.', 'error');
+            } finally {
+                btn.innerHTML = `주문 클라우드 등록`;
+                btn.disabled = false;
+            }
+        };
+
+        window.deleteOrder = function(orderId) {
+            if (!activeDetailClientId || !auth.currentUser) return;
+            const client = clients.find(c => c.id === activeDetailClientId);
+            if (!client || !client.orders) return;
+
+            showToastConfirm('이 주문 내역을 삭제하시겠습니까?', async function() {
+                const updatedOrders = client.orders.filter(o => o.id !== orderId);
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', activeDetailClientId);
+                    await setDoc(docRef, { orders: updatedOrders }, { merge: true });
+                    showToast('주문 내역이 삭제되었습니다.', 'success');
+                } catch(error) {
+                    console.error("주문 삭제 에러:", error);
+                    showToast('주문 삭제 중 오류가 발생했습니다.', 'error');
+                }
+            });
+        };
+
+        function refreshDetailModal(clientId) {
+            // Re-binds data to the detail modal directly from memory (which is updated by real-time listener)
             const client = clients.find(c => c.id === clientId);
             if (!client) return;
 
@@ -1019,35 +1003,96 @@
                     </div>
                 `;
             }
-
-            document.getElementById('detail-modal').classList.remove('hidden');
         }
 
-        function closeDetailModal() {
+        window.openDetailModal = function(clientId) {
+            activeDetailClientId = clientId;
+            refreshDetailModal(clientId);
+            document.getElementById('detail-modal').classList.remove('hidden');
+        };
+
+        window.closeDetailModal = function() {
             document.getElementById('detail-modal').classList.add('hidden');
             activeDetailClientId = null;
-        }
+        };
 
-        function editCurrentClient() {
+        window.editCurrentClient = function() {
             if (!activeDetailClientId) return;
             const targetId = activeDetailClientId;
             closeDetailModal();
             openClientModal(targetId);
-        }
+        };
 
-        function deleteCurrentClient() {
-            if (!activeDetailClientId) return;
-            const targetId = activeDetailClientId;
-            showToastConfirm('이 거래처를 삭제하시겠습니까?', function() {
-                clients = clients.filter(c => c.id !== targetId);
-                persistDataLocally();
-                closeDetailModal();
-                showToast('거래처가 삭제되었습니다.', 'success');
-                renderApp();
-            });
-        }
+        window.openClientModal = function(clientId = null) {
+            const modal = document.getElementById('client-modal');
+            const form = document.getElementById('client-form');
+            const title = document.getElementById('modal-title');
+            const productContainer = document.getElementById('product-rows-container');
 
-        function openOrderModal() {
+            if (!modal || !form) return;
+            form.reset();
+            if (productContainer) productContainer.innerHTML = '';
+
+            if (clientId) {
+                const client = clients.find(c => c.id === clientId);
+                if (client) {
+                    if (title) title.textContent = '거래처 정보 수정';
+                    document.getElementById('form-client-id').value = client.id;
+                    document.getElementById('form-name').value = client.name || '';
+                    document.getElementById('form-country').value = client.country || '';
+                    document.getElementById('form-manager').value = client.manager || '';
+                    document.getElementById('form-status').value = client.status || 'ACTIVE';
+                    document.getElementById('form-email').value = client.email || '';
+                    document.getElementById('form-phone').value = client.phone || '';
+                    document.getElementById('form-notes').value = client.notes || '';
+
+                    if (client.products && client.products.length > 0) {
+                        client.products.forEach(p => addProductRow(p.name, p.price));
+                    } else {
+                        addProductRow();
+                    }
+                }
+            } else {
+                if (title) title.textContent = '신규 거래처 등록';
+                document.getElementById('form-client-id').value = '';
+                addProductRow();
+            }
+
+            modal.classList.remove('hidden');
+        };
+
+        window.closeClientModal = function() {
+            document.getElementById('client-modal').classList.add('hidden');
+        };
+
+        window.addProductRow = function(name = '', price = '') {
+            const container = document.getElementById('product-rows-container');
+            if (!container) return;
+            const rowId = 'prod_row_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+
+            const formattedPrice = price !== '' && !isNaN(price) ? Number(price).toFixed(2) : '';
+
+            const row = document.createElement('div');
+            row.id = rowId;
+            row.className = "flex items-center gap-2 animate-in fade-in duration-150";
+            row.innerHTML = `
+                <input type="text" placeholder="물품명 (예: CAOS 광센서 모듈)" value="${escapeHTML(name)}" required
+                    class="product-name-input flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
+                <input type="number" step="0.01" min="0" placeholder="단가($ USD, 소수점)" value="${formattedPrice}" required
+                    class="product-price-input w-36 sm:w-44 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
+                <button type="button" onclick="removeProductRow('${rowId}')" class="text-slate-400 hover:text-red-500 p-2 transition">
+                    <i class="fa-solid fa-trash-can text-sm"></i>
+                </button>
+            `;
+            container.appendChild(row);
+        };
+
+        window.removeProductRow = function(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) row.remove();
+        };
+
+        window.openOrderModal = function() {
             if (!activeDetailClientId) return;
             const client = clients.find(c => c.id === activeDetailClientId);
             if (!client) return;
@@ -1069,13 +1114,13 @@
 
             calculateOrderTotal();
             document.getElementById('order-modal').classList.remove('hidden');
-        }
+        };
 
-        function closeOrderModal() {
+        window.closeOrderModal = function() {
             document.getElementById('order-modal').classList.add('hidden');
-        }
+        };
 
-        function onOrderProductSelectChange() {
+        window.onOrderProductSelectChange = function() {
             if (!activeDetailClientId) return;
             const client = clients.find(c => c.id === activeDetailClientId);
             if (!client || !client.products) return;
@@ -1089,63 +1134,16 @@
                     calculateOrderTotal();
                 }
             }
-        }
+        };
 
-        function calculateOrderTotal() {
+        window.calculateOrderTotal = function() {
             const qty = Number(document.getElementById('order-qty').value) || 0;
             const price = Number(document.getElementById('order-unit-price').value) || 0;
             const total = qty * price;
             document.getElementById('order-total-display').textContent = `$${total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        }
+        };
 
-        function saveOrder(event) {
-            event.preventDefault();
-            if (!activeDetailClientId) return;
-
-            const client = clients.find(c => c.id === activeDetailClientId);
-            if (!client) return;
-
-            const itemName = document.getElementById('order-item-name').value.trim();
-            const qty = Number(document.getElementById('order-qty').value) || 1;
-            const price = Number(document.getElementById('order-unit-price').value) || 0;
-            const date = document.getElementById('order-date').value;
-            const status = document.getElementById('order-status').value;
-            const total = Number((qty * price).toFixed(2));
-
-            if (!client.orders) client.orders = [];
-
-            client.orders.unshift({
-                id: 'ord_' + Date.now(),
-                itemName,
-                qty,
-                price: Number(price.toFixed(2)),
-                total,
-                date,
-                status
-            });
-
-            persistDataLocally();
-            closeOrderModal();
-            showToast('신규 주문이 등록되었습니다.', 'success');
-            openDetailModal(client.id);
-            renderApp();
-        }
-
-        function deleteOrder(orderId) {
-            if (!activeDetailClientId) return;
-            showToastConfirm('이 주문 내역을 삭제하시겠습니까?', function() {
-                const client = clients.find(c => c.id === activeDetailClientId);
-                if (client && client.orders) {
-                    client.orders = client.orders.filter(o => o.id !== orderId);
-                    persistDataLocally();
-                    showToast('주문 내역이 삭제되었습니다.', 'success');
-                    openDetailModal(client.id);
-                    renderApp();
-                }
-            });
-        }
-
-        function exportToCSV() {
+        window.exportToCSV = function() {
             if (clients.length === 0) {
                 showToast('내보낼 데이터가 없습니다.', 'error');
                 return;
@@ -1173,15 +1171,69 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `CAOS_거래처_목록_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `CAOS_CRM_목록_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
             showToast('CSV 엑셀 파일이 다운로드되었습니다.', 'success');
+        };
+
+        function updateCountryFilterOptions() {
+            const filterSelect = document.getElementById('filter-country');
+            if (!filterSelect) return;
+            const currentVal = filterSelect.value || 'ALL';
+            const countries = Array.from(new Set(clients.map(c => c.country).filter(Boolean))).sort();
+            
+            let optionsHTML = '<option value="ALL">전체 국가</option>';
+            countries.forEach(c => {
+                optionsHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`;
+            });
+            filterSelect.innerHTML = optionsHTML;
+            filterSelect.value = countries.includes(currentVal) ? currentVal : 'ALL';
         }
 
-        function showToast(message, type = 'info') {
+        function getStatusBadgeHTML(status) {
+            if (status === 'ACTIVE') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>활성 거래중
+                </span>`;
+            } else if (status === 'PROSPECT') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>계약 협상중
+                </span>`;
+            } else {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>거래 중단
+                </span>`;
+            }
+        }
+
+        function updateDashboardKPIs() {
+            const totalClients = clients.length;
+            const activeClients = clients.filter(c => c.status === 'ACTIVE').length;
+            let totalRevenue = 0;
+            let pendingOrdersCount = 0;
+
+            clients.forEach(c => {
+                if (c.orders && Array.isArray(c.orders)) {
+                    c.orders.forEach(o => {
+                        totalRevenue += Number(o.total || 0);
+                        if (o.status === '주문접수' || o.status === '진행중') {
+                            pendingOrdersCount++;
+                        }
+                    });
+                }
+            });
+
+            const uniqueCountries = new Set(clients.map(c => c.country)).size;
+            document.getElementById('stat-total-clients').textContent = `${totalClients}개사`;
+            document.getElementById('stat-active-clients').textContent = activeClients;
+            document.getElementById('stat-total-revenue').textContent = `$${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('stat-pending-orders').textContent = `${pendingOrdersCount}건`;
+            document.getElementById('stat-total-countries').textContent = `${uniqueCountries}개국`;
+        }
+
+        window.showToast = function(message, type = 'info') {
             const container = document.getElementById('toast-container');
             if (!container) return;
             const toast = document.createElement('div');
@@ -1202,17 +1254,14 @@
 
             container.appendChild(toast);
 
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
-        }
+        };
 
-        function showToastConfirm(message, onConfirm) {
+        window.showToastConfirm = function(message, onConfirm) {
             const container = document.getElementById('toast-container');
             if (!container) return;
             const toast = document.createElement('div');
@@ -1230,13 +1279,12 @@
             `;
 
             container.appendChild(toast);
-
             toast.querySelector('#confirm-cancel-btn').onclick = () => toast.remove();
             toast.querySelector('#confirm-ok-btn').onclick = () => {
                 toast.remove();
                 onConfirm();
             };
-        }
+        };
 
         function escapeHTML(str) {
             if (!str) return '';
@@ -1247,8 +1295,6 @@
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
         }
-
-        loadInitialState();
     </script>
 </body>
 </html>
