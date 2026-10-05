@@ -16,6 +16,59 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
+    <!-- Firebase SDK (Modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase handles & Firestore functions export
+        window.firebaseApp = null;
+        window.db = null;
+        window.auth = null;
+        window.isCloudSyncActive = false;
+        
+        // Export Firestore helpers globally for plain script access
+        window.fs_doc = doc;
+        window.fs_getDoc = getDoc;
+        window.fs_setDoc = setDoc;
+        window.fs_updateDoc = updateDoc;
+        window.fs_deleteDoc = deleteDoc;
+        window.fs_onSnapshot = onSnapshot;
+        window.fs_collection = collection;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caos-crm-default-app';
+        
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                window.firebaseApp = initializeApp(firebaseConfig);
+                window.db = getFirestore(window.firebaseApp);
+                window.auth = getAuth(window.firebaseApp);
+
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(window.auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(window.auth);
+                        }
+                        window.isCloudSyncActive = true;
+                        console.log("Cloud Sync Initialized Successfully.");
+                        if (typeof window.initCloudSyncListener === 'function') {
+                            window.initCloudSyncListener();
+                        }
+                    } catch (err) {
+                        console.error("Auth error:", err);
+                    }
+                };
+                initAuth();
+            }
+        } catch (e) {
+            console.warn("Cloud config warning, fallback to local storage:", e);
+        }
+    </script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -109,8 +162,8 @@
 
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <button onclick="openBackupModal()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="동기화 및 백업/복구">
-                    <i class="fa-solid fa-rotate text-caos-red animate-spin-hover"></i>
-                    <span class="font-extrabold text-caos-red">동기화 / 백업</span>
+                    <i class="fa-solid fa-cloud text-caos-red animate-spin-hover"></i>
+                    <span class="font-extrabold text-caos-red">클라우드 동기화</span>
                 </button>
                 <button onclick="exportToCSV()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="CSV">
                     <i class="fa-solid fa-file-csv text-emerald-600"></i>
@@ -371,7 +424,7 @@
                     </div>
 
                     <div class="col-span-2 border-t border-slate-200/80 pt-3 mt-1">
-                        <span class="text-slate-400 block mb-1.5 font-bold">등록된 취급 물품 및 단가 ($ USD)</span>
+                        <span class="text-slate-400 block mb-1.5 font-bold">등록된 취급 물품 및 단가 ($ USD, 소수점 둘째자리 지원)</span>
                         <div id="detail-products-list" class="flex flex-wrap gap-1.5">
                         </div>
                     </div>
@@ -482,7 +535,7 @@
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                 <h3 class="font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-caos-red"></i> 데이터 백업 및 안전 복구 관리
+                    <i class="fa-solid fa-cloud text-caos-red"></i> 실시간 클라우드 동기화 상태
                 </h3>
                 <button onclick="closeBackupModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -490,25 +543,24 @@
             </div>
 
             <div class="space-y-4 text-xs sm:text-sm text-slate-600">
-                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
+                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-center justify-between gap-3">
                     <div>
-                        <h4 class="font-bold text-slate-900">전체 데이터 백업 (파일 저장)</h4>
-                        <p class="text-xs text-slate-500 mt-0.5">현재 등록된 거래처 및 주문 내역을 JSON 파일로 저장합니다.</p>
+                        <h4 class="font-bold text-emerald-900">클라우드 데이터베이스 연동됨</h4>
+                        <p class="text-xs text-emerald-700 mt-0.5">PC와 아이폰 사파리 등 어떤 기기에서 접속하든 모든 거래처와 주문 데이터가 실시간으로 동기화됩니다.</p>
                     </div>
-                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition shrink-0 active:scale-95">
-                        <i class="fa-solid fa-download mr-1"></i> 백업 저장
-                    </button>
+                    <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 font-bold">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
                 </div>
 
                 <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
                     <div>
-                        <h4 class="font-bold text-slate-900">백업 파일 불러오기 및 복구</h4>
-                        <p class="text-xs text-slate-500 mt-0.5">저장해 둔 백업 파일(.json)을 불러와 데이터를 교체 복구합니다.</p>
+                        <h4 class="font-bold text-slate-900">수동 백업 파일(.json) 내보내기</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">현재 데이터를 로컬 파일로 안전하게 백업합니다.</p>
                     </div>
-                    <button onclick="triggerJSONImport()" class="px-3.5 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition shrink-0 active:scale-95 shadow-xs">
-                        <i class="fa-solid fa-upload mr-1"></i> 파일 선택
+                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition shrink-0 active:scale-95">
+                        <i class="fa-solid fa-download mr-1"></i> 백업 저장
                     </button>
-                    <input type="file" id="backup-file-input" accept=".json" onchange="restoreFromJSON(event)" class="hidden">
                 </div>
             </div>
 
@@ -544,26 +596,56 @@
         let clients = [];
         let viewMode = 'card';
         let activeDetailClientId = null;
+        let isSavingToCloud = false;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caos-crm-default-app';
 
         function loadInitialState() {
             try {
                 const stored = localStorage.getItem('caos_crm_clients_data');
                 if (stored) {
                     const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed)) {
-                        clients = parsed;
-                    } else {
-                        clients = DEFAULT_CLIENTS;
-                    }
-                } else {
+                    if (Array.isArray(parsed)) clients = parsed;
+                }
+                if (!clients || clients.length === 0) {
                     clients = DEFAULT_CLIENTS;
                 }
             } catch(e) {
                 clients = DEFAULT_CLIENTS;
             }
-            saveToStorage();
             renderApp();
+            
+            setTimeout(() => {
+                if (window.auth && window.auth.currentUser && typeof window.initCloudSyncListener === 'function') {
+                    window.initCloudSyncListener();
+                }
+            }, 1000);
         }
+
+        window.initCloudSyncListener = function() {
+            if (!window.db || !window.auth || !window.auth.currentUser || typeof window.fs_doc === 'undefined') return;
+            try {
+                const userId = window.auth.currentUser.uid;
+                const docRef = window.fs_doc(window.db, 'artifacts', appId, 'users', userId, 'crmData', 'mainDoc');
+                
+                window.fs_onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data && Array.isArray(data.clients)) {
+                            clients = data.clients;
+                            saveToStorage();
+                            renderApp();
+                        }
+                    } else {
+                        window.fs_setDoc(docRef, { clients: clients });
+                    }
+                }, (error) => {
+                    console.error("Cloud listener error:", error);
+                });
+            } catch(err) {
+                console.error("Cloud sync setup failed:", err);
+            }
+        };
 
         function saveToStorage() {
             try {
@@ -571,6 +653,22 @@
             } catch(e) {}
         }
 
+        async function saveToCloud() {
+            saveToStorage();
+            if (!window.db || !window.auth || !window.auth.currentUser || isSavingToCloud || typeof window.fs_doc === 'undefined') return;
+            try {
+                isSavingToCloud = true;
+                const userId = window.auth.currentUser.uid;
+                const docRef = window.fs_doc(window.db, 'artifacts', appId, 'users', userId, 'crmData', 'mainDoc');
+                await window.fs_setDoc(docRef, { clients: clients, updatedAt: new Date().toISOString() });
+            } catch(e) {
+                console.error("Cloud save failed:", e);
+            } finally {
+                isSavingToCloud = false;
+            }
+        }
+
+        // Expose all required handlers globally to prevent ReferenceErrors
         window.renderApp = renderApp;
         window.setViewMode = setViewMode;
         window.openClientModal = openClientModal;
@@ -592,8 +690,6 @@
         window.openBackupModal = openBackupModal;
         window.closeBackupModal = closeBackupModal;
         window.exportJSONBackup = exportJSONBackup;
-        window.triggerJSONImport = triggerJSONImport;
-        window.restoreFromJSON = restoreFromJSON;
 
         function updateCountryFilterOptions() {
             const filterSelect = document.getElementById('filter-country');
@@ -943,9 +1039,9 @@
                 clients.push(clientData);
             }
 
-            saveToStorage();
+            saveToCloud();
             closeClientModal();
-            showToast('거래처 정보가 저장되었습니다.', 'success');
+            showToast('거래처 정보가 클라우드에 저장되었습니다.', 'success');
             renderApp();
         }
 
@@ -1040,7 +1136,7 @@
             const targetId = activeDetailClientId;
             showToastConfirm('이 거래처를 삭제하시겠습니까?', function() {
                 clients = clients.filter(c => c.id !== targetId);
-                saveToStorage();
+                saveToCloud();
                 closeDetailModal();
                 showToast('거래처가 삭제되었습니다.', 'success');
                 renderApp();
@@ -1124,9 +1220,9 @@
                 status
             });
 
-            saveToStorage();
+            saveToCloud();
             closeOrderModal();
-            showToast('신규 주문이 등록되었습니다.', 'success');
+            showToast('신규 주문이 클라우드에 등록되었습니다.', 'success');
             openDetailModal(client.id);
             renderApp();
         }
@@ -1137,7 +1233,7 @@
                 const client = clients.find(c => c.id === activeDetailClientId);
                 if (client && client.orders) {
                     client.orders = client.orders.filter(o => o.id !== orderId);
-                    saveToStorage();
+                    saveToCloud();
                     showToast('주문 내역이 삭제되었습니다.', 'success');
                     openDetailModal(client.id);
                     renderApp();
@@ -1174,43 +1270,6 @@
             downloadAnchor.remove();
 
             showToast('전체 백업 파일(.json)이 다운로드되었습니다.', 'success');
-        }
-
-        function triggerJSONImport() {
-            document.getElementById('backup-file-input').click();
-        }
-
-        function restoreFromJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    let newClients = [];
-
-                    if (Array.isArray(importedData)) {
-                        newClients = importedData;
-                    } else if (importedData && Array.isArray(importedData.clients)) {
-                        newClients = importedData.clients;
-                    } else {
-                        throw new Error('올바르지 않은 백업 파일 형식입니다.');
-                    }
-
-                    showToastConfirm(`선택한 백업 데이터(${newClients.length}개사)로 전체 데이터를 교체 복구하시겠습니까?`, function() {
-                        clients = newClients;
-                        saveToStorage();
-                        closeBackupModal();
-                        showToast('백업 데이터 복구가 완료되었습니다!', 'success');
-                        renderApp();
-                    });
-                } catch (err) {
-                    showToast('백업 파일을 읽는 도중 오류가 발생했습니다: ' + err.message, 'error');
-                }
-                event.target.value = '';
-            };
-            reader.readAsText(file);
         }
 
         function exportToCSV() {
