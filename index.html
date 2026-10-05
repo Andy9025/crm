@@ -147,27 +147,23 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full flex flex-col gap-4 sm:gap-6">
 
-        <!-- Slim & Minimal Cloud Sync Toolbar -->
-        <section class="bg-slate-900 text-white px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl shadow-sm flex items-center justify-between gap-2 border border-slate-800">
+        <!-- Ultra-Slim Minimal Cloud Sync Toolbar (Mobile Optimized) -->
+        <section class="bg-slate-900 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-xs flex items-center justify-between gap-2 border border-slate-800">
             <div class="flex items-center gap-2 min-w-0">
-                <div class="relative flex items-center justify-center shrink-0 w-8 h-8 rounded-lg bg-slate-800 border border-slate-700/80" title="클라우드 동기화 상태">
-                    <i class="fa-solid fa-cloud text-emerald-400 text-xs sm:text-sm"></i>
+                <div class="relative flex items-center justify-center shrink-0 w-7 h-7 rounded-lg bg-slate-800 border border-slate-700/80" title="클라우드 동기화 상태">
+                    <i id="mobile-cloud-icon" class="fa-solid fa-cloud text-emerald-400 text-xs sm:text-sm animate-pulse"></i>
                     <span id="mobile-cloud-dot" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 </div>
-                <div class="flex items-center gap-2 truncate">
-                    <span id="mobile-room-tag" class="px-2 py-0.5 bg-emerald-950/80 text-emerald-300 font-bold text-[11px] rounded-md border border-emerald-800/60 font-mono">채널: CAOS-GLOBAL</span>
-                    <span id="mobile-cloud-status-text" class="text-[11px] text-emerald-400 font-bold hidden sm:inline">실시간 연동 중</span>
-                    <span id="mobile-sync-time" class="text-[10px] text-slate-400 hidden lg:inline truncate">최근 동기화: 방금 전</span>
-                </div>
+                <span id="mobile-room-tag" class="px-2 py-0.5 bg-emerald-950/80 text-emerald-300 font-bold text-[10px] rounded-md border border-emerald-800/60 font-mono">CAOS-77</span>
             </div>
 
             <!-- Icon-Only Action Buttons -->
             <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" onclick="manualSync()" title="즉시 동기화" class="w-8 h-8 sm:w-9 sm:h-9 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg inline-flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer">
-                    <i id="mobile-sync-icon" class="fa-solid fa-rotate text-xs sm:text-sm"></i>
+                <button type="button" onclick="manualSync()" title="즉시 동기화" class="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg inline-flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer">
+                    <i id="mobile-sync-icon" class="fa-solid fa-rotate text-xs"></i>
                 </button>
-                <button type="button" id="btn-open-cloud-setup" onclick="openCloudSetupModal()" title="채널 설정" class="w-8 h-8 sm:w-9 sm:h-9 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-300 rounded-lg border border-slate-700 inline-flex items-center justify-center transition active:scale-95 cursor-pointer">
-                    <i class="fa-solid fa-gear text-xs sm:text-sm"></i>
+                <button type="button" id="btn-open-cloud-setup" onclick="openCloudSetupModal()" title="채널 설정" class="w-7 h-7 sm:w-8 sm:h-8 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-300 rounded-lg border border-slate-700 inline-flex items-center justify-center transition active:scale-95 cursor-pointer">
+                    <i class="fa-solid fa-gear text-xs"></i>
                 </button>
             </div>
         </section>
@@ -769,20 +765,26 @@
         function updateCloudSyncStatusUI(isConnected, text) {
             const statusText = document.getElementById('cloud-status-text');
             const dot = document.getElementById('cloud-indicator-dot');
-            const mobileStatusText = document.getElementById('mobile-cloud-status-text');
+            const mobileCloudIcon = document.getElementById('mobile-cloud-icon');
             const mobileDot = document.getElementById('mobile-cloud-dot');
             const mobileRoomTag = document.getElementById('mobile-room-tag');
 
             if (statusText) statusText.textContent = text;
-            if (mobileStatusText) mobileStatusText.textContent = text;
-            if (mobileRoomTag) mobileRoomTag.textContent = `채널: ${channelId}`;
+            if (mobileRoomTag) mobileRoomTag.textContent = channelId;
 
             const dotClass = isConnected 
                 ? "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
                 : "w-2.5 h-2.5 rounded-full bg-amber-500";
 
             if (dot) dot.className = dotClass;
-            if (mobileDot) mobileDot.className = dotClass;
+
+            if (isConnected) {
+                if (mobileCloudIcon) mobileCloudIcon.className = "fa-solid fa-cloud text-emerald-400 text-xs sm:text-sm animate-pulse";
+                if (mobileDot) mobileDot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+            } else {
+                if (mobileCloudIcon) mobileCloudIcon.className = "fa-solid fa-cloud text-amber-400 text-xs sm:text-sm";
+                if (mobileDot) mobileDot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400";
+            }
 
             updateSyncTimeText();
         }
