@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CAOS 거래처 관리 시스템 (B2B CRM)</title>
     
+    <!-- iOS Web App Meta Tags & Bulletproof Touch Icon -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CAOS CRM">
+    <link rel="apple-touch-icon" href="https://placehold.co/180x180/E50012/FFFFFF/png?text=CAOS">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -544,7 +550,7 @@
                 const stored = localStorage.getItem('caos_crm_clients_data');
                 if (stored) {
                     const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
+                    if (Array.isArray(parsed)) {
                         clients = parsed;
                     } else {
                         clients = DEFAULT_CLIENTS;
