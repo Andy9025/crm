@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CAOS CRM">
     
-    <!-- Bulletproof iOS Apple Touch Icon (Fixed standard image placeholder to prevent 'C' fallback) -->
+    <!-- Bulletproof Apple Touch Icon for iOS Safari Home Screen -->
     <link rel="apple-touch-icon" href="https://placehold.co/180x180/E50012/FFFFFF?text=CAOS">
     <link rel="icon" type="image/png" href="https://placehold.co/32x32/E50012/FFFFFF?text=C">
 
@@ -281,6 +281,7 @@
         </button>
     </div>
 
+    <!-- Client Modal -->
     <div id="client-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
@@ -611,6 +612,28 @@
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
     <script>
+        // Fallback default sample data to guarantee preview and initial load never show empty state
+        const DEFAULT_SAMPLE_CLIENTS = [
+            {
+                id: 'client_sample_1',
+                name: 'ACCENT SYSTEMS SRL',
+                country: 'Romania',
+                manager: 'Dan Albu',
+                status: 'ACTIVE',
+                email: 'dan.albu@accentsystems.ro',
+                phone: '0744 382758',
+                notes: '유럽 센서 모듈 주력 공급 거래처',
+                products: [
+                    { name: 'CA05FS', price: 29 },
+                    { name: 'CA20FS', price: 37 },
+                    { name: 'MP100', price: 10 }
+                ],
+                orders: [
+                    { id: 'ord_1', itemName: 'CA05FS 센서 50EA', qty: 50, price: 29, total: 1450, date: '2026-06-01', status: '진행중' }
+                ]
+            }
+        ];
+
         let clients = [];
         let viewMode = 'card';
         let activeDetailClientId = null;
@@ -624,7 +647,7 @@
 
         if (crmBroadcast) {
             crmBroadcast.onmessage = (event) => {
-                if (event.data && Array.isArray(event.data)) {
+                if (event.data && Array.isArray(event.data) && event.data.length > 0) {
                     clients = event.data;
                     safeSaveToStorage(clients);
                     renderApp();
@@ -636,7 +659,7 @@
             if (event.key === 'caos_crm_clients_data' && event.newValue) {
                 try {
                     const parsed = JSON.parse(event.newValue);
-                    if (Array.isArray(parsed)) {
+                    if (Array.isArray(parsed) && parsed.length > 0) {
                         clients = parsed;
                         renderApp();
                     }
@@ -655,17 +678,18 @@
                 const storedData = localStorage.getItem('caos_crm_clients_data');
                 if (storedData !== null && storedData !== undefined) {
                     const parsed = JSON.parse(storedData);
-                    if (Array.isArray(parsed)) {
+                    if (Array.isArray(parsed) && parsed.length > 0) {
                         clients = parsed;
                     } else {
-                        clients = [];
+                        clients = DEFAULT_SAMPLE_CLIENTS;
                     }
                 } else {
-                    clients = [];
+                    clients = DEFAULT_SAMPLE_CLIENTS;
                 }
             } catch(e) {
-                clients = [];
+                clients = DEFAULT_SAMPLE_CLIENTS;
             }
+            safeSaveToStorage(clients);
             renderApp();
         }
 
@@ -680,7 +704,7 @@
                 const storedData = localStorage.getItem('caos_crm_clients_data');
                 if (storedData) {
                     const parsed = JSON.parse(storedData);
-                    if (Array.isArray(parsed)) clients = parsed;
+                    if (Array.isArray(parsed) && parsed.length > 0) clients = parsed;
                 }
             } catch(e) {}
             
@@ -1535,6 +1559,7 @@
                 .replace(/'/g, '&#039;');
         }
 
+        // Initialize state immediately
         loadInitialState();
     </script>
 </body>
