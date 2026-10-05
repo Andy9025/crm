@@ -9,9 +9,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CAOS CRM">
     
-    <!-- Bulletproof Apple Touch Icon for iOS Safari Home Screen -->
-    <link rel="apple-touch-icon" href="https://placehold.co/180x180/E50012/FFFFFF?text=CAOS">
-    <link rel="icon" type="image/png" href="https://placehold.co/32x32/E50012/FFFFFF?text=C">
+    <!-- Bulletproof Inline SVG Data-URI Apple Touch Icon to prevent Safari 'C' fallback bug -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23E50012'/><text x='50% ' y='54%' font-family='Arial, sans-serif' font-size='90' font-weight='900' fill='%23FFFFFF' text-anchor='middle' dominant-baseline='central'>C</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23E50012'/><text x='50%' y='54%' font-family='Arial, sans-serif' font-size='18' font-weight='900' fill='%23FFFFFF' text-anchor='middle' dominant-baseline='central'>C</text></svg>">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -105,8 +105,8 @@
                     </div>
 
                     <div class="flex flex-col justify-center leading-none">
-                        <span class="text-base sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
-                        <span class="text-[9px] sm:text-[11px] font-black tracking-widest text-caos-red uppercase mt-0.5">CRM</span>
+                        <span class="text-base sm:text-xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
+                        <span class="text-[9px] sm:text-[10px] font-black tracking-widest text-caos-red uppercase mt-0.5">CRM</span>
                     </div>
                 </a>
             </div>
@@ -612,7 +612,7 @@
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
     <script>
-        // Fallback default sample data to guarantee preview and initial load never show empty state
+        // Default sample data fallback to guarantee preview and initial load instantly show content
         const DEFAULT_SAMPLE_CLIENTS = [
             {
                 id: 'client_sample_1',
@@ -647,7 +647,7 @@
 
         if (crmBroadcast) {
             crmBroadcast.onmessage = (event) => {
-                if (event.data && Array.isArray(event.data) && event.data.length > 0) {
+                if (event.data && Array.isArray(event.data)) {
                     clients = event.data;
                     safeSaveToStorage(clients);
                     renderApp();
@@ -659,7 +659,7 @@
             if (event.key === 'caos_crm_clients_data' && event.newValue) {
                 try {
                     const parsed = JSON.parse(event.newValue);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
+                    if (Array.isArray(parsed)) {
                         clients = parsed;
                         renderApp();
                     }
@@ -680,6 +680,8 @@
                     const parsed = JSON.parse(storedData);
                     if (Array.isArray(parsed) && parsed.length > 0) {
                         clients = parsed;
+                    } else if (parsed && Array.isArray(parsed) && parsed.length === 0) {
+                        clients = [];
                     } else {
                         clients = DEFAULT_SAMPLE_CLIENTS;
                     }
@@ -704,7 +706,7 @@
                 const storedData = localStorage.getItem('caos_crm_clients_data');
                 if (storedData) {
                     const parsed = JSON.parse(storedData);
-                    if (Array.isArray(parsed) && parsed.length > 0) clients = parsed;
+                    if (Array.isArray(parsed)) clients = parsed;
                 }
             } catch(e) {}
             
@@ -1559,7 +1561,7 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Initialize state immediately
+        // Initialize state immediately upon script load
         loadInitialState();
     </script>
 </body>
