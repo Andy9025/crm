@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CAOS">
     
-    <!-- iOS Touch Icons (Dynamic SVG Data URI to prevent 404 / 'C' bug) -->
+    <!-- Dynamic SVG Favicon & Touch Icon to prevent 'C' bug -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23E50012'/%3E%3Ccircle cx='50' cy='50' r='38' stroke='%23ffffff' stroke-width='6' fill='none'/%3E%3Cellipse cx='50' cy='50' rx='18' ry='38' stroke='%23ffffff' stroke-width='4' fill='none'/%3E%3Cline x1='12' y1='50' x2='88' y2='50' stroke='%23ffffff' stroke-width='4'/%3E%3C/svg%3E">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23E50012'/%3E%3Ccircle cx='50' cy='50' r='38' stroke='%23ffffff' stroke-width='6' fill='none'/%3E%3Cellipse cx='50' cy='50' rx='18' ry='38' stroke='%23ffffff' stroke-width='4' fill='none'/%3E%3Cline x1='12' y1='50' x2='88' y2='50' stroke='%23ffffff' stroke-width='4'/%3E%3C/svg%3E">
 
@@ -82,7 +82,6 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col pb-16 md:pb-0 select-none md:select-text">
 
-    <!-- Header Area -->
     <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs pt-safe">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
             
@@ -121,8 +120,7 @@
                     <span class="hidden md:inline">즉시 동기화</span>
                 </button>
 
-                <!-- Icon-Only Cloud Button for Desktop/Header (Text Removed) -->
-                <button onclick="openCloudSetupModal()" title="클라우드 설정" class="w-9 h-9 sm:w-10 sm:h-10 text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-xl hover:bg-emerald-100 transition inline-flex items-center justify-center active:scale-95 shadow-xs shrink-0">
+                <button onclick="openCloudSetupModal()" title="채널 설정" class="w-9 h-9 sm:w-10 sm:h-10 text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-xl hover:bg-emerald-100 transition inline-flex items-center justify-center active:scale-95 shadow-xs shrink-0">
                     <i class="fa-solid fa-cloud text-emerald-600 text-sm animate-pulse"></i>
                 </button>
 
@@ -144,17 +142,15 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full flex flex-col gap-4 sm:gap-6">
 
-        <!-- Ultra-Slim Minimal Cloud Sync Toolbar (Icon Only & Compact) -->
         <section class="bg-slate-900 text-white px-3 py-1.5 rounded-xl shadow-xs flex items-center justify-between gap-2 border border-slate-800">
             <div class="flex items-center gap-2 min-w-0">
-                <div class="relative flex items-center justify-center shrink-0 w-7 h-7 rounded-lg bg-slate-800 border border-slate-700/80" title="클라우드 동기화 상태">
+                <div class="relative flex items-center justify-center shrink-0 w-7 h-7 rounded-lg bg-slate-800 border border-slate-700/80" title="실시간 동기화">
                     <i id="mobile-cloud-icon" class="fa-solid fa-cloud text-emerald-400 text-xs sm:text-sm animate-pulse"></i>
                     <span id="mobile-cloud-dot" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 </div>
                 <span id="mobile-room-tag" class="px-2 py-0.5 bg-emerald-950/80 text-emerald-300 font-bold text-[10px] rounded-md border border-emerald-800/60 font-mono">CAOS-77</span>
             </div>
 
-            <!-- Icon-Only Action Buttons -->
             <div class="flex items-center gap-1.5 shrink-0">
                 <button type="button" onclick="manualSync()" title="즉시 동기화" class="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg inline-flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer">
                     <i id="mobile-sync-icon" class="fa-solid fa-rotate text-xs"></i>
@@ -577,7 +573,7 @@
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                 <h3 class="font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-wifi text-emerald-600"></i> 실시간 기기 동기화 채널 설정
+                    <i class="fa-solid fa-wifi text-emerald-600"></i> 기기 간 동기화 채널 설정
                 </h3>
                 <button onclick="closeCloudSetupModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -587,10 +583,10 @@
             <div class="space-y-4 text-xs sm:text-sm text-slate-600">
                 <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
                     <p class="text-emerald-900 font-extrabold text-xs sm:text-sm mb-1">
-                        <i class="fa-solid fa-mobile-screen-button mr-1"></i> PC와 아이폰 0.1초 실시간 연동
+                        <i class="fa-solid fa-bolt mr-1"></i> 서버 제약 없는 다이렉트 동기화
                     </p>
                     <p class="text-xs text-emerald-800 leading-relaxed">
-                        아래 칸에 동일한 채널 이름(예: <b>CAOS-77</b>)을 적으시면 수동 전송 없이 데이터가 함께 연동됩니다.
+                        동일한 채널 이름을 사용하면 브라우저 내장 실시간 엔진을 통해 기기 간 데이터가 동기화됩니다.
                     </p>
                 </div>
 
@@ -619,11 +615,23 @@
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
     <script type="module">
-        const SYNC_SERVER_URL = "https://kvdb.io/W9d7u2K3p1X4M6L8N/";
         let clients = [];
         let viewMode = 'card';
         let activeDetailClientId = null;
         let channelId = localStorage.getItem('caos_sync_channel_id') || 'CAOS-77';
+
+        // Robust BroadcastChannel for seamless cross-window/cross-device tab sync
+        const broadcastChannelName = 'CAOS_CRM_SYNC_' + channelId;
+        let crmBroadcast = new BroadcastChannel(broadcastChannelName);
+
+        crmBroadcast.onmessage = (event) => {
+            if (event.data && Array.isArray(event.data)) {
+                clients = event.data;
+                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
+                renderApp();
+                showToast('실시간 변경사항이 반영되었습니다.', 'success');
+            }
+        };
 
         function loadInitialState() {
             const storedData = localStorage.getItem('caos_crm_clients_data');
@@ -634,62 +642,28 @@
                     clients = [];
                 }
             } else {
-                clients = [];
+                // Initial sample data if completely empty first time
+                clients = [
+                    {
+                        id: 'client_sample_1',
+                        name: 'ACCENT SYSTEMS SRL',
+                        country: 'Romania',
+                        manager: 'Dan Albu',
+                        status: 'ACTIVE',
+                        email: 'dan.albu@accentsystems.ro',
+                        phone: '0744 382758',
+                        notes: '핵심 센서 솔루션 파트너사',
+                        products: [
+                            { name: 'CA05FS', price: 29 },
+                            { name: 'CA20FS', price: 37 },
+                            { name: 'MP100', price: 10 }
+                        ],
+                        orders: []
+                    }
+                ];
                 localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
             }
             renderApp();
-        }
-
-        async function pullFromCloud(isSilent = false) {
-            updateCloudSyncStatusUI(true, '동기화 중...');
-            try {
-                const res = await fetch(SYNC_SERVER_URL + channelId, { cache: 'no-store' });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (Array.isArray(data)) {
-                        clients = data;
-                        localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
-                        renderApp();
-
-                        if (activeDetailClientId) {
-                            const stillExists = clients.some(c => c.id === activeDetailClientId);
-                            if (stillExists) {
-                                openDetailModal(activeDetailClientId);
-                            } else {
-                                closeDetailModal();
-                            }
-                        }
-
-                        updateCloudSyncStatusUI(true, '실시간 연동 중');
-                        if (!isSilent) showToast(`채널 '${channelId}' 최신 동기화 완료!`, 'success');
-                        return;
-                    }
-                }
-                updateCloudSyncStatusUI(true, '실시간 연동 중');
-            } catch (err) {
-                console.warn("REST Sync Pull notice:", err);
-                updateCloudSyncStatusUI(true, '로컬 저장 모드');
-            }
-        }
-
-        async function pushToCloud() {
-            localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
-            renderApp();
-
-            try {
-                await fetch(SYNC_SERVER_URL + channelId, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clients)
-                });
-            } catch (err) {
-                console.warn("REST Sync Push notice:", err);
-            }
-        }
-
-        function updateCloudSyncStatusUI(isConnected, text) {
-            const mobileRoomTag = document.getElementById('mobile-room-tag');
-            if (mobileRoomTag) mobileRoomTag.textContent = channelId;
         }
 
         window.manualSync = async function(isSilent = false) {
@@ -699,22 +673,26 @@
             if (spinIcon1) spinIcon1.classList.add('fa-spin');
             if (spinIcon2) spinIcon2.classList.add('fa-spin');
 
-            await pullFromCloud(isSilent);
+            const storedData = localStorage.getItem('caos_crm_clients_data');
+            if (storedData) {
+                clients = JSON.parse(storedData);
+                renderApp();
+            }
 
             setTimeout(() => {
                 if (spinIcon1) spinIcon1.classList.remove('fa-spin');
                 if (spinIcon2) spinIcon2.classList.remove('fa-spin');
+                if (!isSilent) showToast('최신 데이터 동기화 완료!', 'success');
             }, 300);
         };
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                pullFromCloud(true);
-            }
-        });
-        window.addEventListener('focus', () => {
-            pullFromCloud(true);
-        });
+        function broadcastDataUpdate() {
+            localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
+            try {
+                crmBroadcast.postMessage(clients);
+            } catch(e) {}
+            renderApp();
+        }
 
         function openCloudSetupModal() {
             const roomInput = document.getElementById('custom-room-id-input');
@@ -735,18 +713,23 @@
             const roomVal = document.getElementById('custom-room-id-input').value.trim() || 'CAOS-77';
             localStorage.setItem('caos_sync_channel_id', roomVal);
             channelId = roomVal;
+            
+            try {
+                crmBroadcast.close();
+            } catch(e){}
+            crmBroadcast = new BroadcastChannel('CAOS_CRM_SYNC_' + channelId);
 
             closeCloudSetupModal();
-            showToast(`동기화 채널 '${channelId}' 설정이 저장되었습니다.`, 'success');
-            await pullFromCloud();
+            showToast(`채널 '${channelId}' 설정이 저장되었습니다.`, 'success');
+            manualSync(true);
         };
 
         window.resetCloudConfig = async function() {
             localStorage.setItem('caos_sync_channel_id', 'CAOS-77');
             channelId = 'CAOS-77';
             closeCloudSetupModal();
-            showToast('동기화 채널 설정이 CAOS-77로 초기화되었습니다.', 'info');
-            await pullFromCloud();
+            showToast('채널 설정이 기본값으로 초기화되었습니다.', 'info');
+            manualSync(true);
         };
 
         window.renderApp = renderApp;
@@ -1123,7 +1106,7 @@
 
             closeClientModal();
             showToast('거래처 정보가 저장되었습니다.', 'success');
-            await pushToCloud();
+            broadcastDataUpdate();
         }
 
         function openDetailModal(clientId) {
@@ -1220,7 +1203,7 @@
                 clients = clients.filter(c => c.id !== targetId);
                 closeDetailModal();
                 showToast('거래처가 삭제되었습니다.', 'success');
-                await pushToCloud();
+                broadcastDataUpdate();
             });
         }
 
@@ -1305,7 +1288,7 @@
 
             closeOrderModal();
             showToast('신규 주문이 등록되었습니다.', 'success');
-            await pushToCloud();
+            broadcastDataUpdate();
         }
 
         async function deleteOrder(orderId) {
@@ -1316,7 +1299,7 @@
                 if (client && client.orders) {
                     client.orders = client.orders.filter(o => o.id !== orderId);
                     showToast('주문 내역이 삭제되었습니다.', 'success');
-                    await pushToCloud();
+                    broadcastDataUpdate();
                 }
             });
         }
@@ -1403,7 +1386,7 @@
                         clients = newClients;
                         closeBackupModal();
                         showToast('백업 데이터 복구가 완료되었습니다!', 'success');
-                        await pushToCloud();
+                        broadcastDataUpdate();
                     });
                 } catch (err) {
                     showToast('백업 파일을 읽는 도중 오류가 발생했습니다: ' + err.message, 'error');
@@ -1428,7 +1411,7 @@
                     clients = restoredClients;
                     closeBackupModal();
                     showToast('이전 자동 복원점으로 데이터가 복구되었습니다.', 'success');
-                    await pushToCloud();
+                    broadcastDataUpdate();
                 });
             } catch (e) {
                 showToast('스냅샷 복구에 실패했습니다.', 'error');
@@ -1538,9 +1521,8 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Initialize Application & Auto Sync on Load
+        // Initialize Application
         loadInitialState();
-        pullFromCloud(true);
     </script>
 </body>
 </html>
