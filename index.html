@@ -115,6 +115,10 @@
 
             <!-- 동기화 버튼 영역: 사파리에서 누르기 편하도록 크기와 여백 최적화 -->
             <div class="flex items-center gap-2">
+                <button onclick="forceRecoverLocalData()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-white bg-slate-800 rounded-xl hover:bg-slate-900 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="PC 로컬 데이터 강제 복구">
+                    <i class="fa-solid fa-life-ring text-amber-400 animate-pulse"></i>
+                    <span class="font-extrabold hidden sm:inline">PC 데이터 강제 복구</span>
+                </button>
                 <button onclick="manualCloudSync()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="클라우드 동기화 새로고침">
                     <i class="fa-solid fa-cloud text-caos-red" id="sync-icon"></i>
                     <span class="font-extrabold text-caos-red hidden sm:inline" id="sync-text">클라우드 동기화</span>
@@ -620,6 +624,83 @@
                 if (syncIcon) syncIcon.classList.remove('fa-spin');
                 showToast('현재 모든 기기가 완벽하게 동기화되어 있습니다.', 'success');
             }, 500);
+        };
+
+        window.forceRecoverLocalData = async function() {
+            if (!auth.currentUser) {
+                showToast("클라우드 서버에 연결 중입니다. 잠시 후 다시 시도해주세요.", "error");
+                return;
+            }
+            
+            showToast("PC 메모리를 스캔하여 유실된 데이터를 찾습니다...", "info");
+            
+            let foundClients = [];
+            // 브라우저의 모든 로컬 스토리지 공간을 샅샅이 뒤져서 거래처 데이터 형태를 찾음
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                try {
+                    const val = localStorage.getItem(key);
+                    const parsed = JSON.parse(val);
+                    if (Array.isArray(parsed)) {
+                        // 거래처 데이터인지 확인 (name 속성이 있는지)
+                        const isClientArray = parsed.some(item => item && item.name && (item.country || item.manager));
+                        if (isClientArray) {
+                            foundClients = foundClients.concat(parsed);
+                        }
+                    }
+                } catch(e) {
+                    // JSON 형식이 아닌 일반 데이터는 무시
+                }
+            }
+
+            if (foundClients.length === 0) {
+                showToast("이 기기(PC)에 복구할 기존 거래처 데이터가 남아있지 않습니다.", "error");
+                return;
+            }
+
+            try {
+                let successCount = 0;
+                // 중복 방지를 위해 현재 클라우드에 있는 이름 목록 가져오기
+                const clientsRef = collection(db, 'artifacts', appId, 'public', 'data', 'clients');
+                const snap = await getDocs(clientsRef);
+                const existingNames = new Set();
+                snap.forEach(docSnap => existingNames.add(docSnap.data().name));
+
+                for (const c of foundClients) {
+                    if (!c || !c.name) continue;
+                    
+                    // 클라우드에 아직 없는 거래처명일 경우에만 업로드 진행
+                    if (!existingNames.has(c.name)) {
+                        const clientId = c.id || ('client_' + Date.now() + Math.random().toString(36).substr(2, 5));
+                        const clientData = {
+                            id: clientId,
+                            name: c.name,
+                            country: c.country || '',
+                            manager: c.manager || '',
+                            status: c.status || 'ACTIVE',
+                            email: c.email || '',
+                            phone: c.phone || '',
+                            notes: c.notes || '',
+                            products: c.products || [],
+                            orders: c.orders || [],
+                            updatedAt: new Date().toISOString()
+                        };
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', clientId);
+                        await setDoc(docRef, clientData);
+                        successCount++;
+                        existingNames.add(c.name); // 한 번의 루프 내에서 중복 방지
+                    }
+                }
+                
+                if (successCount > 0) {
+                    showToast(`${successCount}개의 거래처 데이터 복구 및 클라우드 업로드 성공! 이제 스마트폰에서도 보입니다.`, 'success');
+                } else {
+                    showToast(`발견된 데이터가 이미 클라우드에 모두 존재하여 업로드를 건너뛰었습니다.`, 'info');
+                }
+            } catch (err) {
+                console.error("복구 실패:", err);
+                showToast("복구 데이터를 클라우드에 업로드하는 중 오류가 발생했습니다.", "error");
+            }
         };
 
         window.setViewMode = function(mode) {
