@@ -83,12 +83,12 @@
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col pb-16 md:pb-0 select-none md:select-text">
 
     <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs pt-safe">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
             
             <!-- Sleek Minimalist Globe Header Logo -->
             <div class="flex items-center gap-3">
-                <a href="#" class="flex items-center gap-3 group">
-                    <div class="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center shrink-0">
+                <a href="#" class="flex items-center gap-2.5 sm:gap-3 group">
+                    <div class="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center shrink-0">
                         <svg class="w-full h-full text-caos-red drop-shadow-xs group-hover:rotate-12 group-hover:scale-105 transition-all duration-500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="50" cy="50" r="42" stroke="url(#globeRedGrad)" stroke-width="5"/>
                             <ellipse cx="50" cy="50" rx="20" ry="42" stroke="#94A3B8" stroke-width="3.5" stroke-dasharray="2 1"/>
@@ -108,7 +108,7 @@
 
                     <div class="flex flex-col">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
+                            <span class="text-lg sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
                             <span class="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider bg-red-50 text-caos-red border border-red-200 rounded-md">CRM</span>
                         </div>
                         <span class="text-[9px] sm:text-[10px] font-extrabold text-slate-600 tracking-wider uppercase leading-none hidden sm:block">
@@ -118,19 +118,21 @@
                 </a>
             </div>
 
-            <!-- Header Quick Action Controls -->
+            <!-- Header Quick Action Controls with Explicit Cloud Sync Button -->
             <div class="flex items-center gap-1.5 sm:gap-2">
-                <span id="sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 클라우드 연동 중
-                </span>
+                <button onclick="openCloudSetupModal()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-xl hover:bg-emerald-100 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
+                    <i class="fa-solid fa-cloud text-emerald-600 text-sm"></i>
+                    <span id="cloud-status-text" class="font-extrabold">클라우드 연동</span>
+                    <span id="cloud-indicator-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </button>
 
-                <button onclick="openBackupModal()" class="px-3 py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
+                <button onclick="openBackupModal()" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
                     <i class="fa-solid fa-floppy-disk text-caos-red"></i>
                     <span class="hidden sm:inline">백업 / 복구</span>
                 </button>
-                <button onclick="exportToCSV()" class="px-3 py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
+                <button onclick="exportToCSV()" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
                     <i class="fa-solid fa-file-csv text-emerald-600"></i>
-                    <span class="hidden sm:inline">CSV 내보내기</span>
+                    <span class="hidden sm:inline">CSV</span>
                 </button>
                 <button onclick="openClientModal()" class="hidden md:flex px-4 py-2 text-xs sm:text-sm font-bold text-white caos-btn-gradient rounded-xl transition items-center gap-1.5 shadow-caos-glow active:scale-95">
                     <i class="fa-solid fa-plus"></i>
@@ -189,6 +191,7 @@
             </div>
         </section>
 
+        <!-- Search & Filter Controls -->
         <section class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             <div class="relative flex-1">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -219,6 +222,7 @@
             </div>
         </section>
 
+        <!-- Clients Container -->
         <section id="clients-container" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex-1">
             <div id="card-view" class="p-3 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
             </div>
@@ -262,6 +266,7 @@
         </button>
     </div>
 
+    <!-- Client Form Modal -->
     <div id="client-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
@@ -349,6 +354,7 @@
         </div>
     </div>
 
+    <!-- Detail Side Drawer Modal -->
     <div id="detail-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-end">
         <div class="bg-white h-full sm:h-full w-full max-w-2xl shadow-2xl border-l border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out">
             <div class="p-5 sm:p-6 bg-slate-900 text-white flex items-center justify-between pt-safe">
@@ -421,6 +427,7 @@
         </div>
     </div>
 
+    <!-- Order Entry Modal -->
     <div id="order-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
@@ -489,6 +496,7 @@
         </div>
     </div>
 
+    <!-- Backup / Restore Modal -->
     <div id="backup-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
@@ -503,39 +511,80 @@
             <div class="space-y-4 text-xs sm:text-sm text-slate-600">
                 <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
                     <div>
-                        <h4 class="font-bold text-slate-900 text-sm mb-0.5">1. 전체 데이터 백업 파일 다운로드</h4>
-                        <p class="text-xs text-slate-500">모든 거래처, 물품, 주문 내역을 JSON 파일로 내보냅니다.</p>
+                        <h4 class="font-bold text-slate-900">전체 데이터 백업 (파일 저장)</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">현재 등록된 거래처 및 주문 내역을 JSON 파일로 저장합니다.</p>
                     </div>
-                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 text-xs font-bold text-white caos-btn-gradient rounded-xl shadow-caos-glow transition shrink-0 active:scale-95 flex items-center gap-1.5">
-                        <i class="fa-solid fa-download"></i> 백업 저장
+                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition shrink-0 active:scale-95">
+                        <i class="fa-solid fa-download mr-1"></i> 백업 저장
                     </button>
                 </div>
 
                 <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
                     <div>
-                        <h4 class="font-bold text-slate-900 text-sm mb-0.5">2. 백업 파일로 복구하기</h4>
-                        <p class="text-xs text-slate-500">저장해 둔 백업 JSON 파일을 읽어와 한 번에 원상 복구합니다.</p>
+                        <h4 class="font-bold text-slate-900">백업 파일 불러오기 및 복구</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">저장해 둔 백업 파일(.json)을 불러와 데이터를 교체 복구합니다.</p>
                     </div>
-                    <button onclick="triggerJSONImport()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl shadow-xs transition shrink-0 active:scale-95 flex items-center gap-1.5">
-                        <i class="fa-solid fa-upload text-indigo-600"></i> 파일 선택
+                    <button onclick="triggerJSONImport()" class="px-3.5 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition shrink-0 active:scale-95 shadow-xs">
+                        <i class="fa-solid fa-upload mr-1"></i> 파일 선택
                     </button>
                     <input type="file" id="backup-file-input" accept=".json" onchange="restoreFromJSON(event)" class="hidden">
                 </div>
 
-                <div class="p-4 bg-amber-50/80 rounded-2xl border border-amber-200/80 flex items-center justify-between gap-3">
-                    <div>
-                        <h4 class="font-bold text-amber-900 text-sm mb-0.5"><i class="fa-solid fa-clock-rotate-left mr-1"></i> 실수 직전 자동 복원점</h4>
-                        <p class="text-xs text-amber-800/80" id="snapshot-status-text">수정·삭제 직전의 자동 저장본이 보관 중입니다.</p>
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-bold text-amber-900 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock-rotate-left"></i> 직전 자동 저장 스냅샷
+                        </span>
+                        <button onclick="restoreAutoSnapshot()" class="text-xs font-bold text-amber-800 underline hover:text-amber-950">
+                            이전 상태로 복원
+                        </button>
                     </div>
-                    <button onclick="restoreAutoSnapshot()" class="px-3.5 py-2 text-xs font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-xl transition shrink-0 active:scale-95 flex items-center gap-1.5">
-                        <i class="fa-solid fa-rotate-left"></i> 되돌리기
-                    </button>
+                    <p id="snapshot-status-text" class="text-[11px] text-amber-700">
+                        수정/삭제 조치 직전의 이전 데이터가 자동 보존됩니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-slate-200 text-right">
+                <button onclick="closeBackupModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cloud Setup Modal for Realtime Sync -->
+    <div id="cloud-setup-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+                <h3 class="font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-cloud text-emerald-600"></i> 실시간 클라우드 기기 연동 설정
+                </h3>
+                <button onclick="closeCloudSetupModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-slate-600">
+                <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <p class="text-emerald-900 font-bold mb-1"><i class="fa-solid fa-wifi mr-1"></i> 아이폰 & PC 실시간 자동 동기화</p>
+                    <p class="text-xs text-emerald-800 leading-relaxed">
+                        클라우드 DB 연결 키를 등록해 두시면 파일 다운로드 없이 **아이폰에서 지우면 PC에서도 즉시 삭제**되는 실시간 동기화가 활성화됩니다.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Firebase 설정 정보 (JSON)</label>
+                    <textarea id="custom-firebase-config-input" rows="4" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "..."}' 
+                        class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono resize-none"></textarea>
+                    <p class="text-[11px] text-slate-400 mt-1">* 무료 Firebase 프로젝트 키를 입력해 두시면 기기 간 실시간 자동 연동이 유지됩니다.</p>
                 </div>
             </div>
 
             <div class="pt-4 mt-4 border-t border-slate-200 flex items-center justify-between">
-                <span class="text-[11px] text-slate-400">* 복구 시 연결된 모든 기기(PC, 아이폰 등)에 연동됩니다.</span>
-                <button onclick="closeBackupModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl">닫기</button>
+                <button onclick="resetCloudConfig()" class="text-xs text-red-500 font-bold hover:underline">기본 설정 초기화</button>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeCloudSetupModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl">닫기</button>
+                    <button onclick="saveCustomCloudConfig()" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs active:scale-95">연동 저장</button>
+                </div>
             </div>
         </div>
     </div>
@@ -613,8 +662,18 @@
 
         async function initCloudSync() {
             try {
+                let firebaseConfig = null;
+
                 if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    const firebaseConfig = JSON.parse(__firebase_config);
+                    firebaseConfig = JSON.parse(__firebase_config);
+                } else {
+                    const customConfigStr = localStorage.getItem('caos_custom_firebase_config');
+                    if (customConfigStr) {
+                        firebaseConfig = JSON.parse(customConfigStr);
+                    }
+                }
+
+                if (firebaseConfig) {
                     const app = initializeApp(firebaseConfig);
                     auth = getAuth(app);
                     db = getFirestore(app);
@@ -627,13 +686,27 @@
                         currentUser = userCred.user;
                     }
 
+                    updateCloudSyncStatusUI(true, '실시간 연동중');
                     setupCloudListener();
                 } else {
+                    updateCloudSyncStatusUI(false, '클라우드 설정');
                     loadClientsFromLocalStorage();
                 }
             } catch (e) {
                 console.warn("Cloud Sync Fallback to LocalStorage:", e);
+                updateCloudSyncStatusUI(false, '클라우드 설정');
                 loadClientsFromLocalStorage();
+            }
+        }
+
+        function updateCloudSyncStatusUI(isConnected, text) {
+            const statusText = document.getElementById('cloud-status-text');
+            const dot = document.getElementById('cloud-indicator-dot');
+            if (statusText) statusText.textContent = text;
+            if (dot) {
+                dot.className = isConnected 
+                    ? "w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
+                    : "w-2 h-2 rounded-full bg-amber-500";
             }
         }
 
@@ -658,6 +731,7 @@
                     });
 
                     renderApp();
+                    
                     if (activeDetailClientId) {
                         const currentClientExists = clients.some(c => c.id === activeDetailClientId);
                         if (currentClientExists) {
@@ -732,6 +806,40 @@
                 renderApp();
             }
         }
+
+        // Window exposed handlers
+        window.openCloudSetupModal = function() {
+            const existingConfig = localStorage.getItem('caos_custom_firebase_config') || '';
+            document.getElementById('custom-firebase-config-input').value = existingConfig;
+            document.getElementById('cloud-setup-modal').classList.remove('hidden');
+        };
+
+        window.closeCloudSetupModal = function() {
+            document.getElementById('cloud-setup-modal').classList.add('hidden');
+        };
+
+        window.saveCustomCloudConfig = function() {
+            const inputVal = document.getElementById('custom-firebase-config-input').value.trim();
+            if (inputVal) {
+                try {
+                    JSON.parse(inputVal);
+                    localStorage.setItem('caos_custom_firebase_config', inputVal);
+                    showToast('클라우드 연동 키가 저장되었습니다. 앱을 다시 로드합니다.', 'success');
+                    setTimeout(() => location.reload(), 800);
+                } catch(e) {
+                    showToast('올바른 JSON 형식의 키를 입력해 주세요.', 'error');
+                }
+            } else {
+                localStorage.removeItem('caos_custom_firebase_config');
+                location.reload();
+            }
+        };
+
+        window.resetCloudConfig = function() {
+            localStorage.removeItem('caos_custom_firebase_config');
+            showToast('클라우드 연동 설정이 초기화되었습니다.', 'info');
+            setTimeout(() => location.reload(), 800);
+        };
 
         window.renderApp = renderApp;
         window.setViewMode = setViewMode;
