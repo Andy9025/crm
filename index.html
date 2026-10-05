@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>스마트 거래처 관리 시스템 (B2B Client CRM)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter & Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans KR', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* iOS smooth scrolling & custom scrollbars */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .ios-scroller {
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col pb-16 md:pb-0 select-none md:select-text">
+
+    <!-- Top Header -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-xs pt-safe">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-briefcase text-base sm:text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-bold text-slate-900 text-base sm:text-xl leading-tight">글로벌 거래처 CRM</h1>
+                        <span id="sync-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 동기화
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 hidden sm:block">Client & Order Management System</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openBackupModal()" class="px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-floppy-disk text-brand-600 text-sm"></i>
+                    <span class="hidden sm:inline">백업 / 복구</span>
+                </button>
+                <button onclick="exportToCSV()" class="px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-file-csv text-emerald-600 text-sm"></i>
+                    <span class="hidden sm:inline">CSV 내보내기</span>
+                </button>
+                <button onclick="openClientModal()" class="hidden md:flex px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition items-center gap-2 shadow-sm active:scale-95">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>신규 거래처 등록</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full flex flex-col gap-4 sm:gap-6">
+
+        <!-- KPI Summary Cards -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+            <!-- Total Clients Card -->
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">총 관리 거래처</p>
+                    <p id="stat-total-clients" class="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">0개사</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5"><span id="stat-active-clients" class="text-emerald-600 font-semibold">0</span>개 활성 거래</p>
+                </div>
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center text-lg sm:text-xl">
+                    <i class="fa-solid fa-building-user"></i>
+                </div>
+            </div>
+
+            <!-- Total Revenue Card -->
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">총 누적 주문액</p>
+                    <p id="stat-total-revenue" class="text-lg sm:text-2xl font-bold text-slate-900 mt-0.5 truncate max-w-[130px] sm:max-w-none">$0</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">누적 매출 합계</p>
+                </div>
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg sm:text-xl">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+            </div>
+
+            <!-- Active Orders Card -->
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">진행 중 주문건</p>
+                    <p id="stat-pending-orders" class="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">0건</p>
+                    <p class="text-[11px] text-amber-600 font-medium mt-0.5">생산/배송 진행 중</p>
+                </div>
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg sm:text-xl">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                </div>
+            </div>
+
+            <!-- Export Countries Card -->
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">진출 국가 수</p>
+                    <p id="stat-total-countries" class="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">0개국</p>
+                    <p class="text-[11px] text-indigo-600 font-medium mt-0.5">글로벌 커버리지</p>
+                </div>
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg sm:text-xl">
+                    <i class="fa-solid fa-earth-americas"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls & Filters Section -->
+        <section class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+            <!-- Search bar -->
+            <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="search-input" oninput="renderApp()" placeholder="거래처명, 담당자, 판매물품, 국가 검색..." 
+                    class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+            </div>
+
+            <!-- Filters -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 ios-scroller">
+                <!-- Country Filter -->
+                <select id="filter-country" onchange="renderApp()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 min-w-[110px]">
+                    <option value="ALL">전체 국가</option>
+                </select>
+
+                <!-- Status Filter -->
+                <select id="filter-status" onchange="renderApp()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 min-w-[120px]">
+                    <option value="ALL">전체 거래상태</option>
+                    <option value="ACTIVE">활성 거래중</option>
+                    <option value="PROSPECT">계약 협상중</option>
+                    <option value="INACTIVE">거래 중단/휴면</option>
+                </select>
+
+                <!-- View Toggle buttons -->
+                <div class="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200 shrink-0">
+                    <button id="view-card-btn" onclick="setViewMode('card')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-slate-800 transition">
+                        <i class="fa-solid fa-table-cells-large mr-1"></i> 카드
+                    </button>
+                    <button id="view-table-btn" onclick="setViewMode('table')" class="px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 transition">
+                        <i class="fa-solid fa-list mr-1"></i> 표
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Client List Container -->
+        <section id="clients-container" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex-1">
+            <!-- Card View Grid (Default for iPhone/Mobile friendliness) -->
+            <div id="card-view" class="p-3 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+                <!-- Dynamic Cards -->
+            </div>
+
+            <!-- Table View -->
+            <div id="table-view" class="hidden overflow-x-auto ios-scroller">
+                <table class="w-full text-left text-sm border-collapse min-w-[700px]">
+                    <thead>
+                        <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold text-xs uppercase tracking-wider">
+                            <th class="py-3.5 px-4">거래처명</th>
+                            <th class="py-3.5 px-4">국가</th>
+                            <th class="py-3.5 px-4">담당자 / 연락처</th>
+                            <th class="py-3.5 px-4">등록 판매물품 목록</th>
+                            <th class="py-3.5 px-4 text-center">주문 건수</th>
+                            <th class="py-3.5 px-4 text-center">상태</th>
+                            <th class="py-3.5 px-4 text-right">상세</th>
+                        </tr>
+                    </thead>
+                    <tbody id="client-table-body" class="divide-y divide-slate-100">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden py-16 text-center px-4">
+                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mx-auto mb-3 text-2xl">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h3 class="text-slate-800 font-semibold text-base sm:text-lg">조회할 거래처 정보가 없습니다</h3>
+                <p class="text-slate-500 text-xs mt-1">검색어를 수정하거나 신규 거래처를 등록해 보세요.</p>
+                <button onclick="openClientModal()" class="mt-4 px-4 py-2.5 text-xs font-semibold text-brand-600 bg-brand-50 rounded-xl hover:bg-brand-100 transition inline-flex items-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-plus"></i> 신규 거래처 추가
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Mobile Quick Bottom Bar & Floating Action Button (FAB) -->
+    <div class="fixed bottom-4 right-4 z-40 md:hidden">
+        <button onclick="openClientModal()" class="w-14 h-14 rounded-full bg-brand-600 text-white shadow-lg shadow-brand-600/40 flex items-center justify-center text-xl active:scale-90 transition">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- Add/Edit Client Modal -->
+    <div id="client-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-building text-brand-600 text-lg"></i>
+                    <h3 id="modal-title" class="font-bold text-slate-900 text-base sm:text-lg">신규 거래처 등록</h3>
+                </div>
+                <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-200/50 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Form Body -->
+            <form id="client-form" onsubmit="saveClient(event)" class="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 ios-scroller">
+                <input type="hidden" id="form-client-id">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Client Name -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">거래처명 <span class="text-red-500">*</span></label>
+                        <input type="text" id="form-name" required placeholder="예: (주)한국글로벌무역" 
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                    </div>
+
+                    <!-- Country -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">국가 <span class="text-red-500">*</span></label>
+                        <input type="text" id="form-country" required placeholder="예: 대한민국, 미국, 일본, 독일" 
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                    </div>
+
+                    <!-- Manager Name -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">담당자 이름 <span class="text-red-500">*</span></label>
+                        <input type="text" id="form-manager" required placeholder="예: 김철수 팀장" 
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">거래 상태</label>
+                        <select id="form-status" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                            <option value="ACTIVE">활성 거래중 (Active)</option>
+                            <option value="PROSPECT">계약 협상중 (Prospect)</option>
+                            <option value="INACTIVE">거래 중단/휴면 (Inactive)</option>
+                        </select>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">이메일 주소 <span class="text-red-500">*</span></label>
+                        <input type="email" id="form-email" required placeholder="contact@company.com" 
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">전화번호 / 연락처 <span class="text-red-500">*</span></label>
+                        <input type="text" id="form-phone" required placeholder="010-1234-5678 / +82 2-123-4567" 
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                    </div>
+                </div>
+
+                <!-- Multiple Products Section -->
+                <div class="border-t border-slate-200 pt-4 mt-2">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-bold text-slate-800">
+                            <i class="fa-solid fa-boxes-stacked text-brand-600 mr-1"></i> 주요 판매/취급 물품 목록 (다중 등록 가능)
+                        </label>
+                        <button type="button" onclick="addProductRow()" class="text-xs text-brand-600 font-semibold hover:underline flex items-center gap-1 py-1">
+                            <i class="fa-solid fa-plus-circle"></i> 물품 추가
+                        </button>
+                    </div>
+                    
+                    <div id="product-rows-container" class="space-y-2">
+                        <!-- Dynamic Product Rows -->
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1.5">* 거래처별로 다수의 물품과 물품별 기준 단가를 등록할 수 있습니다.</p>
+                </div>
+
+                <!-- Notes / Address -->
+                <div class="border-t border-slate-200 pt-3">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">비고 및 메모</label>
+                    <textarea id="form-notes" rows="3" placeholder="거래 조건, 주소, 특이사항, 납기 요청 등 입력..." 
+                        class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white resize-none"></textarea>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="pt-4 border-t border-slate-200 flex items-center justify-end gap-2 pb-safe">
+                    <button type="button" onclick="closeClientModal()" class="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">취소</button>
+                    <button type="submit" class="px-5 py-2.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition shadow-sm active:scale-95">
+                        <i class="fa-solid fa-check mr-1"></i> 저장하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Client Detail & Order History Drawer Modal -->
+    <div id="detail-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-end">
+        <div class="bg-white h-full sm:h-full w-full max-w-2xl shadow-2xl border-l border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out">
+            <!-- Header -->
+            <div class="p-5 sm:p-6 bg-slate-900 text-white flex items-center justify-between pt-safe">
+                <div class="flex items-center gap-3">
+                    <span id="detail-country-flag" class="px-2.5 py-1 bg-slate-800 text-xs font-bold rounded border border-slate-700 text-brand-300 uppercase tracking-wide"></span>
+                    <div>
+                        <h2 id="detail-name" class="text-lg sm:text-xl font-bold leading-tight"></h2>
+                        <p id="detail-manager-sub" class="text-xs text-slate-400 mt-0.5"></p>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5 ios-scroller">
+                
+                <!-- Info Grid -->
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 grid grid-cols-2 gap-3.5 text-xs">
+                    <div>
+                        <span class="text-slate-400 block mb-0.5 font-medium">담당자</span>
+                        <span id="detail-manager" class="text-slate-800 font-semibold text-sm"></span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block mb-0.5 font-medium">거래 상태</span>
+                        <span id="detail-status" class="inline-block"></span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block mb-0.5 font-medium">이메일</span>
+                        <a id="detail-email" href="#" class="text-brand-600 hover:underline font-medium break-all"></a>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block mb-0.5 font-medium">연락처</span>
+                        <a id="detail-phone-link" href="#" class="text-slate-800 font-medium hover:text-brand-600"></a>
+                    </div>
+
+                    <!-- Multi Product Detail List -->
+                    <div class="col-span-2 border-t border-slate-200/80 pt-3 mt-1">
+                        <span class="text-slate-400 block mb-1.5 font-semibold">등록된 판매 물품 목록 및 단가</span>
+                        <div id="detail-products-list" class="flex flex-wrap gap-1.5">
+                            <!-- Dynamic Product Pills -->
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 border-t border-slate-200/80 pt-3">
+                        <span class="text-slate-400 block mb-0.5 font-medium">특이사항 및 메모</span>
+                        <p id="detail-notes" class="text-slate-600 whitespace-pre-line leading-relaxed text-xs"></p>
+                    </div>
+                </div>
+
+                <!-- Order History Section -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-receipt text-brand-600"></i> 주문 및 납품 내역
+                        </h3>
+                        <button onclick="openOrderModal()" class="px-3 py-1.5 text-xs font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-xl transition border border-brand-200 flex items-center gap-1 active:scale-95">
+                            <i class="fa-solid fa-plus text-[10px]"></i> 주문 등록
+                        </button>
+                    </div>
+
+                    <div id="order-history-list" class="space-y-2.5">
+                        <!-- Dynamic Order Cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between pb-safe">
+                <button onclick="deleteCurrentClient()" class="px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-xl transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-trash-can"></i> 삭제
+                </button>
+                <button onclick="editCurrentClient()" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition flex items-center gap-1.5 shadow-xs active:scale-95">
+                    <i class="fa-solid fa-pen-to-square"></i> 정보 수정
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Order Modal -->
+    <div id="order-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-cart-plus text-brand-600"></i> 신규 주문 내역 추가
+                </h3>
+                <button onclick="closeOrderModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveOrder(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">등록 품목 선택</label>
+                    <select id="order-item-select" onchange="onOrderProductSelectChange()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <!-- Dynamic options based on client.products -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">주문 품목명 / 규격 <span class="text-red-500">*</span></label>
+                    <input type="text" id="order-item-name" required placeholder="예: IoT 센서 모듈 100ea" 
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">수량 <span class="text-red-500">*</span></label>
+                        <input type="number" id="order-qty" value="1" min="1" required oninput="calculateOrderTotal()" 
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">단가 ($ USD) <span class="text-red-500">*</span></label>
+                        <input type="number" id="order-unit-price" value="0" min="0" required oninput="calculateOrderTotal()" 
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                </div>
+
+                <div class="p-3 bg-brand-50/70 border border-brand-100 rounded-xl flex items-center justify-between">
+                    <span class="font-semibold text-brand-900">총 주문 금액 합계</span>
+                    <span id="order-total-display" class="font-bold text-brand-700 text-sm sm:text-base">$0</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">주문일자 <span class="text-red-500">*</span></label>
+                        <input type="date" id="order-date" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">진행 상태</label>
+                        <select id="order-status" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="주문접수">주문접수</option>
+                            <option value="진행중" selected>진행중 (생산/배송)</option>
+                            <option value="발송완료">발송완료</option>
+                            <option value="결제완료">결제완료</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeOrderModal()" class="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">취소</button>
+                    <button type="submit" class="px-4 py-2 font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl active:scale-95 shadow-xs">
+                        주문 등록 완료
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Backup & Restore Modal -->
+    <div id="backup-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+                <h3 class="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-brand-600"></i> 데이터 백업 및 복구 관리
+                </h3>
+                <button onclick="closeBackupModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-slate-600">
+                <!-- Option 1: Export JSON -->
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm mb-0.5">1. 전체 데이터 백업 파일 다운로드</h4>
+                        <p class="text-xs text-slate-500">모든 거래처, 품목, 주문 내역 데이터를 JSON 파일로 백업합니다.</p>
+                    </div>
+                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-xs transition shrink-0 active:scale-95 flex items-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> 백업 저장
+                    </button>
+                </div>
+
+                <!-- Option 2: Import JSON -->
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm mb-0.5">2. 백업 파일로 복구하기</h4>
+                        <p class="text-xs text-slate-500">저장해 둔 백업 JSON 파일을 불러와 데이터를 원상 복구합니다.</p>
+                    </div>
+                    <button onclick="triggerJSONImport()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl shadow-xs transition shrink-0 active:scale-95 flex items-center gap-1.5">
+                        <i class="fa-solid fa-upload text-indigo-600"></i> 파일 선택
+                    </button>
+                    <input type="file" id="backup-file-input" accept=".json" onchange="restoreFromJSON(event)" class="hidden">
+                </div>
+
+                <!-- Option 3: Restore Last Auto-Snapshot -->
+                <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-200/80 flex items-center justify-between gap-3">
+                    <div>
+                        <h4 class="font-bold text-amber-900 text-sm mb-0.5"><i class="fa-solid fa-clock-rotate-left mr-1"></i> 실수 직전 자동 복원점</h4>
+                        <p class="text-xs text-amber-700/80" id="snapshot-status-text">수정·삭제 직전의 자동 임시 저장본이 존재합니다.</p>
+                    </div>
+                    <button onclick="restoreAutoSnapshot()" class="px-3.5 py-2 text-xs font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-xl transition shrink-0 active:scale-95 flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> 되돌리기
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-slate-200 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400">* 복구 시 모든 연결된 기기에도 실시간 반영됩니다.</span>
+                <button onclick="closeBackupModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Toast Alert Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
+
+    <!-- Firebase Cloud Database Synchronization Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global State & Initial Data
+        const initialClients = [
+            {
+                id: 'client_101',
+                name: '(주)테크솔루션즈',
+                country: '대한민국',
+                manager: '김민준 이사',
+                email: 'mj.kim@techsolutions.co.kr',
+                phone: '010-3892-1004',
+                products: [
+                    { name: '산업용 IoT 센서 모듈', price: 150 },
+                    { name: '센서 게이트웨이 Hub', price: 280 }
+                ],
+                status: 'ACTIVE',
+                notes: '매월 정기 물량 공급 계약 체결됨. 결제 조건: 익월 15일 현금 결제.',
+                orders: [
+                    { id: 'ord_1', itemName: 'IoT 센서 모듈 (1000EA)', qty: 1000, price: 150, total: 150000, date: '2026-09-15', status: '결제완료' },
+                    { id: 'ord_2', itemName: '센서 게이트웨이 Hub (5EA)', qty: 5, price: 280, total: 1400, date: '2026-09-28', status: '발송완료' }
+                ]
+            },
+            {
+                id: 'client_102',
+                name: 'Apex Global Trade Inc.',
+                country: '미국',
+                manager: 'Robert Chen (VP)',
+                email: 'r.chen@apextrade.us',
+                phone: '+1 (415) 892-3011',
+                products: [
+                    { name: '스마트 가전 컨트롤러 v2.5', price: 350 },
+                    { name: 'Wi-Fi 커넥티드 임베디드 칩', price: 65 }
+                ],
+                status: 'ACTIVE',
+                notes: '북미 유통망 독점 공급 문의 중. 품질 인증 FCC 완료.',
+                orders: [
+                    { id: 'ord_3', itemName: '스마트 가전 컨트롤러 v2.5', qty: 200, price: 350, total: 70000, date: '2026-10-01', status: '진행중' }
+                ]
+            },
+            {
+                id: 'client_103',
+                name: '사쿠라 일렉트로닉스 (Sakura Elec)',
+                country: '일본',
+                manager: 'Tanaka Sato (田中 佐藤)',
+                email: 'sato@sakura-elec.jp',
+                phone: '+81 3-5214-9000',
+                products: [
+                    { name: '고정밀 마이크로 커넥터 A-type', price: 10 },
+                    { name: '마이크로 커넥터 B-type', price: 12 }
+                ],
+                status: 'ACTIVE',
+                notes: '도쿄 지사 배송. 포장 단품 포장 패키지 요구사항 준수 필수.',
+                orders: [
+                    { id: 'ord_4', itemName: '고정밀 마이크로 커넥터 A-type', qty: 10000, price: 10, total: 100000, date: '2026-08-20', status: '결제완료' }
+                ]
+            }
+        ];
+
+        let clients = [];
+        let viewMode = 'card';
+        let activeDetailClientId = null;
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'b2b-crm-default-app';
+
+        // Initialize Firebase Cloud Data
+        async function initCloudSync() {
+            try {
+                if (typeof __firebase_config !== 'undefined') {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        const userCred = await signInWithCustomToken(auth, __initial_auth_token);
+                        currentUser = userCred.user;
+                    } else {
+                        const userCred = await signInAnonymously(auth);
+                        currentUser = userCred.user;
+                    }
+
+                    setupCloudListener();
+                } else {
+                    loadClientsFromLocalStorage();
+                }
+            } catch (e) {
+                console.warn("Cloud Sync Fallback to LocalStorage:", e);
+                loadClientsFromLocalStorage();
+            }
+        }
+
+        function setupCloudListener() {
+            if (!db || !currentUser) return;
+            const clientsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'clients');
+
+            onSnapshot(clientsCollectionRef, (snapshot) => {
+                if (snapshot.empty) {
+                    initialClients.forEach(c => saveClientToCloud(c));
+                    return;
+                }
+
+                clients = [];
+                snapshot.forEach(docSnap => {
+                    clients.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                renderApp();
+                if (activeDetailClientId) {
+                    const currentClientExists = clients.some(c => c.id === activeDetailClientId);
+                    if (currentClientExists) {
+                        openDetailModal(activeDetailClientId);
+                    } else {
+                        closeDetailModal();
+                    }
+                }
+            }, (error) => {
+                console.error("Firestore Listen Error:", error);
+                loadClientsFromLocalStorage();
+            });
+        }
+
+        function loadClientsFromLocalStorage() {
+            const stored = localStorage.getItem('crm_clients_data');
+            if (stored) {
+                try {
+                    clients = JSON.parse(stored);
+                } catch (e) {
+                    clients = [...initialClients];
+                }
+            } else {
+                clients = [...initialClients];
+            }
+            renderApp();
+        }
+
+        async function saveClientToCloud(clientData) {
+            if (db && currentUser) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', clientData.id);
+                await setDoc(docRef, clientData);
+            } else {
+                localStorage.setItem('crm_clients_data', JSON.stringify(clients));
+                renderApp();
+            }
+        }
+
+        async function deleteClientFromCloud(clientId) {
+            if (db && currentUser) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', clientId);
+                await deleteDoc(docRef);
+            } else {
+                clients = clients.filter(c => c.id !== clientId);
+                localStorage.setItem('crm_clients_data', JSON.stringify(clients));
+                renderApp();
+            }
+        }
+
+        // Window Exports for DOM Event Bindings
+        window.renderApp = renderApp;
+        window.setViewMode = setViewMode;
+        window.openClientModal = openClientModal;
+        window.closeClientModal = closeClientModal;
+        window.saveClient = saveClient;
+        window.openDetailModal = openDetailModal;
+        window.closeDetailModal = closeDetailModal;
+        window.editCurrentClient = editCurrentClient;
+        window.deleteCurrentClient = deleteCurrentClient;
+        window.openOrderModal = openOrderModal;
+        window.closeOrderModal = closeOrderModal;
+        window.saveOrder = saveOrder;
+        window.deleteOrder = deleteOrder;
+        window.addProductRow = addProductRow;
+        window.removeProductRow = removeProductRow;
+        window.onOrderProductSelectChange = onOrderProductSelectChange;
+        window.calculateOrderTotal = calculateOrderTotal;
+        window.exportToCSV = exportToCSV;
+        window.openBackupModal = openBackupModal;
+        window.closeBackupModal = closeBackupModal;
+        window.exportJSONBackup = exportJSONBackup;
+        window.triggerJSONImport = triggerJSONImport;
+        window.restoreFromJSON = restoreFromJSON;
+        window.restoreAutoSnapshot = restoreAutoSnapshot;
+
+        function updateCountryFilterOptions() {
+            const filterSelect = document.getElementById('filter-country');
+            if (!filterSelect) return;
+            const currentVal = filterSelect.value || 'ALL';
+            const countries = Array.from(new Set(clients.map(c => c.country).filter(Boolean))).sort();
+            
+            let optionsHTML = '<option value="ALL">전체 국가</option>';
+            countries.forEach(c => {
+                optionsHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`;
+            });
+            filterSelect.innerHTML = optionsHTML;
+            filterSelect.value = countries.includes(currentVal) ? currentVal : 'ALL';
+        }
+
+        function getStatusBadgeHTML(status) {
+            if (status === 'ACTIVE') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>활성 거래중
+                </span>`;
+            } else if (status === 'PROSPECT') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>계약 협상중
+                </span>`;
+            } else {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>거래 중단
+                </span>`;
+            }
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            const cardView = document.getElementById('card-view');
+            const tableView = document.getElementById('table-view');
+            const cardBtn = document.getElementById('view-card-btn');
+            const tableBtn = document.getElementById('view-table-btn');
+
+            if (mode === 'card') {
+                cardView.classList.remove('hidden');
+                tableView.classList.add('hidden');
+                cardBtn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-slate-800 transition";
+                tableBtn.className = "px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 transition";
+            } else {
+                cardView.classList.add('hidden');
+                tableView.classList.remove('hidden');
+                tableBtn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-slate-800 transition";
+                cardBtn.className = "px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 transition";
+            }
+        }
+
+        function getFilteredClients() {
+            const search = document.getElementById('search-input').value.trim().toLowerCase();
+            const countryFilter = document.getElementById('filter-country').value;
+            const statusFilter = document.getElementById('filter-status').value;
+
+            return clients.filter(c => {
+                const productNames = (c.products || []).map(p => p.name.toLowerCase()).join(' ');
+                const matchesSearch = !search || 
+                    c.name.toLowerCase().includes(search) ||
+                    c.manager.toLowerCase().includes(search) ||
+                    productNames.includes(search) ||
+                    c.country.toLowerCase().includes(search) ||
+                    c.email.toLowerCase().includes(search);
+
+                const matchesCountry = countryFilter === 'ALL' || c.country === countryFilter;
+                const matchesStatus = statusFilter === 'ALL' || c.status === statusFilter;
+
+                return matchesSearch && matchesCountry && matchesStatus;
+            });
+        }
+
+        function renderApp() {
+            updateCountryFilterOptions();
+            updateDashboardKPIs();
+
+            const filtered = getFilteredClients();
+            const tableBody = document.getElementById('client-table-body');
+            const cardView = document.getElementById('card-view');
+            const emptyState = document.getElementById('empty-state');
+
+            tableBody.innerHTML = '';
+            cardView.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(client => {
+                const totalOrdersCount = client.orders ? client.orders.length : 0;
+                const statusBadge = getStatusBadgeHTML(client.status);
+                const productsList = client.products && client.products.length > 0 
+                    ? client.products 
+                    : [{ name: '등록물품 없음', price: 0 }];
+
+                // Table Row
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition cursor-pointer group";
+                tr.onclick = (e) => {
+                    if (!e.target.closest('button')) openDetailModal(client.id);
+                };
+
+                const productsBadgeHTML = productsList.slice(0, 2).map(p => `
+                    <span class="inline-block text-[11px] bg-brand-50 text-brand-700 px-2 py-0.5 rounded-md font-semibold border border-brand-100 mr-1 mb-1">
+                        ${escapeHTML(p.name)} ($${Number(p.price).toLocaleString('en-US')})
+                    </span>
+                `).join('') + (productsList.length > 2 ? `<span class="text-[10px] text-slate-400 font-bold">+${productsList.length - 2}개 더보기</span>` : '');
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-bold text-slate-900 group-hover:text-brand-600 transition">
+                        ${escapeHTML(client.name)}
+                    </td>
+                    <td class="py-3.5 px-4 font-medium text-slate-700">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 text-xs text-slate-700 font-semibold border border-slate-200">
+                            <i class="fa-solid fa-earth-asia text-slate-400"></i> ${escapeHTML(client.country)}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-xs">
+                        <div class="font-semibold text-slate-800">${escapeHTML(client.manager)}</div>
+                        <div class="text-slate-500">${escapeHTML(client.phone)}</div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        ${productsBadgeHTML}
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-700">
+                            ${totalOrdersCount}건
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        ${statusBadge}
+                    </td>
+                    <td class="py-3.5 px-4 text-right">
+                        <button onclick="openDetailModal('${client.id}')" class="px-2.5 py-1 text-xs font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-md transition">
+                            상세 <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+
+                // Grid Card
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-brand-300 transition flex flex-col justify-between cursor-pointer active:scale-[0.99]";
+                card.onclick = (e) => {
+                    if (!e.target.closest('button')) openDetailModal(client.id);
+                };
+
+                const cardProductsHTML = productsList.map(p => `
+                    <div class="flex items-center justify-between text-xs py-0.5">
+                        <span class="text-slate-700 font-medium truncate max-w-[170px]">• ${escapeHTML(p.name)}</span>
+                        <span class="font-bold text-slate-900 shrink-0">$${Number(p.price).toLocaleString('en-US')}</span>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2.5">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-600 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
+                                    <i class="fa-solid fa-location-dot mr-1 text-brand-600"></i>${escapeHTML(client.country)}
+                                </span>
+                                <h3 class="font-bold text-slate-900 text-base mt-1.5 leading-snug">${escapeHTML(client.name)}</h3>
+                            </div>
+                            ${statusBadge}
+                        </div>
+
+                        <div class="space-y-1.5 text-xs text-slate-600 border-t border-b border-slate-100 py-2.5 my-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">담당자</span>
+                                <span class="font-semibold text-slate-800">${escapeHTML(client.manager)}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">연락처</span>
+                                <span>${escapeHTML(client.phone)}</span>
+                            </div>
+                            
+                            <div class="pt-1">
+                                <span class="text-[11px] font-semibold text-brand-700 block mb-1">
+                                    <i class="fa-solid fa-boxes-stacked mr-1"></i>판매 물품 목록 (${productsList.length}개)
+                                </span>
+                                <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 space-y-1 max-h-[100px] overflow-y-auto ios-scroller">
+                                    ${cardProductsHTML}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-xs text-slate-500">주문 내역 <b>${totalOrdersCount}</b>건</span>
+                        <button onclick="openDetailModal('${client.id}')" class="px-3.5 py-1.5 text-xs font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-xl transition">
+                            상세보기
+                        </button>
+                    </div>
+                `;
+                cardView.appendChild(card);
+            });
+        }
+
+        function updateDashboardKPIs() {
+            const totalClients = clients.length;
+            const activeClients = clients.filter(c => c.status === 'ACTIVE').length;
+
+            let totalRevenue = 0;
+            let pendingOrdersCount = 0;
+
+            clients.forEach(c => {
+                if (c.orders && Array.isArray(c.orders)) {
+                    c.orders.forEach(o => {
+                        totalRevenue += Number(o.total || 0);
+                        if (o.status === '주문접수' || o.status === '진행중') {
+                            pendingOrdersCount++;
+                        }
+                    });
+                }
+            });
+
+            const uniqueCountries = new Set(clients.map(c => c.country)).size;
+
+            document.getElementById('stat-total-clients').textContent = `${totalClients}개사`;
+            document.getElementById('stat-active-clients').textContent = activeClients;
+            document.getElementById('stat-total-revenue').textContent = `$${totalRevenue.toLocaleString('en-US')}`;
+            document.getElementById('stat-pending-orders').textContent = `${pendingOrdersCount}건`;
+            document.getElementById('stat-total-countries').textContent = `${uniqueCountries}개국`;
+        }
+
+        function addProductRow(name = '', price = '') {
+            const container = document.getElementById('product-rows-container');
+            const rowId = 'prod_row_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+
+            const row = document.createElement('div');
+            row.id = rowId;
+            row.className = "flex items-center gap-2 animate-in fade-in duration-150";
+            row.innerHTML = `
+                <input type="text" placeholder="물품명 (예: 센서 모듈)" value="${escapeHTML(name)}" required
+                    class="product-name-input flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                <input type="number" placeholder="기준 단가($)" value="${price}" required min="0"
+                    class="product-price-input w-28 sm:w-36 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                <button type="button" onclick="removeProductRow('${rowId}')" class="text-slate-400 hover:text-red-500 p-2 transition">
+                    <i class="fa-solid fa-trash-can text-sm"></i>
+                </button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeProductRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) row.remove();
+        }
+
+        function openClientModal(clientId = null) {
+            const modal = document.getElementById('client-modal');
+            const form = document.getElementById('client-form');
+            const title = document.getElementById('modal-title');
+            const productContainer = document.getElementById('product-rows-container');
+
+            form.reset();
+            productContainer.innerHTML = '';
+
+            if (clientId) {
+                const client = clients.find(c => c.id === clientId);
+                if (client) {
+                    title.textContent = '거래처 정보 수정';
+                    document.getElementById('form-client-id').value = client.id;
+                    document.getElementById('form-name').value = client.name || '';
+                    document.getElementById('form-country').value = client.country || '';
+                    document.getElementById('form-manager').value = client.manager || '';
+                    document.getElementById('form-status').value = client.status || 'ACTIVE';
+                    document.getElementById('form-email').value = client.email || '';
+                    document.getElementById('form-phone').value = client.phone || '';
+                    document.getElementById('form-notes').value = client.notes || '';
+
+                    if (client.products && client.products.length > 0) {
+                        client.products.forEach(p => addProductRow(p.name, p.price));
+                    } else {
+                        addProductRow();
+                    }
+                }
+            } else {
+                title.textContent = '신규 거래처 등록';
+                document.getElementById('form-client-id').value = '';
+                addProductRow();
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeClientModal() {
+            document.getElementById('client-modal').classList.add('hidden');
+        }
+
+        async function saveClient(event) {
+            event.preventDefault();
+            createAutoSnapshot();
+
+            const id = document.getElementById('form-client-id').value;
+            const name = document.getElementById('form-name').value.trim();
+            const country = document.getElementById('form-country').value.trim();
+            const manager = document.getElementById('form-manager').value.trim();
+            const status = document.getElementById('form-status').value;
+            const email = document.getElementById('form-email').value.trim();
+            const phone = document.getElementById('form-phone').value.trim();
+            const notes = document.getElementById('form-notes').value.trim();
+
+            const productRows = document.querySelectorAll('#product-rows-container > div');
+            const products = [];
+            productRows.forEach(row => {
+                const pName = row.querySelector('.product-name-input')?.value.trim();
+                const pPrice = Number(row.querySelector('.product-price-input')?.value) || 0;
+                if (pName) {
+                    products.push({ name: pName, price: pPrice });
+                }
+            });
+
+            const existingClient = id ? clients.find(c => c.id === id) : null;
+            const clientData = {
+                id: id || ('client_' + Date.now()),
+                name,
+                country,
+                manager,
+                status,
+                email,
+                phone,
+                notes,
+                products,
+                orders: existingClient ? (existingClient.orders || []) : []
+            };
+
+            await saveClientToCloud(clientData);
+            closeClientModal();
+            showToast('거래처 정보가 실시간 클라우드에 저장되었습니다.', 'success');
+        }
+
+        function openDetailModal(clientId) {
+            activeDetailClientId = clientId;
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+
+            document.getElementById('detail-country-flag').textContent = client.country || 'N/A';
+            document.getElementById('detail-name').textContent = client.name;
+            document.getElementById('detail-manager-sub').textContent = `${client.manager} | ${client.phone}`;
+            document.getElementById('detail-manager').textContent = client.manager;
+            document.getElementById('detail-status').innerHTML = getStatusBadgeHTML(client.status);
+            
+            const emailElem = document.getElementById('detail-email');
+            emailElem.href = `mailto:${client.email}`;
+            emailElem.textContent = client.email;
+
+            const phoneElem = document.getElementById('detail-phone-link');
+            phoneElem.href = `tel:${client.phone}`;
+            phoneElem.textContent = client.phone;
+
+            document.getElementById('detail-notes').textContent = client.notes || '등록된 특이사항 메모가 없습니다.';
+
+            // Render Products Pills
+            const productsContainer = document.getElementById('detail-products-list');
+            if (client.products && client.products.length > 0) {
+                productsContainer.innerHTML = client.products.map(p => `
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 shadow-xs">
+                        <i class="fa-solid fa-box text-brand-500"></i> ${escapeHTML(p.name)} 
+                        <span class="text-brand-600 font-bold ml-0.5">$${Number(p.price).toLocaleString('en-US')}</span>
+                    </span>
+                `).join('');
+            } else {
+                productsContainer.innerHTML = '<span class="text-slate-400 text-xs italic">등록된 취급 물품이 없습니다.</span>';
+            }
+
+            // Render Orders List
+            const ordersContainer = document.getElementById('order-history-list');
+            ordersContainer.innerHTML = '';
+
+            if (client.orders && client.orders.length > 0) {
+                client.orders.forEach(ord => {
+                    let statusBadgeClass = "bg-slate-100 text-slate-700";
+                    if (ord.status === '진행중') statusBadgeClass = "bg-amber-100 text-amber-800 font-bold";
+                    if (ord.status === '결제완료') statusBadgeClass = "bg-emerald-100 text-emerald-800 font-bold";
+                    if (ord.status === '발송완료') statusBadgeClass = "bg-blue-100 text-blue-800 font-bold";
+
+                    const card = document.createElement('div');
+                    card.className = "bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3";
+                    card.innerHTML = `
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 rounded text-[10px] ${statusBadgeClass}">${escapeHTML(ord.status)}</span>
+                                <span class="text-[11px] text-slate-400">${escapeHTML(ord.date)}</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-xs sm:text-sm truncate">${escapeHTML(ord.itemName)}</h4>
+                            <p class="text-[11px] text-slate-500 mt-0.5">수량: ${ord.qty}EA × $${Number(ord.price).toLocaleString('en-US')}</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="font-bold text-slate-900 text-sm block">$${Number(ord.total).toLocaleString('en-US')}</span>
+                            <button onclick="deleteOrder('${ord.id}')" class="text-[11px] text-red-500 hover:underline mt-1">
+                                <i class="fa-solid fa-trash-can"></i> 삭제
+                            </button>
+                        </div>
+                    `;
+                    ordersContainer.appendChild(card);
+                });
+            } else {
+                ordersContainer.innerHTML = `
+                    <div class="p-6 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        <p class="text-slate-400 text-xs">등록된 주문 내역이 없습니다.</p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+            activeDetailClientId = null;
+        }
+
+        function editCurrentClient() {
+            if (!activeDetailClientId) return;
+            const targetId = activeDetailClientId;
+            closeDetailModal();
+            openClientModal(targetId);
+        }
+
+        function deleteCurrentClient() {
+            if (!activeDetailClientId) return;
+            const targetId = activeDetailClientId;
+            showToastConfirm('이 거래처를 삭제하시겠습니까? 삭제 시 모든 기기에서 동기화되어 제거됩니다.', async () => {
+                createAutoSnapshot();
+                await deleteClientFromCloud(targetId);
+                closeDetailModal();
+                showToast('거래처가 삭제되었습니다.', 'success');
+            });
+        }
+
+        function openOrderModal() {
+            if (!activeDetailClientId) return;
+            const client = clients.find(c => c.id === activeDetailClientId);
+            if (!client) return;
+
+            const selectElem = document.getElementById('order-item-select');
+            selectElem.innerHTML = '<option value="">-- 등록된 물품 직접 선택 (선택 시 자동입력) --</option>';
+
+            if (client.products && client.products.length > 0) {
+                client.products.forEach((p, idx) => {
+                    selectElem.innerHTML += `<option value="${idx}">${escapeHTML(p.name)} ($${p.price})</option>`;
+                });
+            }
+
+            document.getElementById('order-item-name').value = '';
+            document.getElementById('order-qty').value = 1;
+            document.getElementById('order-unit-price').value = 0;
+            document.getElementById('order-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('order-status').value = '진행중';
+
+            calculateOrderTotal();
+            document.getElementById('order-modal').classList.remove('hidden');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+
+        function onOrderProductSelectChange() {
+            if (!activeDetailClientId) return;
+            const client = clients.find(c => c.id === activeDetailClientId);
+            if (!client || !client.products) return;
+
+            const selectVal = document.getElementById('order-item-select').value;
+            if (selectVal !== '') {
+                const selectedProd = client.products[selectVal];
+                if (selectedProd) {
+                    document.getElementById('order-item-name').value = selectedProd.name;
+                    document.getElementById('order-unit-price').value = selectedProd.price;
+                    calculateOrderTotal();
+                }
+            }
+        }
+
+        function calculateOrderTotal() {
+            const qty = Number(document.getElementById('order-qty').value) || 0;
+            const price = Number(document.getElementById('order-unit-price').value) || 0;
+            const total = qty * price;
+            document.getElementById('order-total-display').textContent = `$${total.toLocaleString('en-US')}`;
+        }
+
+        async function saveOrder(event) {
+            event.preventDefault();
+            if (!activeDetailClientId) return;
+
+            const client = clients.find(c => c.id === activeDetailClientId);
+            if (!client) return;
+
+            createAutoSnapshot();
+
+            const itemName = document.getElementById('order-item-name').value.trim();
+            const qty = Number(document.getElementById('order-qty').value) || 1;
+            const price = Number(document.getElementById('order-unit-price').value) || 0;
+            const date = document.getElementById('order-date').value;
+            const status = document.getElementById('order-status').value;
+            const total = qty * price;
+
+            if (!client.orders) client.orders = [];
+
+            client.orders.unshift({
+                id: 'ord_' + Date.now(),
+                itemName,
+                qty,
+                price,
+                total,
+                date,
+                status
+            });
+
+            await saveClientToCloud(client);
+            closeOrderModal();
+            showToast('신규 주문이 등록되어 모든 기기에 동기화되었습니다.', 'success');
+        }
+
+        async function deleteOrder(orderId) {
+            if (!activeDetailClientId) return;
+            showToastConfirm('이 주문 내역을 삭제하시겠습니까?', async () => {
+                createAutoSnapshot();
+                const client = clients.find(c => c.id === activeDetailClientId);
+                if (client && client.orders) {
+                    client.orders = client.orders.filter(o => o.id !== orderId);
+                    await saveClientToCloud(client);
+                    showToast('주문 내역이 삭제되었습니다.', 'success');
+                }
+            });
+        }
+
+        function createAutoSnapshot() {
+            try {
+                const snapshotData = {
+                    timestamp: new Date().toLocaleTimeString(),
+                    data: JSON.parse(JSON.stringify(clients))
+                };
+                localStorage.setItem('crm_auto_snapshot', JSON.stringify(snapshotData));
+            } catch (e) {
+                console.warn('Snapshot error:', e);
+            }
+        }
+
+        function openBackupModal() {
+            const snapshotStr = localStorage.getItem('crm_auto_snapshot');
+            const statusElem = document.getElementById('snapshot-status-text');
+            if (snapshotStr) {
+                try {
+                    const snap = JSON.parse(snapshotStr);
+                    statusElem.textContent = `최근 자동 저장시각: ${snap.timestamp} (수정/삭제 전 복원 가능)`;
+                } catch(e) {
+                    statusElem.textContent = '저장된 백업 포인트가 있습니다.';
+                }
+            } else {
+                statusElem.textContent = '수정 및 삭제 시 자동으로 생성됩니다.';
+            }
+            document.getElementById('backup-modal').classList.remove('hidden');
+        }
+
+        function closeBackupModal() {
+            document.getElementById('backup-modal').classList.add('hidden');
+        }
+
+        function exportJSONBackup() {
+            if (clients.length === 0) {
+                showToast('백업할 데이터가 없습니다.', 'error');
+                return;
+            }
+            const backupPayload = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                clientsCount: clients.length,
+                clients: clients
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `CRM_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+
+            showToast('전체 백업 파일(.json)이 다운로드 되었습니다.', 'success');
+        }
+
+        function triggerJSONImport() {
+            document.getElementById('backup-file-input').click();
+        }
+
+        function restoreFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    let newClients = [];
+
+                    if (Array.isArray(importedData)) {
+                        newClients = importedData;
+                    } else if (importedData && Array.isArray(importedData.clients)) {
+                        newClients = importedData.clients;
+                    } else {
+                        throw new Error('올바르지 않은 백업 파일 형식입니다.');
+                    }
+
+                    showToastConfirm(`선택한 백업 데이터(${newClients.length}개사)로 전체 데이터를 교체 복구하시겠습니까?`, async () => {
+                        createAutoSnapshot();
+                        
+                        if (db && currentUser) {
+                            for (const c of clients) {
+                                await deleteClientFromCloud(c.id);
+                            }
+                            for (const c of newClients) {
+                                await saveClientToCloud(c);
+                            }
+                        } else {
+                            clients = newClients;
+                            localStorage.setItem('crm_clients_data', JSON.stringify(clients));
+                            renderApp();
+                        }
+
+                        closeBackupModal();
+                        showToast('백업 데이터 복구가 완료되었습니다!', 'success');
+                    });
+                } catch (err) {
+                    showToast('백업 파일을 읽는 도중 오류가 발생했습니다: ' + err.message, 'error');
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        async function restoreAutoSnapshot() {
+            const snapshotStr = localStorage.getItem('crm_auto_snapshot');
+            if (!snapshotStr) {
+                showToast('복원할 자동 스냅샷 데이터가 존재하지 않습니다.', 'error');
+                return;
+            }
+
+            try {
+                const snap = JSON.parse(snapshotStr);
+                const restoredClients = snap.data;
+
+                showToastConfirm(`최근 저장 포인트(${snap.timestamp})로 데이터를 되돌리시겠습니까?`, async () => {
+                    if (db && currentUser) {
+                        for (const c of clients) {
+                            await deleteClientFromCloud(c.id);
+                        }
+                        for (const c of restoredClients) {
+                            await saveClientToCloud(c);
+                        }
+                    } else {
+                        clients = restoredClients;
+                        localStorage.setItem('crm_clients_data', JSON.stringify(clients));
+                        renderApp();
+                    }
+                    closeBackupModal();
+                    showToast('이전 자동 복원점으로 데이터가 복구되었습니다.', 'success');
+                });
+            } catch (e) {
+                showToast('스냅샷 복구에 실패했습니다.', 'error');
+            }
+        }
+
+        function exportToCSV() {
+            if (clients.length === 0) {
+                showToast('내보낼 거래처 데이터가 없습니다.', 'error');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "거래처명,국가,담당자,이메일,전화번호,판매물품목록,거래상태,주문건수,메모\n";
+
+            clients.forEach(c => {
+                const prodStr = (c.products || []).map(p => `${p.name}($${p.price})`).join('; ');
+                const row = [
+                    `"${c.name.replace(/"/g, '""')}"`,
+                    `"${c.country.replace(/"/g, '""')}"`,
+                    `"${c.manager.replace(/"/g, '""')}"`,
+                    `"${c.email.replace(/"/g, '""')}"`,
+                    `"${c.phone.replace(/"/g, '""')}"`,
+                    `"${prodStr.replace(/"/g, '""')}"`,
+                    `"${c.status}"`,
+                    c.orders ? c.orders.length : 0,
+                    `"${(c.notes || '').replace(/"/g, '""')}"`
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `거래처_목록_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('CSV 엑셀 파일이 다운로드 되었습니다.', 'success');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = "bg-slate-900 text-white";
+            let icon = "fa-circle-info text-blue-400";
+
+            if (type === 'success') {
+                bgClass = "bg-slate-900 text-white border-l-4 border-emerald-500";
+                icon = "fa-circle-check text-emerald-400";
+            } else if (type === 'error') {
+                bgClass = "bg-slate-900 text-white border-l-4 border-red-500";
+                icon = "fa-circle-exclamation text-red-400";
+            }
+
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs font-semibold ${bgClass} transition duration-300 transform translate-y-2 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i> <span>${escapeHTML(message)}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showToastConfirm(message, onConfirm) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            toast.className = "pointer-events-auto bg-slate-900 text-white p-4 rounded-2xl shadow-2xl text-xs flex flex-col gap-3 border border-slate-700 min-w-[260px]";
+            toast.innerHTML = `
+                <div class="flex items-center gap-2 font-bold text-amber-400">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 확인 요청
+                </div>
+                <p class="text-slate-200">${escapeHTML(message)}</p>
+                <div class="flex items-center justify-end gap-2 pt-1">
+                    <button id="confirm-cancel-btn" class="px-3 py-1.5 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">취소</button>
+                    <button id="confirm-ok-btn" class="px-3 py-1.5 text-[11px] bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl active:scale-95">삭제 실행</button>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            toast.querySelector('#confirm-cancel-btn').onclick = () => toast.remove();
+            toast.querySelector('#confirm-ok-btn').onclick = () => {
+                toast.remove();
+                onConfirm();
+            };
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Initialize App on load
+        initCloudSync();
+    </script>
+</body>
+</html>
