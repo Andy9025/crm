@@ -114,10 +114,10 @@
             </div>
 
             <!-- 동기화 버튼 영역: 사파리에서 누르기 편하도록 크기와 여백 최적화 -->
-            <div class="flex items-center gap-2">
-                <button onclick="forceRecoverLocalData()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-white bg-slate-800 rounded-xl hover:bg-slate-900 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="PC 로컬 데이터 강제 복구">
-                    <i class="fa-solid fa-life-ring text-amber-400 animate-pulse"></i>
-                    <span class="font-extrabold hidden sm:inline">PC 데이터 강제 복구</span>
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button onclick="forceRecoverLocalData()" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-extrabold text-white bg-red-600 rounded-xl hover:bg-red-700 transition inline-flex items-center gap-1.5 shadow-lg border-2 border-red-300 animate-pulse whitespace-nowrap" title="PC 로컬 데이터 강제 복구">
+                    <i class="fa-solid fa-life-ring text-amber-200"></i>
+                    <span>PC 데이터 복구</span>
                 </button>
                 <button onclick="manualCloudSync()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="클라우드 동기화 새로고침">
                     <i class="fa-solid fa-cloud text-caos-red" id="sync-icon"></i>
