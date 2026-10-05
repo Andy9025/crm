@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>스마트 거래처 관리 시스템 (B2B Client CRM)</title>
+    <title>CAOS 거래처 관리 시스템 (B2B Client CRM)</title>
+    
+    <!-- iOS Web App & Touch Icon -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CAOS CRM">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/000000/microchip.png">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts (Inter & Noto Sans KR) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
     <script>
         tailwind.config = {
             theme: {
@@ -18,21 +26,26 @@
                         sans: ['Inter', 'Noto Sans KR', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
                     },
                     colors: {
+                        caos: {
+                            red: '#E50012',
+                            darkred: '#C0000F',
+                            lightred: '#FFF0F1',
+                        },
                         brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            900: '#1e3a8a',
+                            50: '#fff0f1',
+                            100: '#ffe1e3',
+                            500: '#e50012',
+                            600: '#c0000f',
+                            700: '#9e000b',
+                            900: '#630005',
                         }
                     }
                 }
             }
         }
     </script>
+    
     <style>
-        /* iOS smooth scrolling & custom scrollbars */
         * {
             -webkit-tap-highlight-color: transparent;
         }
@@ -51,45 +64,64 @@
             border-radius: 4px;
         }
         .modal-backdrop {
-            background-color: rgba(15, 23, 42, 0.6);
+            background-color: rgba(15, 23, 42, 0.65);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
         }
         .ios-scroller {
             -webkit-overflow-scrolling: touch;
         }
+        .caos-gradient-btn {
+            background: linear-gradient(135deg, #E50012 0%, #B8000E 100%);
+        }
+        .caos-gradient-btn:hover {
+            background: linear-gradient(135deg, #FF1A2D 0%, #D00010 100%);
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col pb-16 md:pb-0 select-none md:select-text">
 
     <!-- Top Header -->
-    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-xs pt-safe">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-                    <i class="fa-solid fa-briefcase text-base sm:text-lg"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="font-bold text-slate-900 text-base sm:text-xl leading-tight">글로벌 거래처 CRM</h1>
-                        <span id="sync-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 동기화
-                        </span>
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-xs pt-safe">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            
+            <!-- CAOS Official Brand Logo -->
+            <div class="flex items-center gap-3">
+                <a href="#" class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 group">
+                    <div class="h-8 sm:h-11 flex items-center">
+                        <svg class="h-7 sm:h-10 w-auto" viewBox="0 0 380 95" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- C -->
+                            <path d="M12 20 C12 10 20 6 30 6 L92 6 C100 6 104 10 104 18 L104 28 C104 32 98 34 90 34 L36 34 C28 34 26 38 26 44 L26 52 C26 58 28 62 36 62 L90 62 C98 62 104 64 104 68 L104 78 C104 86 98 90 88 90 L30 90 C18 90 12 84 12 72 Z" fill="#E50012"/>
+                            <!-- A -->
+                            <path d="M120 90 L152 10 C154 6 160 6 164 10 L196 90 L174 90 L168 74 L146 74 L140 90 Z M152 56 L162 56 L157 40 Z" fill="#E50012"/>
+                            <!-- O -->
+                            <path d="M208 20 C208 10 216 6 228 6 L272 6 C284 6 292 10 292 20 L292 76 C292 86 284 90 272 90 L228 90 C216 90 208 86 208 76 Z M232 34 L268 34 L268 62 L232 62 Z" fill="#E50012"/>
+                            <!-- S -->
+                            <path d="M304 20 C304 10 312 6 324 6 L372 6 C380 6 384 10 384 18 L384 28 C384 32 378 34 370 34 L328 34 C322 34 320 36 320 40 L320 42 C320 46 322 48 328 48 L368 48 C378 48 384 52 384 62 L384 76 C384 86 376 90 364 90 L316 90 C308 90 304 86 304 78 L304 68 C304 64 310 62 318 62 L358 62 C364 62 366 60 366 56 L366 54 C366 50 364 48 358 48 L320 48 C310 48 304 42 304 32 Z" fill="#E50012"/>
+                        </svg>
                     </div>
-                    <p class="text-[11px] text-slate-500 hidden sm:block">Client & Order Management System</p>
-                </div>
+                    <div class="border-l border-slate-300 pl-2.5 hidden sm:block">
+                        <p class="text-[10px] font-bold text-slate-800 tracking-wider uppercase leading-tight">Creative Applications Of Sensor</p>
+                        <p class="text-[11px] font-extrabold text-caos-red tracking-tight">거래처 관리 시스템 (CRM)</p>
+                    </div>
+                </a>
             </div>
 
+            <!-- Header Action Controls -->
             <div class="flex items-center gap-2">
-                <button onclick="openBackupModal()" class="px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95">
-                    <i class="fa-solid fa-floppy-disk text-brand-600 text-sm"></i>
+                <span id="sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 클라우드 동기화
+                </span>
+
+                <button onclick="openBackupModal()" class="px-3 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
+                    <i class="fa-solid fa-floppy-disk text-caos-red text-sm"></i>
                     <span class="hidden sm:inline">백업 / 복구</span>
                 </button>
-                <button onclick="exportToCSV()" class="px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95">
+                <button onclick="exportToCSV()" class="px-3 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 active:scale-95 shadow-xs">
                     <i class="fa-solid fa-file-csv text-emerald-600 text-sm"></i>
                     <span class="hidden sm:inline">CSV 내보내기</span>
                 </button>
-                <button onclick="openClientModal()" class="hidden md:flex px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition items-center gap-2 shadow-sm active:scale-95">
+                <button onclick="openClientModal()" class="hidden md:flex px-4 py-2 text-xs sm:text-sm font-bold text-white caos-gradient-btn rounded-xl transition items-center gap-2 shadow-caos active:scale-95">
                     <i class="fa-solid fa-plus"></i>
                     <span>신규 거래처 등록</span>
                 </button>
@@ -105,11 +137,11 @@
             <!-- Total Clients Card -->
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">총 관리 거래처</p>
-                    <p id="stat-total-clients" class="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">0개사</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5"><span id="stat-active-clients" class="text-emerald-600 font-semibold">0</span>개 활성 거래</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 tracking-wider uppercase">총 관리 거래처</p>
+                    <p id="stat-total-clients" class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">0개사</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5"><span id="stat-active-clients" class="text-emerald-600 font-extrabold">0</span>개 활성 거래중</p>
                 </div>
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center text-lg sm:text-xl">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-50 text-caos-red flex items-center justify-center text-lg sm:text-xl shadow-xs">
                     <i class="fa-solid fa-building-user"></i>
                 </div>
             </div>
@@ -117,23 +149,23 @@
             <!-- Total Revenue Card -->
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">총 누적 주문액</p>
-                    <p id="stat-total-revenue" class="text-lg sm:text-2xl font-bold text-slate-900 mt-0.5 truncate max-w-[130px] sm:max-w-none">$0</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">누적 매출 합계</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 tracking-wider uppercase">총 누적 주문액</p>
+                    <p id="stat-total-revenue" class="text-lg sm:text-2xl font-black text-slate-900 mt-0.5 truncate max-w-[130px] sm:max-w-none">$0</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">누적 매출 합계 ($ USD)</p>
                 </div>
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg sm:text-xl">
-                    <i class="fa-solid fa-coins"></i>
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg sm:text-xl shadow-xs">
+                    <i class="fa-solid fa-[#E50012] fa-dollar-sign"></i>
                 </div>
             </div>
 
             <!-- Active Orders Card -->
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">진행 중 주문건</p>
-                    <p id="stat-pending-orders" class="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">0건</p>
-                    <p class="text-[11px] text-amber-600 font-medium mt-0.5">생산/배송 진행 중</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 tracking-wider uppercase">진행 중 주문건</p>
+                    <p id="stat-pending-orders" class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">0건</p>
+                    <p class="text-[11px] text-amber-600 font-bold mt-0.5">생산/배송 진행 중</p>
                 </div>
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg sm:text-xl">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg sm:text-xl shadow-xs">
                     <i class="fa-solid fa-boxes-packing"></i>
                 </div>
             </div>
@@ -141,11 +173,11 @@
             <!-- Export Countries Card -->
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">진출 국가 수</p>
-                    <p id="stat-total-countries" class="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">0개국</p>
-                    <p class="text-[11px] text-indigo-600 font-medium mt-0.5">글로벌 커버리지</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 tracking-wider uppercase">진출 국가 수</p>
+                    <p id="stat-total-countries" class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">0개국</p>
+                    <p class="text-[11px] text-indigo-600 font-bold mt-0.5">글로벌 커버리지</p>
                 </div>
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg sm:text-xl">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg sm:text-xl shadow-xs">
                     <i class="fa-solid fa-earth-americas"></i>
                 </div>
             </div>
@@ -157,18 +189,18 @@
             <div class="relative flex-1">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                 <input type="text" id="search-input" oninput="renderApp()" placeholder="거래처명, 담당자, 판매물품, 국가 검색..." 
-                    class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                    class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white transition">
             </div>
 
             <!-- Filters -->
             <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 ios-scroller">
                 <!-- Country Filter -->
-                <select id="filter-country" onchange="renderApp()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 min-w-[110px]">
+                <select id="filter-country" onchange="renderApp()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red text-slate-700 min-w-[110px]">
                     <option value="ALL">전체 국가</option>
                 </select>
 
                 <!-- Status Filter -->
-                <select id="filter-status" onchange="renderApp()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 min-w-[120px]">
+                <select id="filter-status" onchange="renderApp()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red text-slate-700 min-w-[120px]">
                     <option value="ALL">전체 거래상태</option>
                     <option value="ACTIVE">활성 거래중</option>
                     <option value="PROSPECT">계약 협상중</option>
@@ -177,10 +209,10 @@
 
                 <!-- View Toggle buttons -->
                 <div class="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200 shrink-0">
-                    <button id="view-card-btn" onclick="setViewMode('card')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-slate-800 transition">
-                        <i class="fa-solid fa-table-cells-large mr-1"></i> 카드
+                    <button id="view-card-btn" onclick="setViewMode('card')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-white shadow-xs text-slate-900 transition">
+                        <i class="fa-solid fa-table-cells-large mr-1 text-caos-red"></i> 카드
                     </button>
-                    <button id="view-table-btn" onclick="setViewMode('table')" class="px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 transition">
+                    <button id="view-table-btn" onclick="setViewMode('table')" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
                         <i class="fa-solid fa-list mr-1"></i> 표
                     </button>
                 </div>
@@ -189,16 +221,16 @@
 
         <!-- Main Client List Container -->
         <section id="clients-container" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex-1">
-            <!-- Card View Grid (Default for iPhone/Mobile friendliness) -->
+            <!-- Card View Grid -->
             <div id="card-view" class="p-3 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
                 <!-- Dynamic Cards -->
             </div>
 
             <!-- Table View -->
             <div id="table-view" class="hidden overflow-x-auto ios-scroller">
-                <table class="w-full text-left text-sm border-collapse min-w-[700px]">
+                <table class="w-full text-left text-sm border-collapse min-w-[750px]">
                     <thead>
-                        <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold text-xs uppercase tracking-wider">
+                        <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-wider">
                             <th class="py-3.5 px-4">거래처명</th>
                             <th class="py-3.5 px-4">국가</th>
                             <th class="py-3.5 px-4">담당자 / 연락처</th>
@@ -216,12 +248,12 @@
 
             <!-- Empty State -->
             <div id="empty-state" class="hidden py-16 text-center px-4">
-                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mx-auto mb-3 text-2xl">
+                <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-caos-red mx-auto mb-3 text-2xl">
                     <i class="fa-solid fa-folder-open"></i>
                 </div>
-                <h3 class="text-slate-800 font-semibold text-base sm:text-lg">조회할 거래처 정보가 없습니다</h3>
+                <h3 class="text-slate-800 font-bold text-base sm:text-lg">조회할 거래처 정보가 없습니다</h3>
                 <p class="text-slate-500 text-xs mt-1">검색어를 수정하거나 신규 거래처를 등록해 보세요.</p>
-                <button onclick="openClientModal()" class="mt-4 px-4 py-2.5 text-xs font-semibold text-brand-600 bg-brand-50 rounded-xl hover:bg-brand-100 transition inline-flex items-center gap-2 active:scale-95">
+                <button onclick="openClientModal()" class="mt-4 px-4 py-2.5 text-xs font-bold text-caos-red bg-red-50 rounded-xl hover:bg-red-100 transition inline-flex items-center gap-2 active:scale-95 border border-red-200">
                     <i class="fa-solid fa-plus"></i> 신규 거래처 추가
                 </button>
             </div>
@@ -229,9 +261,9 @@
 
     </main>
 
-    <!-- Mobile Quick Bottom Bar & Floating Action Button (FAB) -->
+    <!-- Mobile Quick Bottom Bar & FAB -->
     <div class="fixed bottom-4 right-4 z-40 md:hidden">
-        <button onclick="openClientModal()" class="w-14 h-14 rounded-full bg-brand-600 text-white shadow-lg shadow-brand-600/40 flex items-center justify-center text-xl active:scale-90 transition">
+        <button onclick="openClientModal()" class="w-14 h-14 rounded-full caos-gradient-btn text-white shadow-caos flex items-center justify-center text-xl active:scale-90 transition">
             <i class="fa-solid fa-plus"></i>
         </button>
     </div>
@@ -242,8 +274,8 @@
             <!-- Modal Header -->
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-building text-brand-600 text-lg"></i>
-                    <h3 id="modal-title" class="font-bold text-slate-900 text-base sm:text-lg">신규 거래처 등록</h3>
+                    <i class="fa-solid fa-building text-caos-red text-lg"></i>
+                    <h3 id="modal-title" class="font-extrabold text-slate-900 text-base sm:text-lg">신규 거래처 등록</h3>
                 </div>
                 <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-200/50 transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -255,49 +287,43 @@
                 <input type="hidden" id="form-client-id">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Client Name -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">거래처명 <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">거래처명 <span class="text-red-500">*</span></label>
                         <input type="text" id="form-name" required placeholder="예: (주)한국글로벌무역" 
-                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
                     </div>
 
-                    <!-- Country -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">국가 <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">국가 <span class="text-red-500">*</span></label>
                         <input type="text" id="form-country" required placeholder="예: 대한민국, 미국, 일본, 독일" 
-                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
                     </div>
 
-                    <!-- Manager Name -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">담당자 이름 <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">담당자 이름 <span class="text-red-500">*</span></label>
                         <input type="text" id="form-manager" required placeholder="예: 김철수 팀장" 
-                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
                     </div>
 
-                    <!-- Status -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">거래 상태</label>
-                        <select id="form-status" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">거래 상태</label>
+                        <select id="form-status" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
                             <option value="ACTIVE">활성 거래중 (Active)</option>
                             <option value="PROSPECT">계약 협상중 (Prospect)</option>
                             <option value="INACTIVE">거래 중단/휴면 (Inactive)</option>
                         </select>
                     </div>
 
-                    <!-- Email -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">이메일 주소 <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">이메일 주소 <span class="text-red-500">*</span></label>
                         <input type="email" id="form-email" required placeholder="contact@company.com" 
-                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
                     </div>
 
-                    <!-- Phone -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">전화번호 / 연락처 <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">전화번호 / 연락처 <span class="text-red-500">*</span></label>
                         <input type="text" id="form-phone" required placeholder="010-1234-5678 / +82 2-123-4567" 
-                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
                     </div>
                 </div>
 
@@ -305,9 +331,9 @@
                 <div class="border-t border-slate-200 pt-4 mt-2">
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-xs font-bold text-slate-800">
-                            <i class="fa-solid fa-boxes-stacked text-brand-600 mr-1"></i> 주요 판매/취급 물품 목록 (다중 등록 가능)
+                            <i class="fa-solid fa-boxes-stacked text-caos-red mr-1"></i> 주요 판매/취급 물품 목록 (다중 등록 및 단가 $ USD 설정)
                         </label>
-                        <button type="button" onclick="addProductRow()" class="text-xs text-brand-600 font-semibold hover:underline flex items-center gap-1 py-1">
+                        <button type="button" onclick="addProductRow()" class="text-xs text-caos-red font-bold hover:underline flex items-center gap-1 py-1">
                             <i class="fa-solid fa-plus-circle"></i> 물품 추가
                         </button>
                     </div>
@@ -315,20 +341,18 @@
                     <div id="product-rows-container" class="space-y-2">
                         <!-- Dynamic Product Rows -->
                     </div>
-                    <p class="text-[11px] text-slate-400 mt-1.5">* 거래처별로 다수의 물품과 물품별 기준 단가를 등록할 수 있습니다.</p>
+                    <p class="text-[11px] text-slate-400 mt-1.5">* 거래처별로 다수의 센서/물품과 물품별 기준 단가($ USD)를 등록할 수 있습니다.</p>
                 </div>
 
-                <!-- Notes / Address -->
-                <div class="border-t border-slate-200 pt-3">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">비고 및 메모</label>
-                    <textarea id="form-notes" rows="3" placeholder="거래 조건, 주소, 특이사항, 납기 요청 등 입력..." 
-                        class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white resize-none"></textarea>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">비고 및 메모</label>
+                    <textarea id="form-notes" rows="3" placeholder="거래 조건, 특이사항, 납기 요청 등 입력..." 
+                        class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white resize-none"></textarea>
                 </div>
 
-                <!-- Footer Buttons -->
                 <div class="pt-4 border-t border-slate-200 flex items-center justify-end gap-2 pb-safe">
-                    <button type="button" onclick="closeClientModal()" class="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">취소</button>
-                    <button type="submit" class="px-5 py-2.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition shadow-sm active:scale-95">
+                    <button type="button" onclick="closeClientModal()" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition">취소</button>
+                    <button type="submit" class="px-5 py-2.5 text-xs font-bold text-white caos-gradient-btn rounded-xl transition shadow-caos active:scale-95">
                         <i class="fa-solid fa-check mr-1"></i> 저장하기
                     </button>
                 </div>
@@ -336,13 +360,12 @@
         </div>
     </div>
 
-    <!-- Client Detail & Order History Drawer Modal -->
+    <!-- Client Detail Drawer Modal -->
     <div id="detail-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-end">
         <div class="bg-white h-full sm:h-full w-full max-w-2xl shadow-2xl border-l border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out">
-            <!-- Header -->
             <div class="p-5 sm:p-6 bg-slate-900 text-white flex items-center justify-between pt-safe">
                 <div class="flex items-center gap-3">
-                    <span id="detail-country-flag" class="px-2.5 py-1 bg-slate-800 text-xs font-bold rounded border border-slate-700 text-brand-300 uppercase tracking-wide"></span>
+                    <span id="detail-country-flag" class="px-2.5 py-1 bg-slate-800 text-xs font-bold rounded border border-slate-700 text-red-400 uppercase tracking-wide"></span>
                     <div>
                         <h2 id="detail-name" class="text-lg sm:text-xl font-bold leading-tight"></h2>
                         <p id="detail-manager-sub" class="text-xs text-slate-400 mt-0.5"></p>
@@ -353,14 +376,11 @@
                 </button>
             </div>
 
-            <!-- Content Area -->
             <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5 ios-scroller">
-                
-                <!-- Info Grid -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 grid grid-cols-2 gap-3.5 text-xs">
                     <div>
                         <span class="text-slate-400 block mb-0.5 font-medium">담당자</span>
-                        <span id="detail-manager" class="text-slate-800 font-semibold text-sm"></span>
+                        <span id="detail-manager" class="text-slate-800 font-bold text-sm"></span>
                     </div>
                     <div>
                         <span class="text-slate-400 block mb-0.5 font-medium">거래 상태</span>
@@ -368,16 +388,15 @@
                     </div>
                     <div>
                         <span class="text-slate-400 block mb-0.5 font-medium">이메일</span>
-                        <a id="detail-email" href="#" class="text-brand-600 hover:underline font-medium break-all"></a>
+                        <a id="detail-email" href="#" class="text-caos-red hover:underline font-bold break-all"></a>
                     </div>
                     <div>
                         <span class="text-slate-400 block mb-0.5 font-medium">연락처</span>
-                        <a id="detail-phone-link" href="#" class="text-slate-800 font-medium hover:text-brand-600"></a>
+                        <a id="detail-phone-link" href="#" class="text-slate-800 font-bold hover:text-caos-red"></a>
                     </div>
 
-                    <!-- Multi Product Detail List -->
                     <div class="col-span-2 border-t border-slate-200/80 pt-3 mt-1">
-                        <span class="text-slate-400 block mb-1.5 font-semibold">등록된 판매 물품 목록 및 단가</span>
+                        <span class="text-slate-400 block mb-1.5 font-bold">등록된 취급 물품 및 단가 ($ USD)</span>
                         <div id="detail-products-list" class="flex flex-wrap gap-1.5">
                             <!-- Dynamic Product Pills -->
                         </div>
@@ -393,9 +412,9 @@
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-receipt text-brand-600"></i> 주문 및 납품 내역
+                            <i class="fa-solid fa-receipt text-caos-red"></i> 주문 및 납품 내역
                         </h3>
-                        <button onclick="openOrderModal()" class="px-3 py-1.5 text-xs font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-xl transition border border-brand-200 flex items-center gap-1 active:scale-95">
+                        <button onclick="openOrderModal()" class="px-3 py-1.5 text-xs font-bold text-caos-red bg-red-50 hover:bg-red-100 rounded-xl transition border border-red-200 flex items-center gap-1 active:scale-95">
                             <i class="fa-solid fa-plus text-[10px]"></i> 주문 등록
                         </button>
                     </div>
@@ -406,12 +425,11 @@
                 </div>
             </div>
 
-            <!-- Footer Action -->
             <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between pb-safe">
-                <button onclick="deleteCurrentClient()" class="px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-xl transition flex items-center gap-1.5">
+                <button onclick="deleteCurrentClient()" class="px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition flex items-center gap-1.5">
                     <i class="fa-solid fa-trash-can"></i> 삭제
                 </button>
-                <button onclick="editCurrentClient()" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition flex items-center gap-1.5 shadow-xs active:scale-95">
+                <button onclick="editCurrentClient()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition flex items-center gap-1.5 shadow-xs active:scale-95">
                     <i class="fa-solid fa-pen-to-square"></i> 정보 수정
                 </button>
             </div>
@@ -423,7 +441,7 @@
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                 <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
-                    <i class="fa-solid fa-cart-plus text-brand-600"></i> 신규 주문 내역 추가
+                    <i class="fa-solid fa-cart-plus text-caos-red"></i> 신규 주문 내역 추가
                 </h3>
                 <button onclick="closeOrderModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -432,44 +450,44 @@
 
             <form onsubmit="saveOrder(event)" class="space-y-3 text-xs">
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">등록 품목 선택</label>
-                    <select id="order-item-select" onchange="onOrderProductSelectChange()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <!-- Dynamic options based on client.products -->
+                    <label class="block font-bold text-slate-700 mb-1">등록 품목 선택</label>
+                    <select id="order-item-select" onchange="onOrderProductSelectChange()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
+                        <!-- Dynamic options -->
                     </select>
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">주문 품목명 / 규격 <span class="text-red-500">*</span></label>
-                    <input type="text" id="order-item-name" required placeholder="예: IoT 센서 모듈 100ea" 
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <label class="block font-bold text-slate-700 mb-1">주문 품목명 / 규격 <span class="text-red-500">*</span></label>
+                    <input type="text" id="order-item-name" required placeholder="예: IoT 광학 센서 모듈 100EA" 
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">수량 <span class="text-red-500">*</span></label>
+                        <label class="block font-bold text-slate-700 mb-1">수량 <span class="text-red-500">*</span></label>
                         <input type="number" id="order-qty" value="1" min="1" required oninput="calculateOrderTotal()" 
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">단가 ($ USD) <span class="text-red-500">*</span></label>
+                        <label class="block font-bold text-slate-700 mb-1">단가 ($ USD) <span class="text-red-500">*</span></label>
                         <input type="number" id="order-unit-price" value="0" min="0" required oninput="calculateOrderTotal()" 
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                     </div>
                 </div>
 
-                <div class="p-3 bg-brand-50/70 border border-brand-100 rounded-xl flex items-center justify-between">
-                    <span class="font-semibold text-brand-900">총 주문 금액 합계</span>
-                    <span id="order-total-display" class="font-bold text-brand-700 text-sm sm:text-base">$0</span>
+                <div class="p-3 bg-red-50/70 border border-red-100 rounded-xl flex items-center justify-between">
+                    <span class="font-bold text-caos-red">총 주문 금액 합계</span>
+                    <span id="order-total-display" class="font-black text-caos-red text-base">$0</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">주문일자 <span class="text-red-500">*</span></label>
-                        <input type="date" id="order-date" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <label class="block font-bold text-slate-700 mb-1">주문일자 <span class="text-red-500">*</span></label>
+                        <input type="date" id="order-date" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">진행 상태</label>
-                        <select id="order-status" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <label class="block font-bold text-slate-700 mb-1">진행 상태</label>
+                        <select id="order-status" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                             <option value="주문접수">주문접수</option>
                             <option value="진행중" selected>진행중 (생산/배송)</option>
                             <option value="발송완료">발송완료</option>
@@ -479,8 +497,8 @@
                 </div>
 
                 <div class="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
-                    <button type="button" onclick="closeOrderModal()" class="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">취소</button>
-                    <button type="submit" class="px-4 py-2 font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl active:scale-95 shadow-xs">
+                    <button type="button" onclick="closeOrderModal()" class="px-4 py-2 font-bold text-slate-600 hover:bg-slate-100 rounded-xl">취소</button>
+                    <button type="submit" class="px-4 py-2 font-bold text-white caos-gradient-btn rounded-xl active:scale-95 shadow-caos">
                         주문 등록 완료
                     </button>
                 </div>
@@ -492,8 +510,8 @@
     <div id="backup-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
-                <h3 class="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-brand-600"></i> 데이터 백업 및 복구 관리
+                <h3 class="font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-caos-red"></i> 데이터 백업 및 복구 관리
                 </h3>
                 <button onclick="closeBackupModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -501,22 +519,20 @@
             </div>
 
             <div class="space-y-4 text-xs sm:text-sm text-slate-600">
-                <!-- Option 1: Export JSON -->
                 <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
                     <div>
                         <h4 class="font-bold text-slate-900 text-sm mb-0.5">1. 전체 데이터 백업 파일 다운로드</h4>
-                        <p class="text-xs text-slate-500">모든 거래처, 품목, 주문 내역 데이터를 JSON 파일로 백업합니다.</p>
+                        <p class="text-xs text-slate-500">모든 거래처, 품목, 주문 내역을 JSON 파일로 백업합니다.</p>
                     </div>
-                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-xs transition shrink-0 active:scale-95 flex items-center gap-1.5">
+                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 text-xs font-bold text-white caos-gradient-btn rounded-xl shadow-caos transition shrink-0 active:scale-95 flex items-center gap-1.5">
                         <i class="fa-solid fa-download"></i> 백업 저장
                     </button>
                 </div>
 
-                <!-- Option 2: Import JSON -->
                 <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
                     <div>
                         <h4 class="font-bold text-slate-900 text-sm mb-0.5">2. 백업 파일로 복구하기</h4>
-                        <p class="text-xs text-slate-500">저장해 둔 백업 JSON 파일을 불러와 데이터를 원상 복구합니다.</p>
+                        <p class="text-xs text-slate-500">저장해 둔 백업 JSON 파일을 불러와 원상 복구합니다.</p>
                     </div>
                     <button onclick="triggerJSONImport()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl shadow-xs transition shrink-0 active:scale-95 flex items-center gap-1.5">
                         <i class="fa-solid fa-upload text-indigo-600"></i> 파일 선택
@@ -524,11 +540,10 @@
                     <input type="file" id="backup-file-input" accept=".json" onchange="restoreFromJSON(event)" class="hidden">
                 </div>
 
-                <!-- Option 3: Restore Last Auto-Snapshot -->
-                <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-200/80 flex items-center justify-between gap-3">
+                <div class="p-4 bg-amber-50/80 rounded-2xl border border-amber-200/80 flex items-center justify-between gap-3">
                     <div>
                         <h4 class="font-bold text-amber-900 text-sm mb-0.5"><i class="fa-solid fa-clock-rotate-left mr-1"></i> 실수 직전 자동 복원점</h4>
-                        <p class="text-xs text-amber-700/80" id="snapshot-status-text">수정·삭제 직전의 자동 임시 저장본이 존재합니다.</p>
+                        <p class="text-xs text-amber-800/80" id="snapshot-status-text">수정·삭제 직전의 자동 임시 저장본이 존재합니다.</p>
                     </div>
                     <button onclick="restoreAutoSnapshot()" class="px-3.5 py-2 text-xs font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-xl transition shrink-0 active:scale-95 flex items-center gap-1.5">
                         <i class="fa-solid fa-rotate-left"></i> 되돌리기
@@ -537,13 +552,13 @@
             </div>
 
             <div class="pt-4 mt-4 border-t border-slate-200 flex items-center justify-between">
-                <span class="text-[11px] text-slate-400">* 복구 시 모든 연결된 기기에도 실시간 반영됩니다.</span>
-                <button onclick="closeBackupModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">닫기</button>
+                <span class="text-[11px] text-slate-400">* 복구 시 연결된 모든 기기에 동기화됩니다.</span>
+                <button onclick="closeBackupModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl">닫기</button>
             </div>
         </div>
     </div>
 
-    <!-- Custom Toast Alert Notification Container -->
+    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
     <!-- Firebase Cloud Database Synchronization Script -->
@@ -552,7 +567,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global State & Initial Data
+        // Global State & Initial CAOS Sample Data
         const initialClients = [
             {
                 id: 'client_101',
@@ -562,14 +577,14 @@
                 email: 'mj.kim@techsolutions.co.kr',
                 phone: '010-3892-1004',
                 products: [
-                    { name: '산업용 IoT 센서 모듈', price: 150 },
-                    { name: '센서 게이트웨이 Hub', price: 280 }
+                    { name: 'CAOS 산업용 IoT 광센서 모듈', price: 180 },
+                    { name: '스마트 센서 게이트웨이 Hub', price: 320 }
                 ],
                 status: 'ACTIVE',
                 notes: '매월 정기 물량 공급 계약 체결됨. 결제 조건: 익월 15일 현금 결제.',
                 orders: [
-                    { id: 'ord_1', itemName: 'IoT 센서 모듈 (1000EA)', qty: 1000, price: 150, total: 150000, date: '2026-09-15', status: '결제완료' },
-                    { id: 'ord_2', itemName: '센서 게이트웨이 Hub (5EA)', qty: 5, price: 280, total: 1400, date: '2026-09-28', status: '발송완료' }
+                    { id: 'ord_1', itemName: 'IoT 광센서 모듈 (1000EA)', qty: 1000, price: 180, total: 180000, date: '2026-09-15', status: '결제완료' },
+                    { id: 'ord_2', itemName: '게이트웨이 Hub (5EA)', qty: 5, price: 320, total: 1600, date: '2026-09-28', status: '발송완료' }
                 ]
             },
             {
@@ -580,13 +595,13 @@
                 email: 'r.chen@apextrade.us',
                 phone: '+1 (415) 892-3011',
                 products: [
-                    { name: '스마트 가전 컨트롤러 v2.5', price: 350 },
-                    { name: 'Wi-Fi 커넥티드 임베디드 칩', price: 65 }
+                    { name: 'CAOS 스마트 센서 컨트롤러 v2.5', price: 420 },
+                    { name: 'Wi-Fi 커넥티드 임베디드 칩', price: 75 }
                 ],
                 status: 'ACTIVE',
                 notes: '북미 유통망 독점 공급 문의 중. 품질 인증 FCC 완료.',
                 orders: [
-                    { id: 'ord_3', itemName: '스마트 가전 컨트롤러 v2.5', qty: 200, price: 350, total: 70000, date: '2026-10-01', status: '진행중' }
+                    { id: 'ord_3', itemName: 'CAOS 스마트 센서 컨트롤러 v2.5', qty: 200, price: 420, total: 84000, date: '2026-10-01', status: '진행중' }
                 ]
             },
             {
@@ -597,13 +612,13 @@
                 email: 'sato@sakura-elec.jp',
                 phone: '+81 3-5214-9000',
                 products: [
-                    { name: '고정밀 마이크로 커넥터 A-type', price: 10 },
-                    { name: '마이크로 커넥터 B-type', price: 12 }
+                    { name: '고정밀 마이크로 커넥터 A-type', price: 12 },
+                    { name: 'CAOS 정밀 센서 핀 커넥터 B-type', price: 15 }
                 ],
                 status: 'ACTIVE',
                 notes: '도쿄 지사 배송. 포장 단품 포장 패키지 요구사항 준수 필수.',
                 orders: [
-                    { id: 'ord_4', itemName: '고정밀 마이크로 커넥터 A-type', qty: 10000, price: 10, total: 100000, date: '2026-08-20', status: '결제완료' }
+                    { id: 'ord_4', itemName: '고정밀 마이크로 커넥터 A-type', qty: 10000, price: 12, total: 120000, date: '2026-08-20', status: '결제완료' }
                 ]
             }
         ];
@@ -615,9 +630,9 @@
         let auth = null;
         let currentUser = null;
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'b2b-crm-default-app';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caos-b2b-crm-app';
 
-        // Initialize Firebase Cloud Data
+        // Initialize Cloud Synchronization
         async function initCloudSync() {
             try {
                 if (typeof __firebase_config !== 'undefined') {
@@ -675,7 +690,7 @@
         }
 
         function loadClientsFromLocalStorage() {
-            const stored = localStorage.getItem('crm_clients_data');
+            const stored = localStorage.getItem('caos_crm_clients_data');
             if (stored) {
                 try {
                     clients = JSON.parse(stored);
@@ -693,7 +708,7 @@
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clients', clientData.id);
                 await setDoc(docRef, clientData);
             } else {
-                localStorage.setItem('crm_clients_data', JSON.stringify(clients));
+                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
                 renderApp();
             }
         }
@@ -704,12 +719,11 @@
                 await deleteDoc(docRef);
             } else {
                 clients = clients.filter(c => c.id !== clientId);
-                localStorage.setItem('crm_clients_data', JSON.stringify(clients));
+                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
                 renderApp();
             }
         }
 
-        // Window Exports for DOM Event Bindings
         window.renderApp = renderApp;
         window.setViewMode = setViewMode;
         window.openClientModal = openClientModal;
@@ -775,13 +789,13 @@
             if (mode === 'card') {
                 cardView.classList.remove('hidden');
                 tableView.classList.add('hidden');
-                cardBtn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-slate-800 transition";
-                tableBtn.className = "px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 transition";
+                cardBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-white shadow-xs text-slate-900 transition";
+                tableBtn.className = "px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
             } else {
                 cardView.classList.add('hidden');
                 tableView.classList.remove('hidden');
-                tableBtn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-slate-800 transition";
-                cardBtn.className = "px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 transition";
+                tableBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-white shadow-xs text-slate-900 transition";
+                cardBtn.className = "px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
             }
         }
 
@@ -833,19 +847,19 @@
 
                 // Table Row
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50/80 transition cursor-pointer group";
+                tr.className = "hover:bg-red-50/30 transition cursor-pointer group";
                 tr.onclick = (e) => {
                     if (!e.target.closest('button')) openDetailModal(client.id);
                 };
 
                 const productsBadgeHTML = productsList.slice(0, 2).map(p => `
-                    <span class="inline-block text-[11px] bg-brand-50 text-brand-700 px-2 py-0.5 rounded-md font-semibold border border-brand-100 mr-1 mb-1">
+                    <span class="inline-block text-[11px] bg-red-50 text-caos-red px-2 py-0.5 rounded-md font-bold border border-red-100 mr-1 mb-1">
                         ${escapeHTML(p.name)} ($${Number(p.price).toLocaleString('en-US')})
                     </span>
                 `).join('') + (productsList.length > 2 ? `<span class="text-[10px] text-slate-400 font-bold">+${productsList.length - 2}개 더보기</span>` : '');
 
                 tr.innerHTML = `
-                    <td class="py-3.5 px-4 font-bold text-slate-900 group-hover:text-brand-600 transition">
+                    <td class="py-3.5 px-4 font-bold text-slate-900 group-hover:text-caos-red transition">
                         ${escapeHTML(client.name)}
                     </td>
                     <td class="py-3.5 px-4 font-medium text-slate-700">
@@ -854,14 +868,14 @@
                         </span>
                     </td>
                     <td class="py-3.5 px-4 text-xs">
-                        <div class="font-semibold text-slate-800">${escapeHTML(client.manager)}</div>
+                        <div class="font-bold text-slate-800">${escapeHTML(client.manager)}</div>
                         <div class="text-slate-500">${escapeHTML(client.phone)}</div>
                     </td>
                     <td class="py-3.5 px-4">
                         ${productsBadgeHTML}
                     </td>
                     <td class="py-3.5 px-4 text-center">
-                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-700">
+                        <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700">
                             ${totalOrdersCount}건
                         </span>
                     </td>
@@ -869,7 +883,7 @@
                         ${statusBadge}
                     </td>
                     <td class="py-3.5 px-4 text-right">
-                        <button onclick="openDetailModal('${client.id}')" class="px-2.5 py-1 text-xs font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-md transition">
+                        <button onclick="openDetailModal('${client.id}')" class="px-2.5 py-1 text-xs font-bold text-slate-600 hover:text-caos-red hover:bg-slate-100 rounded-md transition">
                             상세 <i class="fa-solid fa-chevron-right text-[10px]"></i>
                         </button>
                     </td>
@@ -878,7 +892,7 @@
 
                 // Grid Card
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-brand-300 transition flex flex-col justify-between cursor-pointer active:scale-[0.99]";
+                card.className = "bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-caos-red transition flex flex-col justify-between cursor-pointer active:scale-[0.99]";
                 card.onclick = (e) => {
                     if (!e.target.closest('button')) openDetailModal(client.id);
                 };
@@ -895,9 +909,9 @@
                         <div class="flex items-start justify-between gap-2 mb-2.5">
                             <div>
                                 <span class="text-[10px] font-bold text-slate-600 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
-                                    <i class="fa-solid fa-location-dot mr-1 text-brand-600"></i>${escapeHTML(client.country)}
+                                    <i class="fa-solid fa-location-dot mr-1 text-caos-red"></i>${escapeHTML(client.country)}
                                 </span>
-                                <h3 class="font-bold text-slate-900 text-base mt-1.5 leading-snug">${escapeHTML(client.name)}</h3>
+                                <h3 class="font-extrabold text-slate-900 text-base mt-1.5 leading-snug">${escapeHTML(client.name)}</h3>
                             </div>
                             ${statusBadge}
                         </div>
@@ -905,7 +919,7 @@
                         <div class="space-y-1.5 text-xs text-slate-600 border-t border-b border-slate-100 py-2.5 my-2.5">
                             <div class="flex items-center justify-between">
                                 <span class="text-slate-400">담당자</span>
-                                <span class="font-semibold text-slate-800">${escapeHTML(client.manager)}</span>
+                                <span class="font-bold text-slate-800">${escapeHTML(client.manager)}</span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-slate-400">연락처</span>
@@ -913,7 +927,7 @@
                             </div>
                             
                             <div class="pt-1">
-                                <span class="text-[11px] font-semibold text-brand-700 block mb-1">
+                                <span class="text-[11px] font-bold text-caos-red block mb-1">
                                     <i class="fa-solid fa-boxes-stacked mr-1"></i>판매 물품 목록 (${productsList.length}개)
                                 </span>
                                 <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 space-y-1 max-h-[100px] overflow-y-auto ios-scroller">
@@ -925,7 +939,7 @@
 
                     <div class="flex items-center justify-between pt-1">
                         <span class="text-xs text-slate-500">주문 내역 <b>${totalOrdersCount}</b>건</span>
-                        <button onclick="openDetailModal('${client.id}')" class="px-3.5 py-1.5 text-xs font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-xl transition">
+                        <button onclick="openDetailModal('${client.id}')" class="px-3.5 py-1.5 text-xs font-bold text-caos-red bg-red-50 hover:bg-red-100 rounded-xl transition border border-red-100">
                             상세보기
                         </button>
                     </div>
@@ -969,10 +983,10 @@
             row.id = rowId;
             row.className = "flex items-center gap-2 animate-in fade-in duration-150";
             row.innerHTML = `
-                <input type="text" placeholder="물품명 (예: 센서 모듈)" value="${escapeHTML(name)}" required
-                    class="product-name-input flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
-                <input type="number" placeholder="기준 단가($)" value="${price}" required min="0"
-                    class="product-price-input w-28 sm:w-36 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                <input type="text" placeholder="물품명 (예: CAOS 센서 모듈)" value="${escapeHTML(name)}" required
+                    class="product-name-input flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
+                <input type="number" placeholder="기준 단가($ USD)" value="${price}" required min="0"
+                    class="product-price-input w-32 sm:w-40 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
                 <button type="button" onclick="removeProductRow('${rowId}')" class="text-slate-400 hover:text-red-500 p-2 transition">
                     <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
@@ -1093,9 +1107,9 @@
             const productsContainer = document.getElementById('detail-products-list');
             if (client.products && client.products.length > 0) {
                 productsContainer.innerHTML = client.products.map(p => `
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 shadow-xs">
-                        <i class="fa-solid fa-box text-brand-500"></i> ${escapeHTML(p.name)} 
-                        <span class="text-brand-600 font-bold ml-0.5">$${Number(p.price).toLocaleString('en-US')}</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 shadow-xs">
+                        <i class="fa-solid fa-box text-caos-red"></i> ${escapeHTML(p.name)} 
+                        <span class="text-caos-red font-extrabold ml-0.5">$${Number(p.price).toLocaleString('en-US')}</span>
                     </span>
                 `).join('');
             } else {
@@ -1126,7 +1140,7 @@
                         </div>
                         <div class="text-right shrink-0">
                             <span class="font-bold text-slate-900 text-sm block">$${Number(ord.total).toLocaleString('en-US')}</span>
-                            <button onclick="deleteOrder('${ord.id}')" class="text-[11px] text-red-500 hover:underline mt-1">
+                            <button onclick="deleteOrder('${ord.id}')" class="text-[11px] text-red-500 hover:underline mt-1 font-bold">
                                 <i class="fa-solid fa-trash-can"></i> 삭제
                             </button>
                         </div>
@@ -1173,7 +1187,7 @@
             if (!client) return;
 
             const selectElem = document.getElementById('order-item-select');
-            selectElem.innerHTML = '<option value="">-- 등록된 물품 직접 선택 (선택 시 자동입력) --</option>';
+            selectElem.innerHTML = '<option value="">-- 등록된 물품 선택 (자동입력) --</option>';
 
             if (client.products && client.products.length > 0) {
                 client.products.forEach((p, idx) => {
@@ -1270,14 +1284,14 @@
                     timestamp: new Date().toLocaleTimeString(),
                     data: JSON.parse(JSON.stringify(clients))
                 };
-                localStorage.setItem('crm_auto_snapshot', JSON.stringify(snapshotData));
+                localStorage.setItem('caos_crm_auto_snapshot', JSON.stringify(snapshotData));
             } catch (e) {
                 console.warn('Snapshot error:', e);
             }
         }
 
         function openBackupModal() {
-            const snapshotStr = localStorage.getItem('crm_auto_snapshot');
+            const snapshotStr = localStorage.getItem('caos_crm_auto_snapshot');
             const statusElem = document.getElementById('snapshot-status-text');
             if (snapshotStr) {
                 try {
@@ -1311,7 +1325,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `CRM_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            downloadAnchor.setAttribute("download", `CAOS_CRM_Backup_${new Date().toISOString().split('T')[0]}.json`);
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
@@ -1353,7 +1367,7 @@
                             }
                         } else {
                             clients = newClients;
-                            localStorage.setItem('crm_clients_data', JSON.stringify(clients));
+                            localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
                             renderApp();
                         }
 
@@ -1369,7 +1383,7 @@
         }
 
         async function restoreAutoSnapshot() {
-            const snapshotStr = localStorage.getItem('crm_auto_snapshot');
+            const snapshotStr = localStorage.getItem('caos_crm_auto_snapshot');
             if (!snapshotStr) {
                 showToast('복원할 자동 스냅샷 데이터가 존재하지 않습니다.', 'error');
                 return;
@@ -1389,7 +1403,7 @@
                         }
                     } else {
                         clients = restoredClients;
-                        localStorage.setItem('crm_clients_data', JSON.stringify(clients));
+                        localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
                         renderApp();
                     }
                     closeBackupModal();
@@ -1428,7 +1442,7 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `거래처_목록_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `CAOS_거래처_목록_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1451,7 +1465,7 @@
                 icon = "fa-circle-exclamation text-red-400";
             }
 
-            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs font-semibold ${bgClass} transition duration-300 transform translate-y-2 opacity-0`;
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold ${bgClass} transition duration-300 transform translate-y-2 opacity-0`;
             toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i> <span>${escapeHTML(message)}</span>`;
 
             container.appendChild(toast);
@@ -1477,7 +1491,7 @@
                 </div>
                 <p class="text-slate-200">${escapeHTML(message)}</p>
                 <div class="flex items-center justify-end gap-2 pt-1">
-                    <button id="confirm-cancel-btn" class="px-3 py-1.5 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">취소</button>
+                    <button id="confirm-cancel-btn" class="px-3 py-1.5 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold">취소</button>
                     <button id="confirm-ok-btn" class="px-3 py-1.5 text-[11px] bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl active:scale-95">삭제 실행</button>
                 </div>
             `;
@@ -1501,7 +1515,7 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Initialize App on load
+        // App Launch
         initCloudSync();
     </script>
 </body>
