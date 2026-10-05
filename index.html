@@ -142,7 +142,7 @@
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-bold text-slate-600 tracking-wider uppercase">총 누적 주문액</p>
-                    <p id="stat-total-revenue" class="text-lg sm:text-2xl font-black text-slate-900 mt-0.5 truncate max-w-[130px] sm:max-w-none">$0</p>
+                    <p id="stat-total-revenue" class="text-lg sm:text-2xl font-black text-slate-900 mt-0.5 truncate max-w-[130px] sm:max-w-none">$0.00</p>
                     <p class="text-[11px] text-slate-500 mt-0.5">누적 매출 합계 ($ USD)</p>
                 </div>
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg sm:text-xl shadow-xs">
@@ -308,7 +308,7 @@
                 <div class="border-t border-slate-200 pt-4 mt-2">
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-xs font-bold text-slate-800">
-                            <i class="fa-solid fa-boxes-stacked text-caos-red mr-1"></i> 다중 판매/취급 물품 목록 및 단가($ USD)
+                            <i class="fa-solid fa-boxes-stacked text-caos-red mr-1"></i> 다중 판매/취급 물품 목록 및 단가($ USD, 소수점 둘째자리 지원)
                         </label>
                         <button type="button" onclick="addProductRow()" class="text-xs text-caos-red font-bold hover:underline flex items-center gap-1 py-1">
                             <i class="fa-solid fa-plus-circle"></i> 물품 추가
@@ -440,15 +440,15 @@
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">단가 ($ USD) <span class="text-red-500">*</span></label>
-                        <input type="number" id="order-unit-price" value="0" min="0" required oninput="calculateOrderTotal()" 
+                        <label class="block font-bold text-slate-700 mb-1">단가 ($ USD, 소수점 가능) <span class="text-red-500">*</span></label>
+                        <input type="number" id="order-unit-price" value="0.00" min="0" step="0.01" required oninput="calculateOrderTotal()" 
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
                     </div>
                 </div>
 
                 <div class="p-3 bg-red-50/80 border border-red-100 rounded-xl flex items-center justify-between">
                     <span class="font-bold text-caos-red">총 주문 금액 합계</span>
-                    <span id="order-total-display" class="font-black text-caos-red text-base">$0</span>
+                    <span id="order-total-display" class="font-black text-caos-red text-base">$0.00</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
@@ -533,9 +533,9 @@
                 phone: '0744 382758',
                 notes: '유럽 센서 모듈 주력 공급 거래처',
                 products: [
-                    { name: 'CA05FS', price: 29 },
-                    { name: 'CA20FS', price: 37 },
-                    { name: 'MP100', price: 10 }
+                    { name: 'CA05FS', price: 29.50 },
+                    { name: 'CA20FS', price: 37.25 },
+                    { name: 'MP100', price: 10.00 }
                 ],
                 orders: []
             }
@@ -690,7 +690,7 @@
                 const statusBadge = getStatusBadgeHTML(client.status);
                 const productsList = client.products && client.products.length > 0 
                     ? client.products 
-                    : [{ name: '등록 물품 없음', price: 0 }];
+                    : [{ name: '등록 물품 없음', price: 0.00 }];
 
                 if (tableBody) {
                     const tr = document.createElement('tr');
@@ -701,7 +701,7 @@
 
                     const productsBadgeHTML = productsList.slice(0, 2).map(p => `
                         <span class="inline-block text-[11px] bg-red-50 text-caos-red px-2 py-0.5 rounded-md font-bold border border-red-100 mr-1 mb-1">
-                            ${escapeHTML(p.name)} ($${Number(p.price).toLocaleString('en-US')})
+                            ${escapeHTML(p.name)} ($${Number(p.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})})
                         </span>
                     `).join('') + (productsList.length > 2 ? `<span class="text-[10px] text-slate-400 font-bold">+${productsList.length - 2}개 더보기</span>` : '');
 
@@ -748,7 +748,7 @@
                     const cardProductsHTML = productsList.map(p => `
                         <div class="flex items-center justify-between text-xs py-0.5">
                             <span class="text-slate-700 font-medium truncate max-w-[170px]">• ${escapeHTML(p.name)}</span>
-                            <span class="font-bold text-slate-900 shrink-0">$${Number(p.price).toLocaleString('en-US')}</span>
+                            <span class="font-bold text-slate-900 shrink-0">$${Number(p.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                         </div>
                     `).join('');
 
@@ -825,7 +825,7 @@
 
             if (statTotalClients) statTotalClients.textContent = `${totalClients}개사`;
             if (statActiveClients) statActiveClients.textContent = activeClients;
-            if (statTotalRevenue) statTotalRevenue.textContent = `$${totalRevenue.toLocaleString('en-US')}`;
+            if (statTotalRevenue) statTotalRevenue.textContent = `$${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             if (statPendingOrders) statPendingOrders.textContent = `${pendingOrdersCount}건`;
             if (statTotalCountries) statTotalCountries.textContent = `${uniqueCountries}개국`;
         }
@@ -835,14 +835,16 @@
             if (!container) return;
             const rowId = 'prod_row_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
 
+            const formattedPrice = price !== '' && !isNaN(price) ? Number(price).toFixed(2) : '';
+
             const row = document.createElement('div');
             row.id = rowId;
             row.className = "flex items-center gap-2 animate-in fade-in duration-150";
             row.innerHTML = `
                 <input type="text" placeholder="물품명 (예: CAOS 광센서 모듈)" value="${escapeHTML(name)}" required
                     class="product-name-input flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
-                <input type="number" placeholder="기준 단가($ USD)" value="${price}" required min="0"
-                    class="product-price-input w-32 sm:w-40 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
+                <input type="number" step="0.01" min="0" placeholder="단가($ USD, 소수점)" value="${formattedPrice}" required
+                    class="product-price-input w-36 sm:w-44 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white">
                 <button type="button" onclick="removeProductRow('${rowId}')" class="text-slate-400 hover:text-red-500 p-2 transition">
                     <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
@@ -916,7 +918,7 @@
                 const pName = row.querySelector('.product-name-input')?.value.trim();
                 const pPrice = Number(row.querySelector('.product-price-input')?.value) || 0;
                 if (pName) {
-                    products.push({ name: pName, price: pPrice });
+                    products.push({ name: pName, price: Number(pPrice.toFixed(2)) });
                 }
             });
 
@@ -973,7 +975,7 @@
                 productsContainer.innerHTML = client.products.map(p => `
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 shadow-xs">
                         <i class="fa-solid fa-box text-caos-red"></i> ${escapeHTML(p.name)} 
-                        <span class="text-caos-red font-extrabold ml-0.5">$${Number(p.price).toLocaleString('en-US')}</span>
+                        <span class="text-caos-red font-extrabold ml-0.5">$${Number(p.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                     </span>
                 `).join('');
             } else {
@@ -999,10 +1001,10 @@
                                 <span class="text-[11px] text-slate-400">${escapeHTML(ord.date)}</span>
                             </div>
                             <h4 class="font-bold text-slate-900 text-xs sm:text-sm truncate">${escapeHTML(ord.itemName)}</h4>
-                            <p class="text-[11px] text-slate-500 mt-0.5">수량: ${ord.qty}EA × $${Number(ord.price).toLocaleString('en-US')}</p>
+                            <p class="text-[11px] text-slate-500 mt-0.5">수량: ${ord.qty}EA × $${Number(ord.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                         </div>
                         <div class="text-right shrink-0">
-                            <span class="font-bold text-slate-900 text-sm block">$${Number(ord.total).toLocaleString('en-US')}</span>
+                            <span class="font-bold text-slate-900 text-sm block">$${Number(ord.total).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                             <button onclick="deleteOrder('${ord.id}')" class="text-[11px] text-red-500 hover:underline mt-1 font-bold">
                                 <i class="fa-solid fa-trash-can"></i> 삭제
                             </button>
@@ -1055,13 +1057,13 @@
 
             if (client.products && client.products.length > 0) {
                 client.products.forEach((p, idx) => {
-                    selectElem.innerHTML += `<option value="${idx}">${escapeHTML(p.name)} ($${p.price})</option>`;
+                    selectElem.innerHTML += `<option value="${idx}">${escapeHTML(p.name)} ($${Number(p.price).toFixed(2)})</option>`;
                 });
             }
 
             document.getElementById('order-item-name').value = '';
             document.getElementById('order-qty').value = 1;
-            document.getElementById('order-unit-price').value = 0;
+            document.getElementById('order-unit-price').value = '0.00';
             document.getElementById('order-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('order-status').value = '진행중';
 
@@ -1083,7 +1085,7 @@
                 const selectedProd = client.products[selectVal];
                 if (selectedProd) {
                     document.getElementById('order-item-name').value = selectedProd.name;
-                    document.getElementById('order-unit-price').value = selectedProd.price;
+                    document.getElementById('order-unit-price').value = Number(selectedProd.price).toFixed(2);
                     calculateOrderTotal();
                 }
             }
@@ -1093,7 +1095,7 @@
             const qty = Number(document.getElementById('order-qty').value) || 0;
             const price = Number(document.getElementById('order-unit-price').value) || 0;
             const total = qty * price;
-            document.getElementById('order-total-display').textContent = `$${total.toLocaleString('en-US')}`;
+            document.getElementById('order-total-display').textContent = `$${total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
 
         function saveOrder(event) {
@@ -1108,7 +1110,7 @@
             const price = Number(document.getElementById('order-unit-price').value) || 0;
             const date = document.getElementById('order-date').value;
             const status = document.getElementById('order-status').value;
-            const total = qty * price;
+            const total = Number((qty * price).toFixed(2));
 
             if (!client.orders) client.orders = [];
 
@@ -1116,7 +1118,7 @@
                 id: 'ord_' + Date.now(),
                 itemName,
                 qty,
-                price,
+                price: Number(price.toFixed(2)),
                 total,
                 date,
                 status
@@ -1221,7 +1223,7 @@
             csvContent += "거래처명,국가,담당자,이메일,전화번호,판매물품목록,거래상태,주문건수,메모\n";
 
             clients.forEach(c => {
-                const prodStr = (c.products || []).map(p => `${p.name}($${p.price})`).join('; ');
+                const prodStr = (c.products || []).map(p => `${p.name}($${Number(p.price).toFixed(2)})`).join('; ');
                 const row = [
                     `"${c.name.replace(/"/g, '""')}"`,
                     `"${c.country.replace(/"/g, '""')}"`,
