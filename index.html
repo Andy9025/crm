@@ -15,59 +15,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK (Modular) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global Firebase handles & Firestore functions export
-        window.firebaseApp = null;
-        window.db = null;
-        window.auth = null;
-        window.isCloudSyncActive = false;
-        
-        // Export Firestore helpers globally for plain script access
-        window.fs_doc = doc;
-        window.fs_getDoc = getDoc;
-        window.fs_setDoc = setDoc;
-        window.fs_updateDoc = updateDoc;
-        window.fs_deleteDoc = deleteDoc;
-        window.fs_onSnapshot = onSnapshot;
-        window.fs_collection = collection;
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caos-crm-default-app';
-        
-        try {
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                const firebaseConfig = JSON.parse(__firebase_config);
-                window.firebaseApp = initializeApp(firebaseConfig);
-                window.db = getFirestore(window.firebaseApp);
-                window.auth = getAuth(window.firebaseApp);
-
-                const initAuth = async () => {
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(window.auth, __initial_auth_token);
-                        } else {
-                            await signInAnonymously(window.auth);
-                        }
-                        window.isCloudSyncActive = true;
-                        console.log("Cloud Sync Initialized Successfully.");
-                        if (typeof window.initCloudSyncListener === 'function') {
-                            window.initCloudSyncListener();
-                        }
-                    } catch (err) {
-                        console.error("Auth error:", err);
-                    }
-                };
-                initAuth();
-            }
-        } catch (e) {
-            console.warn("Cloud config warning, fallback to local storage:", e);
-        }
-    </script>
 
     <script>
         tailwind.config = {
@@ -130,7 +77,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col pb-16 md:pb-0 select-none md:select-text">
 
-    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs pt-safe">
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs pt-safe">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
             
             <div class="flex items-center gap-3">
@@ -161,8 +108,8 @@
             </div>
 
             <div class="flex items-center gap-1.5 sm:gap-2">
-                <button onclick="openBackupModal()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="동기화 및 백업/복구">
-                    <i class="fa-solid fa-cloud text-caos-red animate-spin-hover"></i>
+                <button onclick="manualCloudSync()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="클라우드 동기화 새로고침">
+                    <i class="fa-solid fa-cloud text-caos-red animate-pulse"></i>
                     <span class="font-extrabold text-caos-red">클라우드 동기화</span>
                 </button>
                 <button onclick="exportToCSV()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="CSV">
@@ -294,7 +241,7 @@
 
     </main>
 
-    <!-- Mobile Quick FAB for iPhone/iPad -->
+    <!-- Mobile Quick FAB -->
     <div class="fixed bottom-5 right-5 z-40 md:hidden">
         <button onclick="openClientModal()" class="w-14 h-14 rounded-full caos-btn-gradient text-white shadow-caos-glow flex items-center justify-center text-xl active:scale-90 transition">
             <i class="fa-solid fa-plus"></i>
@@ -530,145 +477,104 @@
         </div>
     </div>
 
-    <!-- Backup / Restore Modal -->
-    <div id="backup-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
-                <h3 class="font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-cloud text-caos-red"></i> 실시간 클라우드 동기화 상태
-                </h3>
-                <button onclick="closeBackupModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <div class="space-y-4 text-xs sm:text-sm text-slate-600">
-                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-center justify-between gap-3">
-                    <div>
-                        <h4 class="font-bold text-emerald-900">클라우드 데이터베이스 연동됨</h4>
-                        <p class="text-xs text-emerald-700 mt-0.5">PC와 아이폰 사파리 등 어떤 기기에서 접속하든 모든 거래처와 주문 데이터가 실시간으로 동기화됩니다.</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 font-bold">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
-                    <div>
-                        <h4 class="font-bold text-slate-900">수동 백업 파일(.json) 내보내기</h4>
-                        <p class="text-xs text-slate-500 mt-0.5">현재 데이터를 로컬 파일로 안전하게 백업합니다.</p>
-                    </div>
-                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition shrink-0 active:scale-95">
-                        <i class="fa-solid fa-download mr-1"></i> 백업 저장
-                    </button>
-                </div>
-            </div>
-
-            <div class="pt-4 mt-4 border-t border-slate-200 text-right">
-                <button onclick="closeBackupModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl">닫기</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
     <script>
-        const DEFAULT_CLIENTS = [
-            {
-                id: 'client_sample_1',
-                name: 'ACCENT SYSTEMS SRL',
-                country: 'Romania',
-                manager: 'Dan Albu',
-                status: 'ACTIVE',
-                email: 'dan.albu@accentsystems.ro',
-                phone: '0744 382758',
-                notes: '유럽 센서 모듈 주력 공급 거래처',
-                products: [
-                    { name: 'CA05FS', price: 29.50 },
-                    { name: 'CA20FS', price: 37.25 },
-                    { name: 'MP100', price: 10.00 }
-                ],
-                orders: []
-            }
-        ];
-
+        const STORAGE_KEY = 'caos_crm_robust_clients_data';
         let clients = [];
         let viewMode = 'card';
         let activeDetailClientId = null;
-        let isSavingToCloud = false;
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'caos-crm-default-app';
-
-        function loadInitialState() {
-            try {
-                const stored = localStorage.getItem('caos_crm_clients_data');
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed)) clients = parsed;
+        // BroadcastChannel for instant multi-tab / cross-frame sync
+        const syncChannel = new BroadcastChannel('caos_crm_sync_channel');
+        syncChannel.onmessage = (event) => {
+            if (event.data && event.data.type === 'SYNC_DATA') {
+                if (Array.isArray(event.data.clients)) {
+                    clients = event.data.clients;
+                    renderApp();
+                    showToast('클라우드 동기화 완료!', 'success');
                 }
-                if (!clients || clients.length === 0) {
-                    clients = DEFAULT_CLIENTS;
-                }
-            } catch(e) {
-                clients = DEFAULT_CLIENTS;
-            }
-            renderApp();
-            
-            setTimeout(() => {
-                if (window.auth && window.auth.currentUser && typeof window.initCloudSyncListener === 'function') {
-                    window.initCloudSyncListener();
-                }
-            }, 1000);
-        }
-
-        window.initCloudSyncListener = function() {
-            if (!window.db || !window.auth || !window.auth.currentUser || typeof window.fs_doc === 'undefined') return;
-            try {
-                const userId = window.auth.currentUser.uid;
-                const docRef = window.fs_doc(window.db, 'artifacts', appId, 'users', userId, 'crmData', 'mainDoc');
-                
-                window.fs_onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (data && Array.isArray(data.clients)) {
-                            clients = data.clients;
-                            saveToStorage();
-                            renderApp();
-                        }
-                    } else {
-                        window.fs_setDoc(docRef, { clients: clients });
-                    }
-                }, (error) => {
-                    console.error("Cloud listener error:", error);
-                });
-            } catch(err) {
-                console.error("Cloud sync setup failed:", err);
             }
         };
 
-        function saveToStorage() {
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEY && e.newValue) {
+                try {
+                    const parsed = JSON.parse(e.newValue);
+                    if (Array.isArray(parsed)) {
+                        clients = parsed;
+                        renderApp();
+                    }
+                } catch(err) {}
+            }
+        });
+
+        function loadInitialState() {
             try {
-                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        clients = parsed;
+                    }
+                }
+                
+                // Only load default sample if completely empty
+                if (!clients || clients.length === 0) {
+                    clients = [
+                        {
+                            id: 'client_sample_1',
+                            name: 'ACCENT SYSTEMS SRL',
+                            country: 'Romania',
+                            manager: 'Dan Albu',
+                            status: 'ACTIVE',
+                            email: 'dan.albu@accentsystems.ro',
+                            phone: '0744 382758',
+                            notes: '유럽 센서 모듈 주력 공급 거래처',
+                            products: [
+                                { name: 'CA05FS', price: 29.50 },
+                                { name: 'CA20FS', price: 37.25 },
+                                { name: 'MP100', price: 10.00 }
+                            ],
+                            orders: []
+                        }
+                    ];
+                    persistDataLocally();
+                }
+            } catch(e) {
+                clients = [];
+            }
+            renderApp();
+        }
+
+        function persistDataLocally() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
+                syncChannel.postMessage({ type: 'SYNC_DATA', clients: clients });
             } catch(e) {}
         }
 
-        async function saveToCloud() {
-            saveToStorage();
-            if (!window.db || !window.auth || !window.auth.currentUser || isSavingToCloud || typeof window.fs_doc === 'undefined') return;
+        function manualCloudSync() {
             try {
-                isSavingToCloud = true;
-                const userId = window.auth.currentUser.uid;
-                const docRef = window.fs_doc(window.db, 'artifacts', appId, 'users', userId, 'crmData', 'mainDoc');
-                await window.fs_setDoc(docRef, { clients: clients, updatedAt: new Date().toISOString() });
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        clients = parsed;
+                        renderApp();
+                        showToast('클라우드 동기화 성공: 최신 데이터 로드됨', 'success');
+                        return;
+                    }
+                }
+                renderApp();
+                showToast('현재 최신 상태입니다.', 'success');
             } catch(e) {
-                console.error("Cloud save failed:", e);
-            } finally {
-                isSavingToCloud = false;
+                showToast('동기화 중 오류가 발생했습니다.', 'error');
             }
         }
 
-        // Expose all required handlers globally to prevent ReferenceErrors
+        // Expose handlers globally
         window.renderApp = renderApp;
         window.setViewMode = setViewMode;
         window.openClientModal = openClientModal;
@@ -687,9 +593,7 @@
         window.onOrderProductSelectChange = onOrderProductSelectChange;
         window.calculateOrderTotal = calculateOrderTotal;
         window.exportToCSV = exportToCSV;
-        window.openBackupModal = openBackupModal;
-        window.closeBackupModal = closeBackupModal;
-        window.exportJSONBackup = exportJSONBackup;
+        window.manualCloudSync = manualCloudSync;
 
         function updateCountryFilterOptions() {
             const filterSelect = document.getElementById('filter-country');
@@ -1039,9 +943,9 @@
                 clients.push(clientData);
             }
 
-            saveToCloud();
+            persistDataLocally();
             closeClientModal();
-            showToast('거래처 정보가 클라우드에 저장되었습니다.', 'success');
+            showToast('거래처 정보가 저장되었습니다.', 'success');
             renderApp();
         }
 
@@ -1136,7 +1040,7 @@
             const targetId = activeDetailClientId;
             showToastConfirm('이 거래처를 삭제하시겠습니까?', function() {
                 clients = clients.filter(c => c.id !== targetId);
-                saveToCloud();
+                persistDataLocally();
                 closeDetailModal();
                 showToast('거래처가 삭제되었습니다.', 'success');
                 renderApp();
@@ -1220,9 +1124,9 @@
                 status
             });
 
-            saveToCloud();
+            persistDataLocally();
             closeOrderModal();
-            showToast('신규 주문이 클라우드에 등록되었습니다.', 'success');
+            showToast('신규 주문이 등록되었습니다.', 'success');
             openDetailModal(client.id);
             renderApp();
         }
@@ -1233,43 +1137,12 @@
                 const client = clients.find(c => c.id === activeDetailClientId);
                 if (client && client.orders) {
                     client.orders = client.orders.filter(o => o.id !== orderId);
-                    saveToCloud();
+                    persistDataLocally();
                     showToast('주문 내역이 삭제되었습니다.', 'success');
                     openDetailModal(client.id);
                     renderApp();
                 }
             });
-        }
-
-        function openBackupModal() {
-            document.getElementById('backup-modal').classList.remove('hidden');
-        }
-
-        function closeBackupModal() {
-            document.getElementById('backup-modal').classList.add('hidden');
-        }
-
-        function exportJSONBackup() {
-            if (clients.length === 0) {
-                showToast('백업할 데이터가 없습니다.', 'error');
-                return;
-            }
-            const backupPayload = {
-                version: '1.0',
-                exportDate: new Date().toISOString(),
-                clientsCount: clients.length,
-                clients: clients
-            };
-
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `CAOS_CRM_Backup_${new Date().toISOString().split('T')[0]}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-
-            showToast('전체 백업 파일(.json)이 다운로드되었습니다.', 'success');
         }
 
         function exportToCSV() {
