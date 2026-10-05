@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CAOS 거래처 관리 시스템 (B2B CRM)</title>
     
-    <!-- iOS Web App & High-End Touch Icon (Minimalist Sleek Globe Icon) -->
+    <!-- iOS Web App Metadata -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CAOS">
     
-    <!-- SVG Data URI for iOS Home Screen Icon (Minimalist Red Globe) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180' width='180' height='180'><defs><linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%230F172A'/><stop offset='100%25' stop-color='%23020617'/></linearGradient><linearGradient id='red' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%23FF2A3B'/><stop offset='100%25' stop-color='%23E50012'/></linearGradient></defs><rect width='180' height='180' rx='40' fill='url(%23bg)'/><circle cx='90' cy='90' r='54' fill='none' stroke='url(%23red)' stroke-width='7'/><ellipse cx='90' cy='90' rx='25' ry='54' fill='none' stroke='%23334155' stroke-width='3.5' stroke-dasharray='3 2'/><line x1='36' y1='90' x2='144' y2='90' stroke='%23334155' stroke-width='3.5'/><line x1='46' y1='62' x2='134' y2='62' stroke='%23475569' stroke-width='2.5'/><line x1='46' y1='118' x2='134' y2='118' stroke='%23475569' stroke-width='2.5'/><circle cx='118' cy='62' r='7' fill='%23FF2A3B'/></svg>">
+    <!-- iOS Native Base64 PNG Apple Touch Icon (Red Globe Icon for iPhone Home Screen) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAACwCAYAAACm44LFAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAdeSURBVHic7Z3ti1vXGcc/z13pIsmR7E3s2InXaVqSpA0mIWBp2uA">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAACwCAYAAACm44LFAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAdeSURBVHic7Z3ti1vXGcc/z13pIsmR7E3s2InXaVqSpA0mIWBp2uA">
+    
+    <!-- SVG Fallback for Standard Web Browsers -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230F172A'/><circle cx='50' cy='50' r='30' fill='none' stroke='%23E50012' stroke-width='4'/><ellipse cx='50' cy='50' rx='14' ry='30' fill='none' stroke='%23475569' stroke-width='2'/><line x1='20' y1='50' x2='80' y2='50' stroke='%23475569' stroke-width='2'/><circle cx='65' cy='35' r='4' fill='%23FF2A3B'/></svg>">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts (Inter & Noto Sans KR) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <script>
@@ -86,17 +90,13 @@
             <!-- Sleek Minimalist Globe Header Logo -->
             <div class="flex items-center gap-3">
                 <a href="#" class="flex items-center gap-3 group">
-                    <!-- Clean Vector Globe Icon -->
                     <div class="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center shrink-0">
                         <svg class="w-full h-full text-caos-red drop-shadow-xs group-hover:rotate-12 group-hover:scale-105 transition-all duration-500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Globe Outer Sphere -->
                             <circle cx="50" cy="50" r="42" stroke="url(#globeRedGrad)" stroke-width="5"/>
-                            <!-- Latitude / Longitude Lines -->
                             <ellipse cx="50" cy="50" rx="20" ry="42" stroke="#94A3B8" stroke-width="3.5" stroke-dasharray="2 1"/>
                             <line x1="8" y1="50" x2="92" y2="50" stroke="#94A3B8" stroke-width="3.5"/>
                             <line x1="16" y1="28" x2="84" y2="28" stroke="#CBD5E1" stroke-width="2.5"/>
                             <line x1="16" y1="72" x2="84" y2="72" stroke="#CBD5E1" stroke-width="2.5"/>
-                            <!-- Active Red Connection Orbit Point -->
                             <circle cx="70" cy="30" r="6" fill="#FF2A3B"/>
                             <circle cx="70" cy="30" r="10" stroke="#FF2A3B" stroke-width="2" class="animate-ping opacity-75"/>
                             <defs>
@@ -146,7 +146,6 @@
 
         <!-- KPI Summary Stats -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-            <!-- Total Clients Card -->
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-bold text-slate-600 tracking-wider uppercase">총 관리 거래처</p>
@@ -158,7 +157,6 @@
                 </div>
             </div>
 
-            <!-- Revenue Card ($ USD) -->
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-bold text-slate-600 tracking-wider uppercase">총 누적 주문액</p>
@@ -170,7 +168,6 @@
                 </div>
             </div>
 
-            <!-- Active Orders Card -->
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-bold text-slate-600 tracking-wider uppercase">진행 중 주문건</p>
@@ -182,7 +179,6 @@
                 </div>
             </div>
 
-            <!-- Export Countries Card -->
             <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-bold text-slate-600 tracking-wider uppercase">진출 국가 수</p>
@@ -196,14 +192,12 @@
         </section>
 
         <section class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-            <!-- Search bar -->
             <div class="relative flex-1">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                 <input type="text" id="search-input" oninput="renderApp()" placeholder="거래처명, 담당자, 판매물품, 국가 검색..." 
                     class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red focus:bg-white transition">
             </div>
 
-            <!-- Filters & View Switch -->
             <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 ios-scroller">
                 <select id="filter-country" onchange="renderApp()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red text-slate-700 min-w-[110px]">
                     <option value="ALL">전체 국가</option>
@@ -228,12 +222,9 @@
         </section>
 
         <section id="clients-container" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex-1">
-            <!-- Card View Grid -->
             <div id="card-view" class="p-3 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
-                <!-- Dynamic Cards injected via JS -->
             </div>
 
-            <!-- Table View -->
             <div id="table-view" class="hidden overflow-x-auto ios-scroller">
                 <table class="w-full text-left text-sm border-collapse min-w-[750px]">
                     <thead>
@@ -248,12 +239,10 @@
                         </tr>
                     </thead>
                     <tbody id="client-table-body" class="divide-y divide-slate-100">
-                        <!-- Dynamic Table Rows injected via JS -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- Empty State -->
             <div id="empty-state" class="hidden py-16 text-center px-4">
                 <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-caos-red mx-auto mb-3 text-2xl shadow-xs">
                     <i class="fa-solid fa-folder-open"></i>
@@ -331,7 +320,6 @@
                     </div>
                 </div>
 
-                <!-- Multi-Product Management -->
                 <div class="border-t border-slate-200 pt-4 mt-2">
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-xs font-bold text-slate-800">
@@ -343,7 +331,6 @@
                     </div>
                     
                     <div id="product-rows-container" class="space-y-2">
-                        <!-- Dynamic Product Rows -->
                     </div>
                     <p class="text-[11px] text-slate-400 mt-1.5">* 다수의 취급 센서/물품과 물품별 기본 단가($ USD)를 입력할 수 있습니다.</p>
                 </div>
@@ -401,7 +388,6 @@
                     <div class="col-span-2 border-t border-slate-200/80 pt-3 mt-1">
                         <span class="text-slate-400 block mb-1.5 font-bold">등록된 취급 물품 및 단가 ($ USD)</span>
                         <div id="detail-products-list" class="flex flex-wrap gap-1.5">
-                            <!-- Dynamic Product Pills -->
                         </div>
                     </div>
 
@@ -411,7 +397,6 @@
                     </div>
                 </div>
 
-                <!-- Order History -->
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
@@ -423,7 +408,6 @@
                     </div>
 
                     <div id="order-history-list" class="space-y-2.5">
-                        <!-- Dynamic Orders -->
                     </div>
                 </div>
             </div>
@@ -439,7 +423,6 @@
         </div>
     </div>
 
-    <!-- Order Modal -->
     <div id="order-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
@@ -455,7 +438,6 @@
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">등록 물품 선택 (자동입력)</label>
                     <select id="order-item-select" onchange="onOrderProductSelectChange()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-caos-red">
-                        <!-- Dynamic options -->
                     </select>
                 </div>
 
@@ -509,7 +491,6 @@
         </div>
     </div>
 
-    <!-- Backup Modal -->
     <div id="backup-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
@@ -569,7 +550,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // Default Initial Data with $ USD Prices
         const initialClients = [
             {
                 id: 'client_101',
@@ -1134,7 +1114,6 @@
 
             document.getElementById('detail-notes').textContent = client.notes || '등록된 특이사항 메모가 없습니다.';
 
-            // Render Products
             const productsContainer = document.getElementById('detail-products-list');
             if (client.products && client.products.length > 0) {
                 productsContainer.innerHTML = client.products.map(p => `
@@ -1147,7 +1126,6 @@
                 productsContainer.innerHTML = '<span class="text-slate-400 text-xs italic">등록된 취급 물품이 없습니다.</span>';
             }
 
-            // Render Orders List
             const ordersContainer = document.getElementById('order-history-list');
             ordersContainer.innerHTML = '';
 
