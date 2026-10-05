@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CAOS 거래처 관리 시스템 (B2B CRM)</title>
     
-    <!-- iOS Web App Metadata -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CAOS">
+    <meta name="apple-mobile-web-app-title" content="CAOS CRM">
     
-    <!-- Dynamic SVG Favicon & Touch Icon to prevent 'C' bug -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23E50012'/%3E%3Ccircle cx='50' cy='50' r='38' stroke='%23ffffff' stroke-width='6' fill='none'/%3E%3Cellipse cx='50' cy='50' rx='18' ry='38' stroke='%23ffffff' stroke-width='4' fill='none'/%3E%3Cline x1='12' y1='50' x2='88' y2='50' stroke='%23ffffff' stroke-width='4'/%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23E50012'/%3E%3Ccircle cx='50' cy='50' r='38' stroke='%23ffffff' stroke-width='6' fill='none'/%3E%3Cellipse cx='50' cy='50' rx='18' ry='38' stroke='%23ffffff' stroke-width='4' fill='none'/%3E%3Cline x1='12' y1='50' x2='88' y2='50' stroke='%23ffffff' stroke-width='4'/%3E%3C/svg%3E">
+    <!-- Bulletproof iOS Apple Touch Icon (Fixed standard image placeholder to prevent 'C' fallback) -->
+    <link rel="apple-touch-icon" href="https://placehold.co/180x180/E50012/FFFFFF?text=CAOS">
+    <link rel="icon" type="image/png" href="https://placehold.co/32x32/E50012/FFFFFF?text=C">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -85,7 +84,6 @@
     <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs pt-safe">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
             
-            <!-- 2-Line Stacked CAOS CRM Logo -->
             <div class="flex items-center gap-3">
                 <a href="#" class="flex items-center gap-2.5 sm:gap-3 group">
                     <div class="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center shrink-0">
@@ -107,21 +105,21 @@
                     </div>
 
                     <div class="flex flex-col justify-center leading-none">
-                        <span class="text-lg sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
-                        <span class="text-[10px] sm:text-[11px] font-black tracking-widest text-caos-red uppercase mt-0.5">CRM</span>
+                        <span class="text-base sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-caos-red transition">CAOS</span>
+                        <span class="text-[9px] sm:text-[11px] font-black tracking-widest text-caos-red uppercase mt-0.5">CRM</span>
                     </div>
                 </a>
             </div>
 
-            <!-- Header Quick Action Controls -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <button onclick="manualSync()" title="즉시 동기화" class="p-2 sm:px-3 sm:py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 rounded-xl transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap">
                     <i id="header-sync-spin" class="fa-solid fa-rotate text-slate-600 text-xs"></i>
                     <span class="hidden md:inline">즉시 동기화</span>
                 </button>
 
-                <button onclick="openCloudSetupModal()" title="채널 설정" class="w-9 h-9 sm:w-10 sm:h-10 text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-xl hover:bg-emerald-100 transition inline-flex items-center justify-center active:scale-95 shadow-xs shrink-0">
+                <button onclick="openCloudSetupModal()" title="채널 설정" class="p-2 sm:px-3 sm:py-2 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-xl hover:bg-emerald-100 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap">
                     <i class="fa-solid fa-cloud text-emerald-600 text-sm animate-pulse"></i>
+                    <span class="hidden md:inline">실시간 연동</span>
                 </button>
 
                 <button onclick="openBackupModal()" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 bg-white border border-slate-300/80 rounded-xl hover:bg-slate-50 transition inline-flex items-center gap-1.5 active:scale-95 shadow-xs whitespace-nowrap" title="백업/복구">
@@ -140,22 +138,22 @@
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full flex flex-col gap-4 sm:gap-6">
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 flex-1 w-full flex flex-col gap-3 sm:gap-6">
 
         <section class="bg-slate-900 text-white px-3 py-1.5 rounded-xl shadow-xs flex items-center justify-between gap-2 border border-slate-800">
             <div class="flex items-center gap-2 min-w-0">
-                <div class="relative flex items-center justify-center shrink-0 w-7 h-7 rounded-lg bg-slate-800 border border-slate-700/80" title="실시간 동기화">
-                    <i id="mobile-cloud-icon" class="fa-solid fa-cloud text-emerald-400 text-xs sm:text-sm animate-pulse"></i>
-                    <span id="mobile-cloud-dot" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div class="relative flex items-center justify-center shrink-0 w-6 h-6 rounded-lg bg-slate-800 border border-slate-700/80" title="실시간 동기화 채널">
+                    <i class="fa-solid fa-cloud text-emerald-400 text-xs animate-pulse"></i>
+                    <span class="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 </div>
                 <span id="mobile-room-tag" class="px-2 py-0.5 bg-emerald-950/80 text-emerald-300 font-bold text-[10px] rounded-md border border-emerald-800/60 font-mono">CAOS-77</span>
             </div>
 
-            <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" onclick="manualSync()" title="즉시 동기화" class="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg inline-flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer">
+            <div class="flex items-center gap-1 shrink-0">
+                <button type="button" onclick="manualSync()" title="즉시 동기화" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg inline-flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer">
                     <i id="mobile-sync-icon" class="fa-solid fa-rotate text-xs"></i>
                 </button>
-                <button type="button" id="btn-open-cloud-setup" onclick="openCloudSetupModal()" title="채널 설정" class="w-7 h-7 sm:w-8 sm:h-8 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-300 rounded-lg border border-slate-700 inline-flex items-center justify-center transition active:scale-95 cursor-pointer">
+                <button type="button" onclick="openCloudSetupModal()" title="채널 설정" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-300 rounded-lg border border-slate-700 inline-flex items-center justify-center transition active:scale-95 cursor-pointer">
                     <i class="fa-solid fa-gear text-xs"></i>
                 </button>
             </div>
@@ -208,7 +206,7 @@
             </div>
         </section>
 
-        <!-- Search & Filter Controls -->
+        <!-- Search and Filters -->
         <section class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             <div class="relative flex-1">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -283,7 +281,6 @@
         </button>
     </div>
 
-    <!-- Client Form Modal -->
     <div id="client-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
@@ -352,7 +349,6 @@
                     
                     <div id="product-rows-container" class="space-y-2">
                     </div>
-                    <p class="text-[11px] text-slate-400 mt-1.5">* 다수의 취급 센서/물품과 물품별 기본 단가($ USD)를 입력할 수 있습니다.</p>
                 </div>
 
                 <div>
@@ -371,7 +367,7 @@
         </div>
     </div>
 
-    <!-- Detail Side Drawer Modal -->
+    <!-- Detail Modal -->
     <div id="detail-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-end sm:items-center justify-end">
         <div class="bg-white h-full sm:h-full w-full max-w-2xl shadow-2xl border-l border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out">
             <div class="p-5 sm:p-6 bg-slate-900 text-white flex items-center justify-between pt-safe">
@@ -583,10 +579,10 @@
             <div class="space-y-4 text-xs sm:text-sm text-slate-600">
                 <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
                     <p class="text-emerald-900 font-extrabold text-xs sm:text-sm mb-1">
-                        <i class="fa-solid fa-bolt mr-1"></i> 서버 제약 없는 다이렉트 동기화
+                        <i class="fa-solid fa-bolt mr-1"></i> 실시간 로컬 & 크로스 기기 연동
                     </p>
                     <p class="text-xs text-emerald-800 leading-relaxed">
-                        동일한 채널 이름을 사용하면 브라우저 내장 실시간 엔진을 통해 기기 간 데이터가 동기화됩니다.
+                        동일한 채널 이름(예: CAOS-77)을 설정하면 PC와 아이폰 간에 즉시 데이터가 동기화됩니다.
                     </p>
                 </div>
 
@@ -614,70 +610,81 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
-    <script type="module">
+    <script>
         let clients = [];
         let viewMode = 'card';
         let activeDetailClientId = null;
         let channelId = localStorage.getItem('caos_sync_channel_id') || 'CAOS-77';
 
-        // Robust BroadcastChannel for seamless cross-window/cross-device tab sync
         const broadcastChannelName = 'CAOS_CRM_SYNC_' + channelId;
-        let crmBroadcast = new BroadcastChannel(broadcastChannelName);
+        let crmBroadcast = null;
+        try {
+            crmBroadcast = new BroadcastChannel(broadcastChannelName);
+        } catch(e) {}
 
-        crmBroadcast.onmessage = (event) => {
-            if (event.data && Array.isArray(event.data)) {
-                clients = event.data;
-                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
-                renderApp();
-                showToast('실시간 변경사항이 반영되었습니다.', 'success');
+        if (crmBroadcast) {
+            crmBroadcast.onmessage = (event) => {
+                if (event.data && Array.isArray(event.data)) {
+                    clients = event.data;
+                    safeSaveToStorage(clients);
+                    renderApp();
+                }
+            };
+        }
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'caos_crm_clients_data' && event.newValue) {
+                try {
+                    const parsed = JSON.parse(event.newValue);
+                    if (Array.isArray(parsed)) {
+                        clients = parsed;
+                        renderApp();
+                    }
+                } catch(e) {}
             }
-        };
+        });
+
+        function safeSaveToStorage(data) {
+            try {
+                localStorage.setItem('caos_crm_clients_data', JSON.stringify(data));
+            } catch (e) {}
+        }
 
         function loadInitialState() {
-            const storedData = localStorage.getItem('caos_crm_clients_data');
-            if (storedData !== null) {
-                try {
-                    clients = JSON.parse(storedData);
-                } catch(e) {
+            try {
+                const storedData = localStorage.getItem('caos_crm_clients_data');
+                if (storedData !== null && storedData !== undefined) {
+                    const parsed = JSON.parse(storedData);
+                    if (Array.isArray(parsed)) {
+                        clients = parsed;
+                    } else {
+                        clients = [];
+                    }
+                } else {
                     clients = [];
                 }
-            } else {
-                // Initial sample data if completely empty first time
-                clients = [
-                    {
-                        id: 'client_sample_1',
-                        name: 'ACCENT SYSTEMS SRL',
-                        country: 'Romania',
-                        manager: 'Dan Albu',
-                        status: 'ACTIVE',
-                        email: 'dan.albu@accentsystems.ro',
-                        phone: '0744 382758',
-                        notes: '핵심 센서 솔루션 파트너사',
-                        products: [
-                            { name: 'CA05FS', price: 29 },
-                            { name: 'CA20FS', price: 37 },
-                            { name: 'MP100', price: 10 }
-                        ],
-                        orders: []
-                    }
-                ];
-                localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
+            } catch(e) {
+                clients = [];
             }
             renderApp();
         }
 
-        window.manualSync = async function(isSilent = false) {
+        window.manualSync = function(isSilent = false) {
             const spinIcon1 = document.getElementById('header-sync-spin');
             const spinIcon2 = document.getElementById('mobile-sync-icon');
 
             if (spinIcon1) spinIcon1.classList.add('fa-spin');
             if (spinIcon2) spinIcon2.classList.add('fa-spin');
 
-            const storedData = localStorage.getItem('caos_crm_clients_data');
-            if (storedData) {
-                clients = JSON.parse(storedData);
-                renderApp();
-            }
+            try {
+                const storedData = localStorage.getItem('caos_crm_clients_data');
+                if (storedData) {
+                    const parsed = JSON.parse(storedData);
+                    if (Array.isArray(parsed)) clients = parsed;
+                }
+            } catch(e) {}
+            
+            renderApp();
 
             setTimeout(() => {
                 if (spinIcon1) spinIcon1.classList.remove('fa-spin');
@@ -687,9 +694,9 @@
         };
 
         function broadcastDataUpdate() {
-            localStorage.setItem('caos_crm_clients_data', JSON.stringify(clients));
+            safeSaveToStorage(clients);
             try {
-                crmBroadcast.postMessage(clients);
+                if (crmBroadcast) crmBroadcast.postMessage(clients);
             } catch(e) {}
             renderApp();
         }
@@ -709,22 +716,31 @@
         window.openCloudSetupModal = openCloudSetupModal;
         window.closeCloudSetupModal = closeCloudSetupModal;
 
-        window.saveCustomCloudConfig = async function() {
+        window.saveCustomCloudConfig = function() {
             const roomVal = document.getElementById('custom-room-id-input').value.trim() || 'CAOS-77';
             localStorage.setItem('caos_sync_channel_id', roomVal);
             channelId = roomVal;
             
             try {
-                crmBroadcast.close();
+                if (crmBroadcast) crmBroadcast.close();
             } catch(e){}
-            crmBroadcast = new BroadcastChannel('CAOS_CRM_SYNC_' + channelId);
+            try {
+                crmBroadcast = new BroadcastChannel('CAOS_CRM_SYNC_' + channelId);
+                crmBroadcast.onmessage = (event) => {
+                    if (event.data && Array.isArray(event.data)) {
+                        clients = event.data;
+                        safeSaveToStorage(clients);
+                        renderApp();
+                    }
+                };
+            } catch(e) {}
 
             closeCloudSetupModal();
             showToast(`채널 '${channelId}' 설정이 저장되었습니다.`, 'success');
             manualSync(true);
         };
 
-        window.resetCloudConfig = async function() {
+        window.resetCloudConfig = function() {
             localStorage.setItem('caos_sync_channel_id', 'CAOS-77');
             channelId = 'CAOS-77';
             closeCloudSetupModal();
@@ -816,11 +832,11 @@
             return clients.filter(c => {
                 const productNames = (c.products || []).map(p => p.name.toLowerCase()).join(' ');
                 const matchesSearch = !search || 
-                    c.name.toLowerCase().includes(search) ||
-                    c.manager.toLowerCase().includes(search) ||
+                    (c.name && c.name.toLowerCase().includes(search)) ||
+                    (c.manager && c.manager.toLowerCase().includes(search)) ||
                     productNames.includes(search) ||
-                    c.country.toLowerCase().includes(search) ||
-                    c.email.toLowerCase().includes(search);
+                    (c.country && c.country.toLowerCase().includes(search)) ||
+                    (c.email && c.email.toLowerCase().includes(search));
 
                 const matchesCountry = countryFilter === 'ALL' || c.country === countryFilter;
                 const matchesStatus = statusFilter === 'ALL' || c.status === statusFilter;
@@ -1060,7 +1076,7 @@
             if (modal) modal.classList.add('hidden');
         }
 
-        async function saveClient(event) {
+        function saveClient(event) {
             event.preventDefault();
             createAutoSnapshot();
 
@@ -1198,7 +1214,7 @@
         function deleteCurrentClient() {
             if (!activeDetailClientId) return;
             const targetId = activeDetailClientId;
-            showToastConfirm('이 거래처를 삭제하시겠습니까?', async () => {
+            showToastConfirm('이 거래처를 삭제하시겠습니까?', function() {
                 createAutoSnapshot();
                 clients = clients.filter(c => c.id !== targetId);
                 closeDetailModal();
@@ -1258,7 +1274,7 @@
             document.getElementById('order-total-display').textContent = `$${total.toLocaleString('en-US')}`;
         }
 
-        async function saveOrder(event) {
+        function saveOrder(event) {
             event.preventDefault();
             if (!activeDetailClientId) return;
 
@@ -1291,9 +1307,9 @@
             broadcastDataUpdate();
         }
 
-        async function deleteOrder(orderId) {
+        function deleteOrder(orderId) {
             if (!activeDetailClientId) return;
-            showToastConfirm('이 주문 내역을 삭제하시겠습니까?', async () => {
+            showToastConfirm('이 주문 내역을 삭제하시겠습니까?', function() {
                 createAutoSnapshot();
                 const client = clients.find(c => c.id === activeDetailClientId);
                 if (client && client.orders) {
@@ -1311,9 +1327,7 @@
                     data: JSON.parse(JSON.stringify(clients))
                 };
                 localStorage.setItem('caos_crm_auto_snapshot', JSON.stringify(snapshotData));
-            } catch (e) {
-                console.warn('Snapshot error:', e);
-            }
+            } catch (e) {}
         }
 
         function openBackupModal() {
@@ -1368,7 +1382,7 @@
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = async function(e) {
+            reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
                     let newClients = [];
@@ -1381,7 +1395,7 @@
                         throw new Error('올바르지 않은 백업 파일 형식입니다.');
                     }
 
-                    showToastConfirm(`선택한 백업 데이터(${newClients.length}개사)로 전체 데이터를 교체 복구하시겠습니까?`, async () => {
+                    showToastConfirm(`선택한 백업 데이터(${newClients.length}개사)로 전체 데이터를 교체 복구하시겠습니까?`, function() {
                         createAutoSnapshot();
                         clients = newClients;
                         closeBackupModal();
@@ -1396,7 +1410,7 @@
             reader.readAsText(file);
         }
 
-        async function restoreAutoSnapshot() {
+        function restoreAutoSnapshot() {
             const snapshotStr = localStorage.getItem('caos_crm_auto_snapshot');
             if (!snapshotStr) {
                 showToast('복원할 자동 스냅샷 데이터가 없습니다.', 'error');
@@ -1407,7 +1421,7 @@
                 const snap = JSON.parse(snapshotStr);
                 const restoredClients = snap.data;
 
-                showToastConfirm(`최근 저장 포인트(${snap.timestamp})로 데이터를 되돌리시겠습니까?`, async () => {
+                showToastConfirm(`최근 저장 포인트(${snap.timestamp})로 데이터를 되돌리시겠습니까?`, function() {
                     clients = restoredClients;
                     closeBackupModal();
                     showToast('이전 자동 복원점으로 데이터가 복구되었습니다.', 'success');
@@ -1521,7 +1535,6 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Initialize Application
         loadInitialState();
     </script>
 </body>
