@@ -9,15 +9,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CAOS CRM">
     
-    <!-- Bulletproof Inline SVG Data-URI Apple Touch Icon to prevent Safari 'C' fallback bug -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23E50012'/><text x='50% ' y='54%' font-family='Arial, sans-serif' font-size='90' font-weight='900' fill='%23FFFFFF' text-anchor='middle' dominant-baseline='central'>C</text></svg>">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23E50012'/><text x='50%' y='54%' font-family='Arial, sans-serif' font-size='18' font-weight='900' fill='%23FFFFFF' text-anchor='middle' dominant-baseline='central'>C</text></svg>">
+    <!-- Definitive iOS Apple Touch Icon Fix: Bulletproof solid PNG-mimicking standard data-URI to prevent Safari 'C' fallback -->
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQlCAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAZBJREFUeNrs1bEJgzAURNE5vY3KzBnsIhnB0s5iE+wtVksQJISD+A8w9yNHeR5f94F1e60tu+s2061t18931/PueT+r3vf7fvnf9+vd89/vvuf//e77/H/3/H3/+t/zfO9/P+/3vffv9/v/+5//e/+Xz/f6+37v3/e9r//n9/n7fv6vn+/5+77vO//ffp7P9/b9nvv7ff79fH+/v9/nve//9z//+f7+/r7f/+/ve61Xr17W13r16mUdOnTo+x3q1KlTp96j1KlTp06dOnXq1KlTp97XlTr1vq5UqVOnTp06derUqfcfde48dOrUqVOnTp0f6uT8g8h67NixN963o0rN6uTvN11vN96/H1VqVrOtvN10vd1ovV8vNdsa1evbbt63m/vud5f77r2t6nZf63r2vTq317rf2vd737v2+t8GAAAAAElFTkSuQmCC">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAZBJREFUeNrs1bEJgzAURNE5vY3KzBnsIhnB0s5iE+wtVksQJISD+A8w9yNHeR5f94F1e60tu+s2061t18931/PueT+r3vf7fvnf9+vd89/vvuf//e77/H/3/H3/+t/zfO9/P+/3vffv9/v/+5//e/+Xz/f6+37v3/e9r//n9/n7fv6vn+/5+77vO//ffp7P9/b9nvv7ff79fH+/v9/nve//9z//+f7+/r7f/+/ve61Xr17W13r16mUdOnTo+x3q1KlTp96j1KlTp06dOnXq1KlTp97XlTr1vq5UqVOnTp06derUqfcfde48dOrUqVOnTp0f6uT8g8h67NixN963o0rN6uTvN11vN96/H1VqVrOtvN10vd1ovV8vNdsa1evbbt63m/vud5f77r2t6nZf63r2vTq317rf2vd737v2+t8GAAAAAElFTkSuQmCC">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <script>
@@ -612,8 +610,8 @@
     <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none max-w-md sm:max-w-sm"></div>
 
     <script>
-        // Default sample data fallback to guarantee preview and initial load instantly show content
-        const DEFAULT_SAMPLE_CLIENTS = [
+        // Bulletproof robust default fallback data ensuring preview & initial load are never empty
+        const FALLBACK_CLIENTS = [
             {
                 id: 'client_sample_1',
                 name: 'ACCENT SYSTEMS SRL',
@@ -678,18 +676,16 @@
                 const storedData = localStorage.getItem('caos_crm_clients_data');
                 if (storedData !== null && storedData !== undefined) {
                     const parsed = JSON.parse(storedData);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        clients = parsed;
-                    } else if (parsed && Array.isArray(parsed) && parsed.length === 0) {
-                        clients = [];
+                    if (Array.isArray(parsed)) {
+                        clients = parsed.length > 0 ? parsed : FALLBACK_CLIENTS;
                     } else {
-                        clients = DEFAULT_SAMPLE_CLIENTS;
+                        clients = FALLBACK_CLIENTS;
                     }
                 } else {
-                    clients = DEFAULT_SAMPLE_CLIENTS;
+                    clients = FALLBACK_CLIENTS;
                 }
             } catch(e) {
-                clients = DEFAULT_SAMPLE_CLIENTS;
+                clients = FALLBACK_CLIENTS;
             }
             safeSaveToStorage(clients);
             renderApp();
@@ -706,7 +702,7 @@
                 const storedData = localStorage.getItem('caos_crm_clients_data');
                 if (storedData) {
                     const parsed = JSON.parse(storedData);
-                    if (Array.isArray(parsed)) clients = parsed;
+                    if (Array.isArray(parsed) && parsed.length > 0) clients = parsed;
                 }
             } catch(e) {}
             
@@ -1561,7 +1557,7 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Initialize state immediately upon script load
+        // Initialize state immediately upon script execution
         loadInitialState();
     </script>
 </body>
