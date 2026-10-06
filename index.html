@@ -2,131 +2,203 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="CRM">
-  <title>거래처 관리 CRM</title>
+
+  <title>CAOS 거래처 관리 시스템</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                   "Noto Sans KR", sans-serif;
-      background: #f6f7f9;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans KR",
+        Arial,
+        sans-serif;
+      background: #f5f6f8;
       color: #172033;
     }
 
-    button, input, select, textarea {
+    button,
+    input,
+    select,
+    textarea {
       font: inherit;
     }
 
-    .wrap {
-      max-width: 1180px;
-      margin: auto;
+    button {
+      cursor: pointer;
+    }
+
+    .container {
+      width: min(1180px, 100%);
+      margin: 0 auto;
       padding: 18px;
     }
 
-    .top {
+    .header {
       display: flex;
-      gap: 12px;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+      gap: 12px;
       flex-wrap: wrap;
+      margin-bottom: 16px;
     }
 
-    h1 {
-      font-size: 22px;
+    .title {
       margin: 0;
+      font-size: 24px;
+      font-weight: 800;
     }
 
-    .sub {
-      font-size: 12px;
+    .subtitle {
+      margin-top: 5px;
+      font-size: 13px;
       color: #6b7280;
-      margin-top: 4px;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .btn {
       border: 0;
       border-radius: 10px;
       padding: 10px 14px;
-      cursor: pointer;
       font-weight: 700;
     }
 
-    .primary {
+    .btn-primary {
       background: #e50012;
       color: white;
     }
 
-    .secondary {
+    .btn-secondary {
       background: white;
+      color: #263244;
       border: 1px solid #d8dde6;
     }
 
-    .danger {
+    .btn-danger {
       background: #fff1f2;
       color: #be123c;
       border: 1px solid #fecdd3;
     }
 
-    .toolbar, .panel {
+    .btn-small {
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .summary-card {
       background: white;
       border: 1px solid #e2e6ec;
-      border-radius: 15px;
-      margin-top: 15px;
-      padding: 14px;
+      border-radius: 14px;
+      padding: 15px;
+    }
+
+    .summary-label {
+      color: #6b7280;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .summary-value {
+      font-size: 23px;
+      font-weight: 800;
     }
 
     .toolbar {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr auto;
       gap: 8px;
+      background: white;
+      border: 1px solid #e2e6ec;
+      border-radius: 14px;
+      padding: 12px;
     }
 
-    input, select, textarea {
+    input,
+    select,
+    textarea {
       width: 100%;
       border: 1px solid #ccd3dd;
       border-radius: 9px;
       padding: 10px;
       background: white;
+      color: #172033;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid #e5001222;
+      border-color: #e50012;
     }
 
     textarea {
-      min-height: 90px;
+      min-height: 100px;
       resize: vertical;
     }
 
-    .statusline {
+    .connection {
+      margin: 10px 2px 0;
       font-size: 12px;
-      margin-top: 10px;
       color: #64748b;
+      word-break: break-word;
     }
 
-    .grid {
+    .connection.ok {
+      color: #047857;
+    }
+
+    .connection.error {
+      color: #b91c1c;
+    }
+
+    .client-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      margin-top: 15px;
+      margin-top: 14px;
     }
 
-    .card {
+    .client-card {
       background: white;
       border: 1px solid #e1e5eb;
       border-radius: 15px;
       padding: 15px;
       cursor: pointer;
+      transition: 0.15s;
     }
 
-    .card:hover {
-      box-shadow: 0 5px 18px #00000010;
+    .client-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     }
 
-    .card h3 {
-      margin: 7px 0;
+    .client-name {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 9px 0 5px;
     }
 
     .muted {
@@ -134,83 +206,101 @@
       font-size: 13px;
     }
 
+    .badges {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
     .badge {
       display: inline-block;
       padding: 4px 8px;
       border-radius: 999px;
+      background: #eef2f7;
+      color: #475569;
       font-size: 11px;
       font-weight: 800;
-      background: #eef2f7;
     }
 
-    .ACTIVE {
+    .badge.ACTIVE {
       background: #ecfdf5;
       color: #047857;
     }
 
-    .PROSPECT {
+    .badge.PROSPECT {
       background: #eff6ff;
       color: #1d4ed8;
     }
 
-    .INACTIVE {
+    .badge.INACTIVE {
       background: #f1f5f9;
       color: #64748b;
     }
 
-    .products {
-      font-size: 12px;
+    .product-preview {
+      border-top: 1px solid #edf0f3;
       margin-top: 10px;
-      border-top: 1px solid #eee;
       padding-top: 8px;
+      font-size: 12px;
     }
 
-    .row {
+    .row-between {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
-      padding: 3px 0;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      background: white;
+      border: 1px solid #e2e6ec;
+      border-radius: 14px;
+      padding: 50px 15px;
+      text-align: center;
+      color: #94a3b8;
     }
 
     dialog {
-      border: 0;
-      border-radius: 17px;
-      padding: 0;
       width: min(720px, 94vw);
       max-height: 92vh;
-      box-shadow: 0 20px 70px #0004;
+      padding: 0;
+      border: 0;
+      border-radius: 17px;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.3);
     }
 
     dialog::backdrop {
-      background: #0007;
+      background: rgba(0,0,0,0.55);
     }
 
     .modal {
       padding: 18px;
-      overflow: auto;
       max-height: 92vh;
+      overflow-y: auto;
     }
 
-    .modalhead {
+    .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
-    .modalhead h2 {
+    .modal-header h2 {
       margin: 0;
-      font-size: 19px;
+      font-size: 20px;
     }
 
-    .formgrid {
+    .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
 
     .full {
-      grid-column: 1/-1;
+      grid-column: 1 / -1;
     }
 
     label {
@@ -220,13 +310,6 @@
       margin-bottom: 5px;
     }
 
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
     .product-row {
       display: grid;
       grid-template-columns: 2fr 1fr auto;
@@ -234,61 +317,121 @@
       margin-bottom: 7px;
     }
 
-    .orders {
-      margin-top: 15px;
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 18px;
+      flex-wrap: wrap;
     }
 
-    .order {
+    .detail-box {
+      background: #f8fafc;
       border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 10px;
-      margin: 7px 0;
-      font-size: 13px;
+      border-radius: 12px;
+      padding: 13px;
+      margin-bottom: 15px;
     }
 
-    .empty {
-      text-align: center;
-      color: #94a3b8;
-      padding: 45px;
+    .detail-section {
+      margin-top: 18px;
     }
 
-    @media(max-width:800px) {
+    .detail-section h3 {
+      margin: 0 0 9px;
+      font-size: 16px;
+    }
+
+    .detail-product {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf0f3;
+    }
+
+    .order-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 11px;
+      padding: 11px;
+      margin-bottom: 8px;
+    }
+
+    .order-title {
+      font-weight: 800;
+    }
+
+    .order-info {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 850px) {
+      .summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
       .toolbar {
         grid-template-columns: 1fr 1fr;
       }
 
-      .toolbar input {
-        grid-column: 1/-1;
+      .toolbar .search {
+        grid-column: 1 / -1;
       }
 
-      .grid {
-        grid-template-columns: 1fr 1fr;
+      .client-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media(max-width:560px) {
-      .wrap {
+    @media (max-width: 560px) {
+      .container {
         padding: 12px;
       }
 
-      .grid {
-        grid-template-columns: 1fr;
+      .title {
+        font-size: 21px;
+      }
+
+      .summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .summary-value {
+        font-size: 20px;
       }
 
       .toolbar {
         grid-template-columns: 1fr;
       }
 
-      .toolbar input {
+      .toolbar .search {
         grid-column: auto;
       }
 
-      .formgrid {
+      .client-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
         grid-template-columns: 1fr;
       }
 
       .full {
         grid-column: auto;
+      }
+
+      .product-row {
+        grid-template-columns: 1fr;
+      }
+
+      .header-buttons {
+        width: 100%;
+      }
+
+      .header-buttons .btn {
+        flex: 1;
       }
     }
   </style>
@@ -296,23 +439,48 @@
 
 <body>
 
-<div class="wrap">
+<div class="container">
 
-  <div class="top">
-
+  <div class="header">
     <div>
-      <h1>거래처 관리 CRM</h1>
-      <div class="sub">Supabase 실시간 중앙 데이터베이스</div>
+      <h1 class="title">CAOS 거래처 관리 시스템</h1>
+      <div class="subtitle">
+        PC와 iPhone에서 동일한 Supabase 데이터를 사용합니다.
+      </div>
     </div>
 
-    <div>
-      <button class="btn secondary" id="csvBtn">
+    <div class="header-buttons">
+      <button class="btn btn-secondary" id="csvBtn">
         CSV 내보내기
       </button>
 
-      <button class="btn primary" id="newBtn">
+      <button class="btn btn-primary" id="newClientBtn">
         + 신규 거래처
       </button>
+    </div>
+  </div>
+
+
+  <div class="summary">
+
+    <div class="summary-card">
+      <div class="summary-label">전체 거래처</div>
+      <div class="summary-value" id="totalClients">0</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-label">활성 거래처</div>
+      <div class="summary-value" id="activeClients">0</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-label">전체 주문</div>
+      <div class="summary-value" id="totalOrders">0</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-label">총 주문금액</div>
+      <div class="summary-value" id="totalAmount">$0.00</div>
     </div>
 
   </div>
@@ -321,8 +489,9 @@
   <div class="toolbar">
 
     <input
-      id="search"
-      placeholder="거래처명, 담당자, 이메일, 전화번호 검색"
+      class="search"
+      id="searchInput"
+      placeholder="거래처명, 국가, 담당자, 이메일, 전화번호, 제품 검색"
     >
 
     <select id="countryFilter">
@@ -336,172 +505,139 @@
       <option value="INACTIVE">거래 중단/휴면</option>
     </select>
 
-    <button class="btn secondary" id="refreshBtn">
+    <button class="btn btn-secondary" id="refreshBtn">
       새로고침
     </button>
 
   </div>
 
 
-  <div class="statusline" id="statusLine">
-    데이터 연결 중...
+  <div class="connection" id="connectionStatus">
+    Supabase 연결 중...
   </div>
 
 
-  <div class="grid" id="cards"></div>
+  <div class="client-grid" id="clientGrid"></div>
 
 </div>
 
 
-<!-- 거래처 등록/수정 -->
+<!-- 거래처 등록 / 수정 -->
 
 <dialog id="clientDialog">
 
-<form class="modal" id="clientForm">
+  <form class="modal" id="clientForm">
 
-  <div class="modalhead">
+    <div class="modal-header">
 
-    <h2 id="modalTitle">
-      신규 거래처
-    </h2>
-
-    <button
-      type="button"
-      class="btn secondary"
-      onclick="clientDialog.close()"
-    >
-      닫기
-    </button>
-
-  </div>
-
-
-  <input
-    type="hidden"
-    id="clientId"
-  >
-
-
-  <div class="formgrid">
-
-    <div>
-      <label>거래처명 *</label>
-      <input id="name" required>
-    </div>
-
-    <div>
-      <label>국가 *</label>
-      <input id="country" required>
-    </div>
-
-    <div>
-      <label>담당자 *</label>
-      <input id="manager" required>
-    </div>
-
-    <div>
-
-      <label>상태</label>
-
-      <select id="clientStatus">
-
-        <option value="ACTIVE">
-          활성 거래중
-        </option>
-
-        <option value="PROSPECT">
-          계약 협상중
-        </option>
-
-        <option value="INACTIVE">
-          거래 중단/휴면
-        </option>
-
-      </select>
-
-    </div>
-
-
-    <div>
-
-      <label>이메일</label>
-
-      <input
-        id="email"
-        type="email"
-      >
-
-    </div>
-
-
-    <div>
-
-      <label>전화번호</label>
-
-      <input id="phone">
-
-    </div>
-
-
-    <div class="full">
-
-      <label>메모</label>
-
-      <textarea id="notes"></textarea>
-
-    </div>
-
-
-    <div class="full">
-
-      <label>
-        취급/판매 제품
-      </label>
-
-      <div id="productRows"></div>
+      <h2 id="clientModalTitle">
+        신규 거래처
+      </h2>
 
       <button
         type="button"
-        class="btn secondary"
-        id="addProductBtn"
+        class="btn btn-secondary"
+        id="closeClientDialog"
       >
-        + 제품 추가
+        닫기
       </button>
 
     </div>
 
-  </div>
+
+    <input type="hidden" id="clientId">
 
 
-  <div class="actions">
+    <div class="form-grid">
 
-    <button
-      type="button"
-      class="btn danger"
-      id="deleteClientBtn"
-      style="margin-right:auto;display:none"
-    >
-      거래처 삭제
-    </button>
+      <div>
+        <label for="clientName">거래처명 *</label>
+        <input id="clientName" required>
+      </div>
 
-    <button
-      type="button"
-      class="btn secondary"
-      onclick="clientDialog.close()"
-    >
-      취소
-    </button>
+      <div>
+        <label for="clientCountry">국가 *</label>
+        <input id="clientCountry" required>
+      </div>
 
-    <button
-      class="btn primary"
-      type="submit"
-    >
-      저장
-    </button>
+      <div>
+        <label for="clientManager">담당자 *</label>
+        <input id="clientManager" required>
+      </div>
 
-  </div>
+      <div>
+        <label for="clientStatus">거래상태</label>
 
-</form>
+        <select id="clientStatus">
+          <option value="ACTIVE">활성 거래중</option>
+          <option value="PROSPECT">계약 협상중</option>
+          <option value="INACTIVE">거래 중단/휴면</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="clientEmail">이메일</label>
+        <input id="clientEmail" type="email">
+      </div>
+
+      <div>
+        <label for="clientPhone">전화번호</label>
+        <input id="clientPhone">
+      </div>
+
+      <div class="full">
+        <label for="clientNotes">메모</label>
+        <textarea id="clientNotes"></textarea>
+      </div>
+
+      <div class="full">
+
+        <label>판매 제품</label>
+
+        <div id="productRows"></div>
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-small"
+          id="addProductBtn"
+        >
+          + 제품 추가
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        id="deleteClientBtn"
+        style="margin-right:auto;display:none;"
+      >
+        거래처 삭제
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="cancelClientBtn"
+      >
+        취소
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        저장
+      </button>
+
+    </div>
+
+  </form>
 
 </dialog>
 
@@ -510,46 +646,46 @@
 
 <dialog id="detailDialog">
 
-<div class="modal">
+  <div class="modal">
 
-  <div class="modalhead">
+    <div class="modal-header">
 
-    <h2 id="detailTitle">
-      거래처 상세
-    </h2>
+      <h2 id="detailTitle">
+        거래처 상세
+      </h2>
 
-    <button
-      class="btn secondary"
-      onclick="detailDialog.close()"
-    >
-      닫기
-    </button>
+      <button
+        class="btn btn-secondary"
+        id="closeDetailDialog"
+      >
+        닫기
+      </button>
+
+    </div>
+
+
+    <div id="detailContent"></div>
+
+
+    <div class="modal-actions">
+
+      <button
+        class="btn btn-secondary"
+        id="editClientBtn"
+      >
+        거래처 수정
+      </button>
+
+      <button
+        class="btn btn-primary"
+        id="newOrderBtn"
+      >
+        + 주문 등록
+      </button>
+
+    </div>
 
   </div>
-
-
-  <div id="detailBody"></div>
-
-
-  <div class="actions">
-
-    <button
-      class="btn secondary"
-      id="editBtn"
-    >
-      거래처 수정
-    </button>
-
-    <button
-      class="btn primary"
-      id="newOrderBtn"
-    >
-      + 주문 등록
-    </button>
-
-  </div>
-
-</div>
 
 </dialog>
 
@@ -558,117 +694,128 @@
 
 <dialog id="orderDialog">
 
-<form class="modal" id="orderForm">
+  <form class="modal" id="orderForm">
 
-  <div class="modalhead">
+    <div class="modal-header">
 
-    <h2>주문 등록</h2>
+      <h2>주문 등록</h2>
 
-    <button
-      type="button"
-      class="btn secondary"
-      onclick="orderDialog.close()"
-    >
-      닫기
-    </button>
-
-  </div>
-
-
-  <div class="formgrid">
-
-    <div class="full">
-
-      <label>제품명 *</label>
-
-      <input
-        id="orderItem"
-        required
-        list="productList"
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="closeOrderDialog"
       >
-
-      <datalist id="productList"></datalist>
+        닫기
+      </button>
 
     </div>
 
 
-    <div>
+    <div class="form-grid">
 
-      <label>수량 *</label>
+      <div class="full">
 
-      <input
-        id="orderQty"
-        type="number"
-        min="1"
-        value="1"
-        required
+        <label for="orderItem">
+          제품명 *
+        </label>
+
+        <input
+          id="orderItem"
+          list="productList"
+          required
+        >
+
+        <datalist id="productList"></datalist>
+
+      </div>
+
+
+      <div>
+
+        <label for="orderQty">
+          수량 *
+        </label>
+
+        <input
+          id="orderQty"
+          type="number"
+          min="1"
+          value="1"
+          required
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="orderPrice">
+          단가 ($)
+        </label>
+
+        <input
+          id="orderPrice"
+          type="number"
+          min="0"
+          step="0.01"
+          value="0"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="orderDate">
+          주문일
+        </label>
+
+        <input
+          id="orderDate"
+          type="date"
+          required
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="orderStatus">
+          주문상태
+        </label>
+
+        <select id="orderStatus">
+          <option value="진행중">진행중</option>
+          <option value="발송완료">발송완료</option>
+          <option value="결제완료">결제완료</option>
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="cancelOrderBtn"
       >
+        취소
+      </button>
 
-    </div>
-
-
-    <div>
-
-      <label>단가 ($)</label>
-
-      <input
-        id="orderPrice"
-        type="number"
-        min="0"
-        step="0.01"
-        value="0"
+      <button
+        type="submit"
+        class="btn btn-primary"
       >
+        주문 저장
+      </button>
 
     </div>
 
-
-    <div>
-
-      <label>주문일</label>
-
-      <input
-        id="orderDate"
-        type="date"
-        required
-      >
-
-    </div>
-
-
-    <div>
-
-      <label>상태</label>
-
-      <select id="orderStatus">
-
-        <option>진행중</option>
-        <option>발송완료</option>
-        <option>결제완료</option>
-
-      </select>
-
-    </div>
-
-  </div>
-
-
-  <div class="actions">
-
-    <button
-      type="button"
-      class="btn secondary"
-      onclick="orderDialog.close()"
-    >
-      취소
-    </button>
-
-    <button class="btn primary">
-      주문 저장
-    </button>
-
-  </div>
-
-</form>
+  </form>
 
 </dialog>
 
@@ -676,153 +823,427 @@
 <script>
 
 const SUPABASE_URL =
-"https://schiczeuqeclmhibpzwl.supabase.co";
+  "https://schiczeuqeclmhibpzwl.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_wCtIHl_y2y8drElaoK68qA__ofb6th6";
+  "sb_publishable_wCtIHl_y2y8drElaoK68qA__ofb6th6";
 
 
-const db =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const $ = id =>
+  document.getElementById(id);
 
+
+let db = null;
 
 let clients = [];
 
-let activeClient = null;
+let selectedClientId = null;
 
 
-const $ =
-id => document.getElementById(id);
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(
+      /[&<>"']/g,
+      character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[character])
+    );
+
+}
 
 
-const money =
-n => Number(n || 0).toLocaleString(
-  "en-US",
-  {
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
+
+function formatMoney(value) {
+
+  return Number(value || 0)
+    .toLocaleString(
+      "en-US",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    );
+
+}
+
+
+
+function statusText(status) {
+
+  const names = {
+    ACTIVE: "활성 거래중",
+    PROSPECT: "계약 협상중",
+    INACTIVE: "거래 중단/휴면"
+  };
+
+  return names[status] || status;
+
+}
+
+
+
+function setConnection(message, type = "") {
+
+  const el = $("connectionStatus");
+
+  el.textContent = message;
+
+  el.className =
+    "connection" +
+    (type ? " " + type : "");
+
+}
+
+
+
+function todayLocal() {
+
+  const d = new Date();
+
+  const year = d.getFullYear();
+
+  const month =
+    String(d.getMonth() + 1)
+      .padStart(2, "0");
+
+  const day =
+    String(d.getDate())
+      .padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+
+}
+
+
+
+function initializeSupabase() {
+
+  if (!window.supabase) {
+
+    setConnection(
+      "오류: Supabase JavaScript 라이브러리를 불러오지 못했습니다.",
+      "error"
+    );
+
+    return false;
+
   }
-);
 
 
-const esc = s =>
-String(s ?? "").replace(
-  /[&<>"']/g,
-  c => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
-  }[c])
-);
+  try {
+
+    db =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+          auth: {
+            persistSession: false
+          }
+        }
+      );
 
 
-const statusName = s => ({
-  ACTIVE:"활성 거래중",
-  PROSPECT:"계약 협상중",
-  INACTIVE:"거래 중단/휴면"
-}[s] || s);
+    return true;
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    setConnection(
+      "Supabase 초기화 오류: " +
+      (error.message || String(error)),
+      "error"
+    );
+
+    return false;
+
+  }
+
+}
 
 
 
 async function loadData() {
 
-  $("statusLine").textContent =
-    "Supabase에서 데이터 불러오는 중...";
+  if (!db) {
 
-
-  const { data, error } =
-  await db
-    .from("clients")
-    .select("*, products(*), orders(*)")
-    .order("name");
-
-
-  if (error) {
-
-    $("statusLine").textContent =
-      "연결 오류: " + error.message;
-
-    console.error(error);
+    setConnection(
+      "Supabase가 초기화되지 않았습니다.",
+      "error"
+    );
 
     return;
+
   }
 
 
-  clients =
-  (data || []).map(c => ({
+  setConnection(
+    "Supabase에서 데이터를 불러오는 중..."
+  );
 
-    ...c,
 
-    products:
-      (c.products || [])
-      .sort(
-        (a,b) =>
-        a.name.localeCompare(b.name)
-      ),
+  try {
 
-    orders:
-      (c.orders || [])
-      .sort(
-        (a,b) =>
-        String(b.order_date)
-        .localeCompare(
-          String(a.order_date)
+    const clientResult =
+      await db
+        .from("clients")
+        .select("*")
+        .order(
+          "name",
+          { ascending: true }
+        );
+
+
+    if (clientResult.error) {
+
+      throw clientResult.error;
+
+    }
+
+
+    const productResult =
+      await db
+        .from("products")
+        .select("*");
+
+
+    if (productResult.error) {
+
+      throw productResult.error;
+
+    }
+
+
+    const orderResult =
+      await db
+        .from("orders")
+        .select("*")
+        .order(
+          "order_date",
+          { ascending: false }
+        );
+
+
+    if (orderResult.error) {
+
+      throw orderResult.error;
+
+    }
+
+
+    const productRows =
+      productResult.data || [];
+
+
+    const orderRows =
+      orderResult.data || [];
+
+
+    clients =
+      (clientResult.data || [])
+        .map(client => ({
+
+          ...client,
+
+          products:
+            productRows
+              .filter(
+                product =>
+                  product.client_id === client.id
+              )
+              .sort(
+                (a, b) =>
+                  String(a.name || "")
+                    .localeCompare(
+                      String(b.name || "")
+                    )
+              ),
+
+          orders:
+            orderRows
+              .filter(
+                order =>
+                  order.client_id === client.id
+              )
+
+        }));
+
+
+    updateSummary();
+
+    updateCountryFilter();
+
+    renderClients();
+
+
+    setConnection(
+      `연결됨 · 거래처 ${clients.length}개 · 마지막 갱신 ${new Date().toLocaleTimeString()}`,
+      "ok"
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Supabase load error:",
+      error
+    );
+
+
+    let message =
+      error?.message ||
+      String(error);
+
+
+    if (error?.details) {
+
+      message +=
+        " / " +
+        error.details;
+
+    }
+
+
+    if (error?.hint) {
+
+      message +=
+        " / " +
+        error.hint;
+
+    }
+
+
+    if (error?.code) {
+
+      message +=
+        " / code: " +
+        error.code;
+
+    }
+
+
+    setConnection(
+      "연결 오류: " + message,
+      "error"
+    );
+
+  }
+
+}
+
+
+
+function updateSummary() {
+
+  const totalClients =
+    clients.length;
+
+
+  const activeClients =
+    clients.filter(
+      client =>
+        client.status === "ACTIVE"
+    ).length;
+
+
+  const orders =
+    clients.flatMap(
+      client =>
+        client.orders || []
+    );
+
+
+  const totalAmount =
+    orders.reduce(
+      (sum, order) =>
+        sum +
+        Number(
+          order.total_amount || 0
+        ),
+      0
+    );
+
+
+  $("totalClients").textContent =
+    totalClients;
+
+
+  $("activeClients").textContent =
+    activeClients;
+
+
+  $("totalOrders").textContent =
+    orders.length;
+
+
+  $("totalAmount").textContent =
+    "$" + formatMoney(totalAmount);
+
+}
+
+
+
+function updateCountryFilter() {
+
+  const select =
+    $("countryFilter");
+
+
+  const previousValue =
+    select.value;
+
+
+  const countries =
+    [...new Set(
+      clients
+        .map(
+          client =>
+            client.country
         )
-      )
-
-  }));
-
-
-  $("statusLine").textContent =
-    `연결됨 · 거래처 ${clients.length}개 · 마지막 갱신 ${new Date().toLocaleTimeString()}`;
+        .filter(Boolean)
+    )]
+    .sort();
 
 
-  filters();
-
-  render();
-}
-
-
-
-function filters() {
-
-  const old =
-    $("countryFilter").value;
-
-
-  const cs =
-  [...new Set(
-    clients
-      .map(c => c.country)
-      .filter(Boolean)
-  )].sort();
-
-
-  $("countryFilter").innerHTML =
+  select.innerHTML =
     '<option value="">전체 국가</option>' +
+    countries
+      .map(
+        country =>
+          `<option value="${escapeHtml(country)}">${escapeHtml(country)}</option>`
+      )
+      .join("");
 
-    cs.map(
-      c =>
-      `<option>${esc(c)}</option>`
-    ).join("");
 
+  if (
+    countries.includes(
+      previousValue
+    )
+  ) {
 
-  if (cs.includes(old))
-    $("countryFilter").value = old;
+    select.value =
+      previousValue;
+
+  }
 
 }
 
 
 
-function render() {
+function getFilteredClients() {
 
-  const q =
-    $("search")
+  const keyword =
+    $("searchInput")
       .value
       .trim()
       .toLowerCase();
@@ -832,158 +1253,206 @@ function render() {
     $("countryFilter").value;
 
 
-  const st =
+  const status =
     $("statusFilter").value;
 
 
+  return clients.filter(
+    client => {
+
+      const searchable =
+        [
+          client.name,
+          client.country,
+          client.manager,
+          client.email,
+          client.phone,
+          client.notes,
+
+          ...(client.products || [])
+            .map(
+              product =>
+                product.name
+            )
+
+        ]
+        .join(" ")
+        .toLowerCase();
+
+
+      const keywordMatch =
+        !keyword ||
+        searchable.includes(
+          keyword
+        );
+
+
+      const countryMatch =
+        !country ||
+        client.country === country;
+
+
+      const statusMatch =
+        !status ||
+        client.status === status;
+
+
+      return (
+        keywordMatch &&
+        countryMatch &&
+        statusMatch
+      );
+
+    }
+  );
+
+}
+
+
+
+function renderClients() {
+
   const list =
-  clients.filter(c => {
-
-    const hay = [
-
-      c.name,
-      c.country,
-      c.manager,
-      c.email,
-      c.phone,
-      c.notes,
-
-      ...(c.products || [])
-        .map(p => p.name)
-
-    ].join(" ").toLowerCase();
+    getFilteredClients();
 
 
-    return (
+  if (!list.length) {
 
-      (!q || hay.includes(q))
+    $("clientGrid").innerHTML =
+      `
+        <div class="empty">
+          등록된 거래처가 없습니다.
+        </div>
+      `;
 
-      &&
+    return;
 
-      (!country ||
-       c.country === country)
-
-      &&
-
-      (!st ||
-       c.status === st)
-
-    );
-
-  });
+  }
 
 
-  $("cards").innerHTML =
+  $("clientGrid").innerHTML =
+    list
+      .map(
+        client => {
 
-  list.length
-
-  ?
-
-  list.map(c => `
-
-    <div
-      class="card"
-      data-id="${c.id}"
-    >
-
-      <div>
-
-        <span class="badge">
-          ${esc(c.country)}
-        </span>
-
-        <span
-          class="badge ${c.status}"
-        >
-          ${statusName(c.status)}
-        </span>
-
-      </div>
+          const products =
+            client.products || [];
 
 
-      <h3>
-        ${esc(c.name)}
-      </h3>
+          return `
+
+            <div
+              class="client-card"
+              data-client-id="${client.id}"
+            >
+
+              <div class="badges">
+
+                <span class="badge">
+                  ${escapeHtml(client.country)}
+                </span>
+
+                <span class="badge ${escapeHtml(client.status)}">
+                  ${escapeHtml(statusText(client.status))}
+                </span>
+
+              </div>
 
 
-      <div class="muted">
-
-        ${esc(c.manager)}
-
-        ·
-
-        ${esc(c.phone || "-")}
-
-      </div>
+              <div class="client-name">
+                ${escapeHtml(client.name)}
+              </div>
 
 
-      <div class="products">
+              <div class="muted">
+                담당자:
+                ${escapeHtml(client.manager || "-")}
+              </div>
 
-        ${
-        (c.products || []).length
 
-        ?
+              <div class="muted">
+                ${escapeHtml(client.email || "")}
+              </div>
 
-        (c.products || [])
-        .map(
-          p => `
 
-          <div class="row">
+              <div class="muted">
+                ${escapeHtml(client.phone || "")}
+              </div>
 
-            <span>
-              ${esc(p.name)}
-            </span>
 
-            <b>
-              $${money(p.price)}
-            </b>
+              <div class="product-preview">
 
-          </div>
+                ${
+                  products.length
 
-        `).join("")
+                  ?
 
-        :
+                  products
+                    .slice(0, 3)
+                    .map(
+                      product => `
 
-        '등록 제품 없음'
+                        <div class="row-between">
+
+                          <span>
+                            ${escapeHtml(product.name)}
+                          </span>
+
+                          <strong>
+                            $${formatMoney(product.price)}
+                          </strong>
+
+                        </div>
+
+                      `
+                    )
+                    .join("")
+
+                  :
+
+                  '<span class="muted">등록 제품 없음</span>'
+                }
+
+              </div>
+
+
+              <div
+                class="muted"
+                style="margin-top:9px;"
+              >
+                주문
+                ${(client.orders || []).length}건
+              </div>
+
+            </div>
+
+          `;
 
         }
-
-      </div>
-
-
-      <div
-        class="muted"
-        style="margin-top:10px"
-      >
-
-        주문 ${(c.orders || []).length}건
-
-      </div>
-
-    </div>
-
-  `).join("")
-
-  :
-
-  '<div class="panel empty" style="grid-column:1/-1">등록된 거래처가 없습니다.</div>';
+      )
+      .join("");
 
 
   document
-  .querySelectorAll(
-    ".card[data-id]"
-  )
-  .forEach(
-
-    el =>
-
-    el.onclick =
-    () =>
-    openDetail(
-      el.dataset.id
+    .querySelectorAll(
+      ".client-card"
     )
+    .forEach(
+      card => {
 
-  );
+        card.addEventListener(
+          "click",
+          () => {
+
+            openClientDetail(
+              card.dataset.clientId
+            );
+
+          }
+        );
+
+      }
+    );
 
 }
 
@@ -994,103 +1463,151 @@ function addProductRow(
   price = ""
 ) {
 
-  const d =
+  const row =
     document.createElement("div");
 
 
-  d.className =
+  row.className =
     "product-row";
 
 
-  d.innerHTML = `
+  row.innerHTML =
+    `
 
-    <input
-      class="pname"
-      placeholder="제품명"
-      value="${esc(name)}"
-    >
+      <input
+        class="product-name"
+        placeholder="제품명"
+        value="${escapeHtml(name)}"
+      >
 
-    <input
-      class="pprice"
-      type="number"
-      min="0"
-      step="0.01"
-      placeholder="단가"
-      value="${esc(price)}"
-    >
+      <input
+        class="product-price"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="단가"
+        value="${escapeHtml(price)}"
+      >
 
-    <button
-      type="button"
-      class="btn danger"
-    >
-      삭제
-    </button>
+      <button
+        type="button"
+        class="btn btn-danger btn-small"
+      >
+        삭제
+      </button>
 
-  `;
+    `;
 
 
-  d.querySelector("button")
-   .onclick =
-   () => d.remove();
+  row
+    .querySelector("button")
+    .addEventListener(
+      "click",
+      () => {
+
+        row.remove();
+
+      }
+    );
 
 
   $("productRows")
-    .appendChild(d);
+    .appendChild(row);
 
 }
 
 
 
-function openNew() {
+function openNewClient() {
 
-  activeClient = null;
+  selectedClientId =
+    null;
+
 
   $("clientForm").reset();
 
-  $("clientId").value = "";
 
-  $("modalTitle").textContent =
+  $("clientId").value =
+    "";
+
+
+  $("clientModalTitle").textContent =
     "신규 거래처 등록";
+
 
   $("clientStatus").value =
     "PROSPECT";
 
+
   $("productRows").innerHTML =
     "";
 
+
   addProductRow();
+
 
   $("deleteClientBtn").style.display =
     "none";
 
-  clientDialog.showModal();
+
+  $("clientDialog").showModal();
 
 }
 
 
 
-function openEdit(c) {
+function openEditClient() {
 
-  activeClient = c;
-
-  $("clientId").value = c.id;
-
-  $("name").value = c.name;
-
-  $("country").value = c.country;
-
-  $("manager").value = c.manager;
-
-  $("clientStatus").value = c.status;
-
-  $("email").value = c.email || "";
-
-  $("phone").value = c.phone || "";
-
-  $("notes").value = c.notes || "";
+  const client =
+    clients.find(
+      item =>
+        item.id === selectedClientId
+    );
 
 
-  $("modalTitle").textContent =
+  if (!client) {
+
+    return;
+
+  }
+
+
+  $("detailDialog").close();
+
+
+  $("clientId").value =
+    client.id;
+
+
+  $("clientName").value =
+    client.name || "";
+
+
+  $("clientCountry").value =
+    client.country || "";
+
+
+  $("clientManager").value =
+    client.manager || "";
+
+
+  $("clientStatus").value =
+    client.status || "PROSPECT";
+
+
+  $("clientEmail").value =
+    client.email || "";
+
+
+  $("clientPhone").value =
+    client.phone || "";
+
+
+  $("clientNotes").value =
+    client.notes || "";
+
+
+  $("clientModalTitle").textContent =
     "거래처 수정";
 
 
@@ -1098,421 +1615,593 @@ function openEdit(c) {
     "";
 
 
-  (c.products || [])
-  .forEach(
-    p =>
-    addProductRow(
-      p.name,
-      p.price
-    )
-  );
-
-
-  if (!(c.products || []).length)
-    addProductRow();
-
-
-  $("deleteClientBtn")
-    .style.display = "block";
-
-
-  clientDialog.showModal();
-
-}
-
-
-
-async function openDetail(id) {
-
-  activeClient =
-    clients.find(
-      c => c.id === id
-    );
-
-
-  if (!activeClient)
-    return;
-
-
-  const c = activeClient;
-
-
-  $("detailTitle").textContent =
-    c.name;
-
-
-  $("detailBody").innerHTML = `
-
-    <div
-      class="panel"
-      style="margin-top:0"
-    >
-
-      <b>
-
-        ${esc(c.country)}
-
-        ·
-
-        ${statusName(c.status)}
-
-      </b>
-
-
-      <p>
-
-        ${esc(c.manager)}
-
-        /
-
-        ${esc(c.phone || "-")}
-
-        /
-
-        ${esc(c.email || "-")}
-
-      </p>
-
-
-      <p>
-        ${esc(c.notes || "메모 없음")}
-      </p>
-
-    </div>
-
-
-    <h3>
-      취급 제품
-    </h3>
-
-
-    ${
-    (c.products || [])
-    .map(
-      p => `
-
-      <div class="row">
-
-        <span>
-          ${esc(p.name)}
-        </span>
-
-        <b>
-          $${money(p.price)}
-        </b>
-
-      </div>
-
-    `).join("")
-
-    ||
-
-    '<div class="muted">없음</div>'
-
-    }
-
-
-    <div class="orders">
-
-      <h3>
-        주문 내역
-      </h3>
-
-
-      ${
-      (c.orders || [])
-      .map(
-        o => `
-
-        <div class="order">
-
-          <div class="row">
-
-            <b>
-              ${esc(o.item_name)}
-            </b>
-
-            <b>
-              $${money(o.total_amount)}
-            </b>
-
-          </div>
-
-
-          <div class="muted">
-
-            ${esc(o.order_date)}
-
-            ·
-
-            ${o.quantity}개
-
-            ×
-
-            $${money(o.unit_price)}
-
-            ·
-
-            ${esc(o.status)}
-
-          </div>
-
-
-          <button
-            class="btn danger del-order"
-            data-id="${o.id}"
-            style="margin-top:7px"
-          >
-            삭제
-          </button>
-
-        </div>
-
-      `).join("")
-
-      ||
-
-      '<div class="muted">주문 내역 없음</div>'
+  if (
+    (client.products || []).length
+  ) {
+
+    client.products.forEach(
+      product => {
+
+        addProductRow(
+          product.name,
+          product.price
+        );
 
       }
-
-    </div>
-
-  `;
-
-
-  document
-  .querySelectorAll(
-    ".del-order"
-  )
-  .forEach(
-
-    b =>
-
-    b.onclick =
-    () =>
-    deleteOrder(
-      b.dataset.id
-    )
-
-  );
-
-
-  detailDialog.showModal();
-
-}
-
-
-
-$("clientForm").onsubmit =
-async e => {
-
-  e.preventDefault();
-
-
-  const id =
-    $("clientId").value;
-
-
-  const payload = {
-
-    name:
-      $("name").value.trim(),
-
-    country:
-      $("country").value.trim(),
-
-    manager:
-      $("manager").value.trim(),
-
-    status:
-      $("clientStatus").value,
-
-    email:
-      $("email").value.trim(),
-
-    phone:
-      $("phone").value.trim(),
-
-    notes:
-      $("notes").value.trim()
-
-  };
-
-
-  let clientId = id;
-
-
-  if (id) {
-
-    const { error } =
-    await db
-      .from("clients")
-      .update(payload)
-      .eq("id", id);
-
-
-    if (error)
-      return alert(error.message);
-
-
-    await db
-      .from("products")
-      .delete()
-      .eq(
-        "client_id",
-        id
-      );
+    );
 
   }
 
   else {
 
-    const {
-      data,
-      error
-    } =
-
-    await db
-      .from("clients")
-      .insert(payload)
-      .select()
-      .single();
-
-
-    if (error)
-      return alert(error.message);
-
-
-    clientId =
-      data.id;
+    addProductRow();
 
   }
 
 
-  const ps =
+  $("deleteClientBtn").style.display =
+    "block";
 
-  [...document
-    .querySelectorAll(
+
+  $("clientDialog").showModal();
+
+}
+
+
+
+async function saveClient(event) {
+
+  event.preventDefault();
+
+
+  const existingId =
+    $("clientId").value;
+
+
+  const clientData = {
+
+    name:
+      $("clientName")
+        .value
+        .trim(),
+
+    country:
+      $("clientCountry")
+        .value
+        .trim(),
+
+    manager:
+      $("clientManager")
+        .value
+        .trim(),
+
+    status:
+      $("clientStatus").value,
+
+    email:
+      $("clientEmail")
+        .value
+        .trim(),
+
+    phone:
+      $("clientPhone")
+        .value
+        .trim(),
+
+    notes:
+      $("clientNotes")
+        .value
+        .trim()
+
+  };
+
+
+  const productData =
+    [...document.querySelectorAll(
       ".product-row"
     )]
+    .map(
+      row => ({
 
-  .map(
-    r => ({
+        name:
+          row
+            .querySelector(
+              ".product-name"
+            )
+            .value
+            .trim(),
 
-      name:
-        r.querySelector(
-          ".pname"
-        ).value.trim(),
+        price:
+          Number(
+            row
+              .querySelector(
+                ".product-price"
+              )
+              .value || 0
+          )
 
-      price:
-        Number(
-          r.querySelector(
-            ".pprice"
-          ).value || 0
-        )
-
-    })
-  )
-
-  .filter(
-    p => p.name
-  )
-
-  .map(
-    p => ({
-      ...p,
-      client_id:clientId
-    })
-  );
-
-
-  if (ps.length) {
-
-    const { error } =
-    await db
-      .from("products")
-      .insert(ps);
-
-
-    if (error)
-      return alert(error.message);
-
-  }
-
-
-  clientDialog.close();
-
-  await loadData();
-
-};
-
-
-
-$("deleteClientBtn").onclick =
-async () => {
-
-  if (
-    !activeClient ||
-    !confirm(
-      "이 거래처와 관련 제품/주문을 모두 삭제할까요?"
+      })
     )
-  )
-    return;
-
-
-  const { error } =
-  await db
-    .from("clients")
-    .delete()
-    .eq(
-      "id",
-      activeClient.id
+    .filter(
+      product =>
+        product.name
     );
 
 
-  if (error)
-    return alert(error.message);
+  try {
+
+    let clientId =
+      existingId;
 
 
-  clientDialog.close();
+    if (existingId) {
 
-  detailDialog.close();
-
-  await loadData();
-
-};
-
-
-
-$("editBtn").onclick =
-() => {
-
-  detailDialog.close();
-
-  openEdit(activeClient);
-
-};
+      const updateResult =
+        await db
+          .from("clients")
+          .update(clientData)
+          .eq(
+            "id",
+            existingId
+          );
 
 
+      if (updateResult.error) {
 
-$("newOrderBtn").onclick =
-() => {
+        throw updateResult.error;
 
-  if (!activeClient)
+      }
+
+
+      const deleteProductsResult =
+        await db
+          .from("products")
+          .delete()
+          .eq(
+            "client_id",
+            existingId
+          );
+
+
+      if (
+        deleteProductsResult.error
+      ) {
+
+        throw deleteProductsResult.error;
+
+      }
+
+    }
+
+    else {
+
+      const insertResult =
+        await db
+          .from("clients")
+          .insert(clientData)
+          .select()
+          .single();
+
+
+      if (insertResult.error) {
+
+        throw insertResult.error;
+
+      }
+
+
+      clientId =
+        insertResult.data.id;
+
+    }
+
+
+    if (productData.length) {
+
+      const rows =
+        productData.map(
+          product => ({
+
+            client_id:
+              clientId,
+
+            name:
+              product.name,
+
+            price:
+              product.price
+
+          })
+        );
+
+
+      const productInsertResult =
+        await db
+          .from("products")
+          .insert(rows);
+
+
+      if (
+        productInsertResult.error
+      ) {
+
+        throw productInsertResult.error;
+
+      }
+
+    }
+
+
+    $("clientDialog").close();
+
+
+    await loadData();
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    alert(
+      "저장 오류: " +
+      (
+        error.message ||
+        String(error)
+      )
+    );
+
+  }
+
+}
+
+
+
+async function deleteClient() {
+
+  const id =
+    $("clientId").value;
+
+
+  if (!id) {
+
     return;
+
+  }
+
+
+  const client =
+    clients.find(
+      item =>
+        item.id === id
+    );
+
+
+  const name =
+    client?.name ||
+    "이 거래처";
+
+
+  if (
+    !confirm(
+      `${name}을(를) 삭제하시겠습니까?\n관련 제품과 주문도 함께 삭제됩니다.`
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const result =
+      await db
+        .from("clients")
+        .delete()
+        .eq(
+          "id",
+          id
+        );
+
+
+    if (result.error) {
+
+      throw result.error;
+
+    }
+
+
+    $("clientDialog").close();
+
+
+    if (
+      $("detailDialog").open
+    ) {
+
+      $("detailDialog").close();
+
+    }
+
+
+    selectedClientId =
+      null;
+
+
+    await loadData();
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    alert(
+      "삭제 오류: " +
+      (
+        error.message ||
+        String(error)
+      )
+    );
+
+  }
+
+}
+
+
+
+function openClientDetail(id) {
+
+  const client =
+    clients.find(
+      item =>
+        item.id === id
+    );
+
+
+  if (!client) {
+
+    return;
+
+  }
+
+
+  selectedClientId =
+    id;
+
+
+  $("detailTitle").textContent =
+    client.name;
+
+
+  const products =
+    client.products || [];
+
+
+  const orders =
+    client.orders || [];
+
+
+  $("detailContent").innerHTML =
+    `
+
+      <div class="detail-box">
+
+        <div class="badges">
+
+          <span class="badge">
+            ${escapeHtml(client.country)}
+          </span>
+
+          <span class="badge ${escapeHtml(client.status)}">
+            ${escapeHtml(statusText(client.status))}
+          </span>
+
+        </div>
+
+
+        <p>
+          <strong>담당자:</strong>
+          ${escapeHtml(client.manager || "-")}
+        </p>
+
+
+        <p>
+          <strong>이메일:</strong>
+          ${escapeHtml(client.email || "-")}
+        </p>
+
+
+        <p>
+          <strong>전화:</strong>
+          ${escapeHtml(client.phone || "-")}
+        </p>
+
+
+        <p>
+          <strong>메모:</strong><br>
+          ${escapeHtml(client.notes || "메모 없음")}
+        </p>
+
+      </div>
+
+
+      <div class="detail-section">
+
+        <h3>
+          취급 / 판매 제품
+        </h3>
+
+
+        ${
+          products.length
+
+          ?
+
+          products
+            .map(
+              product => `
+
+                <div class="detail-product">
+
+                  <span>
+                    ${escapeHtml(product.name)}
+                  </span>
+
+                  <strong>
+                    $${formatMoney(product.price)}
+                  </strong>
+
+                </div>
+
+              `
+            )
+            .join("")
+
+          :
+
+          '<div class="muted">등록된 제품이 없습니다.</div>'
+        }
+
+      </div>
+
+
+      <div class="detail-section">
+
+        <h3>
+          주문 내역
+        </h3>
+
+
+        ${
+          orders.length
+
+          ?
+
+          orders
+            .map(
+              order => `
+
+                <div class="order-card">
+
+                  <div class="row-between">
+
+                    <div class="order-title">
+                      ${escapeHtml(order.item_name)}
+                    </div>
+
+                    <strong>
+                      $${formatMoney(order.total_amount)}
+                    </strong>
+
+                  </div>
+
+
+                  <div class="order-info">
+
+                    ${escapeHtml(order.order_date)}
+
+                    ·
+
+                    ${Number(order.quantity || 0)}개
+
+                    ×
+
+                    $${formatMoney(order.unit_price)}
+
+                    ·
+
+                    ${escapeHtml(order.status)}
+
+                  </div>
+
+
+                  <div style="margin-top:8px;">
+
+                    <button
+                      class="btn btn-danger btn-small delete-order-btn"
+                      data-order-id="${order.id}"
+                    >
+                      주문 삭제
+                    </button>
+
+                  </div>
+
+                </div>
+
+              `
+            )
+            .join("")
+
+          :
+
+          '<div class="muted">주문 내역이 없습니다.</div>'
+        }
+
+      </div>
+
+    `;
+
+
+  document
+    .querySelectorAll(
+      ".delete-order-btn"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          event => {
+
+            event.stopPropagation();
+
+            deleteOrder(
+              button.dataset.orderId
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  $("detailDialog").showModal();
+
+}
+
+
+
+function openOrderDialog() {
+
+  const client =
+    clients.find(
+      item =>
+        item.id === selectedClientId
+    );
+
+
+  if (!client) {
+
+    return;
+
+  }
 
 
   $("orderForm").reset();
 
-  $("orderQty").value = 1;
 
-  $("orderPrice").value = 0;
+  $("orderQty").value =
+    1;
+
+
+  $("orderPrice").value =
+    0;
+
 
   $("orderDate").value =
-    new Date()
-      .toISOString()
-      .slice(0,10);
+    todayLocal();
 
 
   $("orderStatus").value =
@@ -1520,52 +2209,74 @@ $("newOrderBtn").onclick =
 
 
   $("productList").innerHTML =
-
-    (activeClient.products || [])
-
-    .map(
-      p =>
-      `<option value="${esc(p.name)}">`
-    )
-
-    .join("");
+    (client.products || [])
+      .map(
+        product =>
+          `<option value="${escapeHtml(product.name)}"></option>`
+      )
+      .join("");
 
 
-  orderDialog.showModal();
+  $("orderDialog").showModal();
 
-};
+}
 
 
 
-$("orderItem").onchange =
-() => {
+function applyProductPrice() {
 
-  const p =
-
-  (activeClient?.products || [])
-
-  .find(
-    p =>
-    p.name ===
-    $("orderItem").value
-  );
+  const client =
+    clients.find(
+      item =>
+        item.id === selectedClientId
+    );
 
 
-  if (p)
+  if (!client) {
+
+    return;
+
+  }
+
+
+  const name =
+    $("orderItem").value;
+
+
+  const product =
+    (client.products || [])
+      .find(
+        item =>
+          item.name === name
+      );
+
+
+  if (product) {
+
     $("orderPrice").value =
-      p.price;
+      Number(
+        product.price || 0
+      );
 
-};
+  }
 
-
-
-$("orderForm").onsubmit =
-async e => {
-
-  e.preventDefault();
+}
 
 
-  const qty =
+
+async function saveOrder(event) {
+
+  event.preventDefault();
+
+
+  if (!selectedClientId) {
+
+    return;
+
+  }
+
+
+  const quantity =
     Number(
       $("orderQty").value
     );
@@ -1577,10 +2288,10 @@ async e => {
     );
 
 
-  const payload = {
+  const orderData = {
 
     client_id:
-      activeClient.id,
+      selectedClientId,
 
     item_name:
       $("orderItem")
@@ -1588,15 +2299,17 @@ async e => {
         .trim(),
 
     quantity:
-      qty,
+      quantity,
 
     unit_price:
       price,
 
     total_amount:
       Number(
-        (qty * price)
-        .toFixed(2)
+        (
+          quantity *
+          price
+        ).toFixed(2)
       ),
 
     order_date:
@@ -1608,103 +2321,135 @@ async e => {
   };
 
 
-  const { error } =
-  await db
-    .from("orders")
-    .insert(payload);
+  try {
+
+    const result =
+      await db
+        .from("orders")
+        .insert(orderData);
 
 
-  if (error)
-    return alert(error.message);
+    if (result.error) {
+
+      throw result.error;
+
+    }
 
 
-  const clientId =
-    activeClient.id;
+    $("orderDialog").close();
 
 
-  orderDialog.close();
-
-  detailDialog.close();
-
-  await loadData();
-
-  openDetail(clientId);
-
-};
+    const clientId =
+      selectedClientId;
 
 
-
-async function deleteOrder(id) {
-
-  if (
-    !confirm(
-      "이 주문을 삭제할까요?"
-    )
-  )
-    return;
+    $("detailDialog").close();
 
 
-  const clientId =
-    activeClient.id;
+    await loadData();
 
 
-  const { error } =
-  await db
-    .from("orders")
-    .delete()
-    .eq("id", id);
+    openClientDetail(
+      clientId
+    );
 
+  }
 
-  if (error)
-    return alert(error.message);
+  catch (error) {
 
+    console.error(error);
 
-  detailDialog.close();
+    alert(
+      "주문 저장 오류: " +
+      (
+        error.message ||
+        String(error)
+      )
+    );
 
-  await loadData();
-
-  openDetail(clientId);
+  }
 
 }
 
 
 
-$("newBtn").onclick =
-  openNew;
+async function deleteOrder(orderId) {
+
+  if (
+    !confirm(
+      "이 주문을 삭제하시겠습니까?"
+    )
+  ) {
+
+    return;
+
+  }
 
 
-$("addProductBtn").onclick =
-() => addProductRow();
+  const clientId =
+    selectedClientId;
 
 
-$("refreshBtn").onclick =
-  loadData;
+  try {
+
+    const result =
+      await db
+        .from("orders")
+        .delete()
+        .eq(
+          "id",
+          orderId
+        );
 
 
-[
-  "search",
-  "countryFilter",
-  "statusFilter"
-]
-.forEach(
-  id =>
-  $(id).addEventListener(
-    id === "search"
-      ? "input"
-      : "change",
-    render
-  )
-);
+    if (result.error) {
+
+      throw result.error;
+
+    }
 
 
+    $("detailDialog").close();
 
-$("csvBtn").onclick =
-() => {
 
-  if (!clients.length)
-    return alert(
-      "내보낼 데이터가 없습니다."
+    await loadData();
+
+
+    openClientDetail(
+      clientId
     );
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    alert(
+      "주문 삭제 오류: " +
+      (
+        error.message ||
+        String(error)
+      )
+    );
+
+  }
+
+}
+
+
+
+function exportCSV() {
+
+  if (!clients.length) {
+
+    alert(
+      "내보낼 거래처 데이터가 없습니다."
+    );
+
+    return;
+
+  }
 
 
   const rows = [
@@ -1715,34 +2460,40 @@ $("csvBtn").onclick =
       "담당자",
       "이메일",
       "전화번호",
-      "제품",
-      "상태",
+      "판매물품목록",
+      "거래상태",
       "주문건수",
       "메모"
     ],
 
-
     ...clients.map(
-      c => [
+      client => [
 
-        c.name,
-        c.country,
-        c.manager,
-        c.email,
-        c.phone,
+        client.name,
 
-        (c.products || [])
-        .map(
-          p =>
-          `${p.name}($${money(p.price)})`
-        )
-        .join("; "),
+        client.country,
 
-        statusName(c.status),
+        client.manager,
 
-        (c.orders || []).length,
+        client.email || "",
 
-        c.notes
+        client.phone || "",
+
+        (client.products || [])
+          .map(
+            product =>
+              `${product.name} ($${formatMoney(product.price)})`
+          )
+          .join("; "),
+
+        statusText(
+          client.status
+        ),
+
+        (client.orders || [])
+          .length,
+
+        client.notes || ""
 
       ]
     )
@@ -1751,103 +2502,311 @@ $("csvBtn").onclick =
 
 
   const csv =
-
-  "\uFEFF" +
-
-  rows.map(
-
-    r =>
-
-    r.map(
-      v =>
-      `"${String(v ?? "")
-      .replaceAll(
-        '"',
-        '""'
-      )}"`
-    )
-    .join(",")
-
-  ).join("\n");
-
-
-  const a =
-    document.createElement("a");
-
-
-  a.href =
-    URL.createObjectURL(
-      new Blob(
-        [csv],
-        {
-          type:
-          "text/csv;charset=utf-8"
-        }
+    "\uFEFF" +
+    rows
+      .map(
+        row =>
+          row
+            .map(
+              value =>
+                `"${String(value ?? "")
+                  .replaceAll(
+                    '"',
+                    '""'
+                  )}"`
+            )
+            .join(",")
       )
+      .join("\n");
+
+
+  const blob =
+    new Blob(
+      [csv],
+      {
+        type:
+          "text/csv;charset=utf-8"
+      }
     );
 
 
-  a.download =
-    `CRM_${new Date()
-      .toISOString()
-      .slice(0,10)}.csv`;
+  const url =
+    URL.createObjectURL(blob);
 
 
-  a.click();
+  const link =
+    document.createElement("a");
 
 
-  URL.revokeObjectURL(
-    a.href
+  link.href =
+    url;
+
+
+  link.download =
+    `CAOS_CRM_${todayLocal()}.csv`;
+
+
+  document.body
+    .appendChild(link);
+
+
+  link.click();
+
+
+  link.remove();
+
+
+  URL.revokeObjectURL(url);
+
+}
+
+
+
+function setupRealtime() {
+
+  if (!db) {
+
+    return;
+
+  }
+
+
+  let timer = null;
+
+
+  const reloadSoon =
+    () => {
+
+      clearTimeout(timer);
+
+      timer =
+        setTimeout(
+          () => {
+
+            loadData();
+
+          },
+          300
+        );
+
+    };
+
+
+  db
+    .channel(
+      "caos-crm-realtime"
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "clients"
+      },
+      reloadSoon
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "products"
+      },
+      reloadSoon
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "orders"
+      },
+      reloadSoon
+    )
+
+    .subscribe();
+
+}
+
+
+
+$("newClientBtn")
+  .addEventListener(
+    "click",
+    openNewClient
   );
 
-};
+
+$("refreshBtn")
+  .addEventListener(
+    "click",
+    loadData
+  );
+
+
+$("csvBtn")
+  .addEventListener(
+    "click",
+    exportCSV
+  );
+
+
+$("searchInput")
+  .addEventListener(
+    "input",
+    renderClients
+  );
+
+
+$("countryFilter")
+  .addEventListener(
+    "change",
+    renderClients
+  );
+
+
+$("statusFilter")
+  .addEventListener(
+    "change",
+    renderClients
+  );
+
+
+$("addProductBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      addProductRow();
+
+    }
+  );
+
+
+$("clientForm")
+  .addEventListener(
+    "submit",
+    saveClient
+  );
+
+
+$("deleteClientBtn")
+  .addEventListener(
+    "click",
+    deleteClient
+  );
+
+
+$("editClientBtn")
+  .addEventListener(
+    "click",
+    openEditClient
+  );
+
+
+$("newOrderBtn")
+  .addEventListener(
+    "click",
+    openOrderDialog
+  );
+
+
+$("orderItem")
+  .addEventListener(
+    "change",
+    applyProductPrice
+  );
+
+
+$("orderForm")
+  .addEventListener(
+    "submit",
+    saveOrder
+  );
+
+
+$("closeClientDialog")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("clientDialog").close();
+
+    }
+  );
+
+
+$("cancelClientBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("clientDialog").close();
+
+    }
+  );
+
+
+$("closeDetailDialog")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("detailDialog").close();
+
+    }
+  );
+
+
+$("closeOrderDialog")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("orderDialog").close();
+
+    }
+  );
+
+
+$("cancelOrderBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("orderDialog").close();
+
+    }
+  );
 
 
 
-db
-.channel("crm-live")
+async function startApp() {
 
-.on(
-  "postgres_changes",
+  const initialized =
+    initializeSupabase();
 
-  {
-    event:"*",
-    schema:"public",
-    table:"clients"
-  },
 
-  loadData
-)
+  if (!initialized) {
 
-.on(
-  "postgres_changes",
+    return;
 
-  {
-    event:"*",
-    schema:"public",
-    table:"products"
-  },
+  }
 
-  loadData
-)
 
-.on(
-  "postgres_changes",
+  await loadData();
 
-  {
-    event:"*",
-    schema:"public",
-    table:"orders"
-  },
 
-  loadData
-)
+  setupRealtime();
 
-.subscribe();
+}
 
 
 
-loadData();
+startApp();
 
 </script>
 
